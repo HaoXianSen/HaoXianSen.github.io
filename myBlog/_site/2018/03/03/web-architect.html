@@ -1,0 +1,1492 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>大型网站与大数据系统的架构 - harry’s blog</title>
+
+<meta name="description" content="记录一下个人看了一些大型网站架构文章后的理解，Overview  衡量一个网站是否为大型网站，访问量和数据量二者缺一不可。除了海量数据和高并发的访问量，本身业务和系统的复杂度也是考察的方面  大型网站的技术挑战主要来自于庞大的用户，高并发的访问和海量的数据，任何简单的业务一旦需要处理数以PB计的数据和面对数以亿计...">
+<link rel="canonical" href="http://localhost:4000/2018/03/03/web-architect.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/browserconfig.xml">
+<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets --><script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.decodeUrl = function(str) {
+    return str ? decodeURIComponent(str.replace(/\+/g, '%20')) : '';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.4',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn1.lncld.net/static/js/3.4.1/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script></head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="473.000000pt" height="473.000000pt" viewBox="0 0 473.000000 473.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.11, written by Peter Selinger 2001-2013
+</metadata>
+<g transform="translate(0.000000,473.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 2370 l0 -1730 2365 0 2365 0 0 1730 0 1730 -2365 0 -2365 0 0
+-1730z m2720 995 c0 -97 -107 -215 -195 -215 -21 0 -25 5 -25 28 0 27 38 114
+62 142 29 34 107 77 146 79 7 1 12 -12 12 -34z m-279 -250 l71 -24 71 24 c122
+43 239 25 306 -49 l24 -26 -38 -37 c-114 -114 -94 -285 45 -374 l25 -16 -40
+-79 c-24 -47 -62 -102 -95 -136 -52 -54 -59 -58 -103 -58 -25 0 -69 9 -97 20
+-66 26 -91 25 -179 -5 -91 -31 -121 -25 -178 31 -118 119 -196 329 -179 484 9
+75 57 171 106 210 80 64 152 73 261 35z m-689 -1689 c-1 -91 -3 -103 -21 -91
+-12 7 -15 167 -4 179 18 18 25 -7 25 -88z m158 75 c0 -29 -11 -51 -25 -51 -12
+0 -12 16 1 58 6 19 24 14 24 -7z m348 -14 c3 -23 7 -26 31 -21 43 9 63 -17 59
+-79 -4 -70 -26 -74 -30 -5 -3 49 -5 53 -28 53 -22 0 -26 -5 -30 -48 -9 -82
+-25 -58 -28 41 -2 73 0 93 10 90 7 -3 14 -16 16 -31z m627 24 c7 -12 -12 -24
+-25 -16 -11 7 -4 25 10 25 5 0 11 -4 15 -9z m-1065 -26 c0 -8 7 -15 15 -15 8
+0 15 -7 15 -15 0 -8 -7 -15 -15 -15 -22 0 -20 -66 3 -79 27 -15 1 -37 -27 -22
+-16 9 -21 21 -21 56 0 24 -4 46 -9 49 -12 8 11 56 27 56 6 0 12 -7 12 -15z
+m993 -5 c19 -23 22 -40 7 -40 -5 0 -10 -18 -10 -40 0 -22 5 -40 10 -40 6 0 10
+-7 10 -15 0 -8 -6 -15 -12 -15 -26 0 -39 18 -40 56 0 21 -5 45 -11 52 -7 9 -6
+20 3 37 16 30 21 31 43 5z m-803 -25 c18 -21 3 -32 -22 -16 -15 9 -23 10 -32
+1 -13 -13 8 -30 36 -30 10 0 22 -9 28 -20 8 -15 6 -24 -10 -40 -11 -11 -26
+-20 -32 -20 -28 0 -57 13 -62 27 -5 12 1 14 35 8 32 -6 40 -4 37 6 -2 7 -18
+17 -35 21 -38 10 -46 29 -27 57 18 25 66 28 84 6z m180 0 c18 -21 3 -32 -22
+-16 -13 8 -24 9 -30 3 -15 -15 0 -32 27 -32 15 0 29 -9 36 -22 10 -18 8 -24
+-11 -40 -29 -23 -52 -23 -81 2 l-24 21 44 -7 c33 -5 42 -3 39 7 -2 7 -19 17
+-36 21 -54 14 -39 78 19 78 15 0 32 -7 39 -15z m280 5 c46 -25 29 -112 -25
+-126 -42 -10 -75 19 -75 66 0 57 50 87 100 60z m76 -27 c10 -59 17 -62 29 -13
+15 63 39 64 55 3 10 -40 14 -45 20 -28 5 11 9 30 9 42 1 12 6 25 11 28 23 14
+26 -8 10 -67 -22 -81 -43 -88 -62 -21 l-14 48 -15 -45 c-21 -67 -42 -63 -62 9
+-21 74 -21 81 -2 81 8 0 17 -14 21 -37z m337 25 c2 -7 4 -38 3 -68 -1 -42 -5
+-55 -16 -55 -11 0 -16 14 -18 54 -2 29 -1 60 2 67 7 17 22 18 29 2z m57 2 c0
+-6 8 -5 20 2 16 10 24 10 41 0 16 -10 24 -10 35 -1 7 6 24 9 38 5 19 -5 24
+-14 29 -52 2 -25 2 -54 0 -65 -10 -37 -28 -13 -31 40 -3 47 -5 52 -25 49 -19
+-3 -22 -10 -25 -56 -4 -70 -26 -65 -30 6 -3 43 -6 52 -21 52 -23 0 -31 -19
+-31 -72 0 -27 -4 -38 -12 -36 -8 3 -14 29 -16 71 -2 55 0 67 13 67 8 0 15 -5
+15 -10z m291 -11 c32 -32 21 -53 -29 -57 -28 -2 -42 -7 -39 -15 2 -7 20 -11
+41 -10 42 3 47 -12 10 -29 -52 -24 -103 33 -82 92 17 45 64 54 99 19z m65 -90
+c10 -17 -13 -36 -27 -22 -12 12 -4 33 11 33 5 0 12 -5 16 -11z m-1888 -336 c2
+-13 -1 -23 -6 -23 -5 0 -9 8 -8 17 0 10 -7 19 -16 21 -13 2 -18 -3 -18 -17 0
+-12 6 -21 13 -21 8 0 9 -3 1 -8 -6 -4 -14 -14 -17 -22 -3 -8 -6 7 -6 33 -1 47
+0 48 27 45 19 -2 28 -9 30 -25z m29 5 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3 -3
+4 -12 1 -19z m748 5 c-2 -10 -4 -31 -6 -48 -2 -30 -2 -30 -8 5 -4 19 -5 41 -3
+48 6 19 21 14 17 -5z m396 -28 c9 -25 13 -45 8 -45 -5 0 -9 7 -9 15 0 21 -37
+19 -50 -2 -10 -16 -11 -16 -5 2 20 57 28 75 34 75 3 0 13 -20 22 -45z m186
+-22 c-2 -16 -4 -5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m510 0 c-2 -16 -4
+-5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m347 20 c-4 -16 -2 -29 7 -35 12
+-8 11 -9 -1 -5 -9 2 -16 18 -18 41 -2 25 0 36 7 31 6 -3 8 -17 5 -32z m-2116
+4 c2 -11 -3 -17 -15 -16 -11 0 -13 3 -5 6 10 4 10 8 0 21 -11 13 -11 14 2 10
+8 -2 16 -12 18 -21z m56 17 c10 -4 16 -18 16 -35 0 -24 -4 -29 -25 -29 -30 0
+-35 29 -5 37 11 3 17 10 14 15 -3 5 -13 7 -21 4 -8 -3 -11 -1 -8 4 7 12 8 12
+29 4z m76 -5 c12 -8 10 -9 -7 -4 -29 8 -31 -11 -2 -20 27 -9 19 -29 -12 -32
+-14 -1 -17 0 -6 3 21 7 23 24 2 24 -15 0 -21 21 -8 33 9 9 15 9 33 -4z m68 -1
+c19 -19 14 -28 -13 -28 -28 0 -34 -16 -7 -23 13 -3 12 -4 -3 -3 -35 2 -30 65
+6 66 3 0 10 -5 17 -12z m59 -25 c-3 -10 -5 -4 -5 12 0 17 2 24 5 18 2 -7 2
+-21 0 -30z m73 22 c19 -23 8 -50 -20 -50 -16 0 -26 6 -28 18 -4 18 14 47 28
+47 4 0 13 -7 20 -15z m107 -26 c1 -24 0 -26 -4 -9 -3 14 -10 31 -16 39 -10 11
+-9 13 3 9 9 -3 16 -18 17 -39z m78 -19 c8 0 16 12 18 28 4 25 4 25 6 -5 1 -29
+-2 -33 -24 -33 -23 0 -25 4 -23 38 1 36 1 36 5 5 3 -19 10 -33 18 -33z m89 51
+c4 -5 -3 -7 -14 -4 -26 7 -26 -14 0 -22 11 -3 20 -11 20 -16 0 -15 -30 -23
+-42 -11 -8 8 -4 9 13 6 l24 -6 -24 20 c-13 11 -21 24 -17 31 9 13 33 15 40 2z
+m141 -26 c0 -23 -5 -31 -22 -33 -26 -4 -41 31 -22 54 20 24 44 13 44 -21z m48
+28 c-7 -2 -14 -19 -14 -36 -1 -25 -3 -27 -6 -9 -6 30 3 52 19 51 10 0 10 -2 1
+-6z m72 -3 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10 3 6 11 10 16 10 6 0 7 -4
+4 -10z m95 -5 c9 -10 9 -15 1 -15 -6 0 -11 5 -11 11 0 23 -25 1 -31 -27 l-7
+-29 -1 32 c-1 27 8 39 30 42 4 1 12 -6 19 -14z m198 -24 c-2 -17 -10 -27 -23
+-30 -11 -2 -23 -8 -27 -15 -4 -6 -8 8 -8 32 0 23 4 42 9 42 5 0 7 -8 4 -19 -6
+-23 14 -38 30 -22 9 9 8 16 -1 31 -10 16 -9 18 4 13 9 -3 14 -15 12 -32z m72
+24 c16 -19 6 -45 -20 -52 -11 -3 -21 -10 -21 -17 -1 -6 -5 5 -8 24 -5 25 -3
+38 8 48 19 16 26 15 41 -3z m100 -5 c9 -17 8 -20 -12 -20 -18 0 -20 2 -8 10 8
+5 11 12 8 15 -11 11 -28 -5 -28 -25 0 -10 8 -20 18 -23 13 -3 12 -4 -3 -3 -36
+2 -29 65 7 66 4 0 12 -9 18 -20z m95 10 c3 -5 0 -7 -8 -4 -8 3 -18 1 -21 -5
+-4 -5 3 -12 14 -16 11 -3 20 -13 20 -21 0 -15 -35 -20 -44 -5 -4 5 4 7 16 4
+l23 -5 -24 20 c-13 11 -21 24 -17 31 9 14 33 14 41 1z m75 -5 c16 -19 3 -55
+-20 -55 -10 0 -21 -6 -23 -12 -3 -7 -6 6 -6 29 -1 37 6 49 30 52 4 1 12 -6 19
+-14z m68 3 c19 -19 14 -28 -13 -28 -14 0 -25 -5 -25 -11 0 -7 11 -9 26 -6 16
+3 22 1 16 -5 -17 -17 -47 -4 -50 21 -5 34 24 51 46 29z m80 -8 c5 -13 3 -13
+-12 -1 -21 17 -42 1 -32 -24 4 -12 13 -15 28 -12 14 4 18 3 11 -4 -16 -16 -47
+-7 -51 14 -8 38 44 63 56 27z m67 10 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10
+3 6 11 10 16 10 6 0 7 -4 4 -10z m154 -3 c12 -16 5 -27 -18 -27 -14 0 -14 2
+-1 10 8 5 11 12 8 15 -11 11 -28 -5 -28 -27 0 -15 5 -19 20 -15 11 3 20 1 20
+-5 0 -5 -10 -8 -22 -6 -26 3 -35 32 -18 53 15 19 24 19 39 2z m74 -2 c-3 -9
+-8 -14 -10 -11 -3 3 -2 9 2 15 9 16 15 13 8 -4z m67 -11 c0 -8 -9 -14 -20 -14
+-11 0 -20 -5 -20 -11 0 -6 9 -9 20 -6 11 3 18 1 14 -4 -8 -13 -41 -11 -47 4
+-2 6 -1 21 4 32 4 11 8 14 8 8 1 -7 8 -13 17 -13 14 0 14 3 4 15 -11 13 -10
+14 4 9 9 -3 16 -12 16 -20z m66 -10 l1 -29 -4 28 c-5 35 -26 30 -34 -9 l-7
+-29 -1 32 c-1 30 12 44 34 39 6 -1 10 -16 11 -32z m-2095 -21 c10 3 17 1 13
+-4 -3 -5 -13 -9 -23 -9 -20 0 -31 26 -22 50 4 9 7 4 9 -13 3 -23 8 -28 23 -24z
+m419 37 c0 -5 -5 -10 -11 -10 -5 0 -7 5 -4 10 3 6 8 10 11 10 2 0 4 -4 4 -10z
+m490 -20 c0 -25 -4 -30 -25 -30 -17 0 -25 5 -24 18 0 10 3 12 6 5 6 -15 33
+-17 33 -3 0 6 -5 10 -10 10 -6 0 -5 6 2 15 18 19 18 19 18 -15z m777 -17 c-3
+-10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z m73 16 c0 -26 -3 -30 -22
+-27 -29 4 -35 28 -9 35 12 3 21 9 21 14 0 5 2 9 5 9 3 0 5 -14 5 -31z m181 -3
+c5 3 9 1 9 -5 0 -5 -4 -13 -10 -16 -5 -3 -10 -4 -10 -1 0 2 -2 10 -3 18 -2 7
+-2 10 0 5 3 -4 9 -5 14 -1z m-1994 -18 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3
+-3 4 -12 1 -19z m440 7 c0 -8 -4 -15 -9 -15 -4 0 -8 7 -8 15 0 8 4 15 8 15 5
+0 9 -7 9 -15z m33 6 c0 -6 -4 -12 -8 -15 -5 -3 -9 1 -9 9 0 8 4 15 9 15 4 0 8
+-4 8 -9z m-148 -43 c-8 -8 -9 -4 -5 13 4 13 8 18 11 10 2 -7 -1 -18 -6 -23z
+m-172 -98 c24 0 36 -18 20 -33 -9 -9 -11 -9 -8 2 2 8 -5 16 -14 19 -12 2 -18
+-5 -21 -25 -2 -15 -4 -5 -4 22 -1 28 1 42 4 33 2 -10 13 -18 23 -18z m205 13
+c5 -15 4 -16 -6 -5 -18 17 -39 15 -39 -3 0 -8 6 -15 14 -15 23 0 41 -29 27
+-43 -10 -9 -11 -9 -6 4 4 10 -3 19 -20 27 -36 17 -33 52 6 52 9 0 20 -8 24
+-17z m663 10 c-10 -2 -19 -12 -19 -21 -1 -16 -2 -16 -6 0 -2 9 -12 19 -21 21
+-9 3 1 5 23 5 22 0 32 -2 23 -5z m632 -8 c14 -17 0 -21 -17 -4 -18 18 -43 3
+-43 -24 0 -34 25 -54 45 -37 9 7 18 10 21 7 3 -3 -4 -10 -15 -17 -30 -16 -61
+3 -61 38 0 47 43 70 70 37z m-1556 -45 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4
+81 3 -3 7 -25 8 -48z m300 0 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4 81 3 -3 7
+-25 8 -48z m302 -26 c-3 -8 -11 -14 -18 -14 -9 0 -9 3 0 12 7 7 13 28 14 48
+l1 35 4 -33 c3 -19 2 -40 -1 -48z m109 66 c-4 -6 5 -10 19 -10 14 0 26 -2 26
+-4 0 -2 3 -13 6 -23 5 -17 5 -17 -6 0 -17 27 -43 22 -38 -8 3 -14 2 -25 -2
+-25 -9 0 -19 68 -11 75 8 9 12 5 6 -5z m276 -10 c15 0 19 -7 18 -32 -2 -31 -2
+-31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -2 -17 -4 -11 -5 17 0 25
+2 39 5 33 2 -7 13 -13 24 -13z m871 -23 c-5 -20 -6 -20 -12 -1 -4 10 -5 25 -2
+32 8 22 21 -6 14 -31z m-1931 -9 l-5 -33 -6 30 c-7 32 -3 48 9 41 4 -3 5 -20
+2 -38z m1260 29 c-1 -4 -1 -14 -1 -22 0 -26 -15 -16 -16 10 -1 15 2 25 8 23 5
+-2 9 -7 9 -11z m-1300 -4 c6 -34 5 -53 -2 -53 -5 0 -9 11 -9 24 0 15 -7 26
+-17 29 -14 4 -12 5 5 6 12 0 23 -2 23 -6z m265 -4 c3 -6 0 -15 -7 -20 -23 -15
+-34 -10 -13 6 17 13 18 14 1 15 -24 0 -32 -26 -16 -48 13 -15 12 -16 -3 -3
+-18 14 -24 42 -11 54 10 11 41 8 49 -4z m220 -7 c1 -7 0 -8 -3 -2 -2 5 -11 10
+-19 10 -17 0 -19 -31 -2 -48 7 -7 9 -12 6 -12 -4 0 -14 7 -22 16 -12 12 -13
+20 -5 35 11 22 41 22 45 1z m32 -7 c-3 -3 -9 2 -12 12 -6 14 -5 15 5 6 7 -7
+10 -15 7 -18z m31 -9 c-12 -26 -29 -35 -29 -16 0 6 4 10 9 10 5 0 13 9 16 21
+4 11 9 18 11 16 3 -2 -1 -16 -7 -31z m76 17 c5 -15 4 -16 -6 -5 -22 21 -42 15
+-37 -13 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m173 -9 c2
+-11 -5 -27 -15 -34 -15 -12 -16 -12 -5 0 19 21 15 52 -5 48 -11 -2 -18 -12
+-17 -25 0 -12 -3 -20 -8 -17 -10 6 -11 38 -1 48 14 14 48 1 51 -20z m142 17
+c0 -5 -10 -7 -22 -3 -14 3 -19 2 -14 -6 4 -7 14 -12 22 -12 8 0 14 -7 14 -16
+0 -14 -2 -14 -15 -1 -8 9 -20 17 -27 19 -6 2 -8 10 -4 16 8 14 46 16 46 3z
+m254 -6 c3 -8 1 -15 -4 -15 -6 0 -10 5 -10 10 0 6 -7 10 -16 10 -12 0 -15 -7
+-12 -25 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 12 12 41 7 47 -8z m66 -15 c0
+-16 -4 -30 -9 -30 -4 0 -6 11 -4 24 4 17 0 25 -14 29 -15 4 -14 5 5 6 18 1 22
+-4 22 -29z m115 13 c5 -15 4 -16 -6 -5 -22 21 -42 15 -37 -13 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m39 9 c-7 -4 -14 -18 -17 -32 -4
+-21 -4 -20 -6 8 -1 24 3 32 17 32 11 0 13 -3 6 -8z m66 -22 c0 -16 -2 -30 -4
+-30 -2 0 -6 14 -8 30 -3 17 -1 30 4 30 4 0 8 -13 8 -30z m66 -3 c1 -25 1 -25
+-3 -2 -6 33 -33 33 -33 0 0 -14 -3 -25 -7 -25 -5 0 -8 14 -8 30 0 27 3 30 25
+28 20 -2 25 -9 26 -31z m156 3 c3 -16 1 -30 -4 -30 -4 0 -8 14 -8 30 0 17 2
+30 4 30 2 0 6 -13 8 -30z m48 0 c0 -16 -4 -30 -8 -30 -5 0 -7 14 -4 30 2 17 6
+30 8 30 2 0 4 -13 4 -30z m70 20 c0 -5 -7 -7 -16 -3 -9 3 -20 0 -25 -8 -7 -11
+-9 -11 -9 4 0 12 8 17 25 17 14 0 25 -4 25 -10z m78 -10 c4 -12 2 -13 -9 -2
+-31 29 -57 -6 -26 -37 10 -10 9 -11 -5 -6 -18 7 -25 45 -11 59 12 11 46 2 51
+-14z m34 8 c-5 -7 -12 -22 -15 -33 -3 -13 -5 -9 -6 13 -1 23 3 32 15 32 12 0
+14 -3 6 -12z m75 -35 c-3 -10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z
+m72 15 c-2 -31 -2 -31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -4 -26
+-4 -26 -6 5 -1 28 2 32 24 32 22 0 25 -4 24 -32z m76 11 c5 -14 1 -27 -11 -38
+-17 -15 -17 -15 -5 1 16 21 8 48 -15 48 -12 0 -15 -7 -12 -25 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 14 14 42 6 48 -14z m-1138 -31 c-3 -7 -5 -2 -5 12 0
+14 2 19 5 13 2 -7 2 -19 0 -25z m-1045 15 c-10 -4 -10 -8 -1 -19 8 -9 8 -14 1
+-14 -15 0 -25 18 -17 30 3 6 12 10 18 9 8 0 8 -2 -1 -6z m1254 -12 c0 -11 -4
+-17 -8 -15 -4 3 -8 12 -8 20 0 8 4 14 8 14 4 0 8 -9 8 -19z m-880 -19 c-4 -3
+-14 2 -24 12 -16 18 -16 18 6 6 13 -6 21 -14 18 -18z m1461 16 c3 6 10 12 16
+12 7 0 5 -6 -4 -15 -16 -16 -49 -11 -49 7 0 6 7 4 17 -3 13 -11 17 -11 20 -1z
+m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
+-10z"/>
+<path d="M2404 1426 c-11 -29 1 -61 24 -64 24 -4 43 28 34 60 -5 22 -50 25
+-58 4z"/>
+<path d="M3160 1431 c0 -6 5 -13 10 -16 14 -9 52 4 45 16 -8 12 -55 12 -55 0z"/>
+<path d="M2550 1016 c0 -9 5 -16 10 -16 6 0 10 4 10 9 0 6 -4 13 -10 16 -5 3
+-10 -1 -10 -9z"/>
+<path d="M1540 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"/>
+<path d="M1675 1010 c-3 -5 1 -10 9 -10 9 0 16 5 16 10 0 6 -4 10 -9 10 -6 0
+-13 -4 -16 -10z"/>
+<path d="M1803 1004 c-8 -21 13 -42 28 -27 13 13 5 43 -11 43 -6 0 -13 -7 -17
+-16z"/>
+<path d="M2214 1006 c-7 -19 3 -36 22 -36 10 0 14 8 12 22 -4 26 -26 36 -34
+14z"/>
+<path d="M2707 1013 c-13 -12 -7 -43 7 -43 19 0 28 14 20 34 -7 17 -16 20 -27
+9z"/>
+<path d="M2977 1014 c-15 -15 -7 -45 11 -42 9 2 17 12 17 22 0 20 -16 31 -28
+20z"/>
+<path d="M3045 1010 c-3 -5 3 -10 15 -10 12 0 18 5 15 10 -3 6 -10 10 -15 10
+-5 0 -12 -4 -15 -10z"/>
+<path d="M3210 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"/>
+</g>
+</svg>
+<a title="harry's technology blog 
+" href="/">harry’s blog</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/_ios/">iOS</a></li><li class="navigation__item"><a href="/_flutter/">Flutter</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/_doc/">文档</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>大型网站与大数据系统的架构</h1></header></div><meta itemprop="headline" content="大型网站与大数据系统的架构"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=architect">architect</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 03, 2018</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="24">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2018-03-03T00:00:00+08:00">
+    <meta itemprop="keywords" content="architect"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>记录一下个人看了一些大型网站架构文章后的理解，</p>
+
+<hr />
+<h1 id="overview">Overview</h1>
+<ul>
+  <li>衡量一个网站是否为<code class="language-plaintext highlighter-rouge">大型网站</code>，<strong>访问量</strong>和<strong>数据量</strong>二者缺一不可。除了海量数据和高并发的访问量，本身业务和系统的复杂度也是考察的方面</li>
+  <li>大型网站的技术挑战主要来自于庞大的用户，高并发的访问和海量的数据，任何简单的业务一旦需要处理数以<a href="https://en.wikipedia.org/wiki/Petabyte">PB</a>计的数据和面对数以亿计的用户，问题就会变的很棘手</li>
+  <li>大型网站<strong>架构</strong>主要就是解决这类问题</li>
+</ul>
+
+<hr />
+<h1 id="1-大型网站系统的特点">1. 大型网站系统的特点</h1>
+<h3 id="11-高并发high-concurrency大流量">1.1 高并发High Concurrency，大流量</h3>
+<p>需要面对高并发用户，大流量访问。Google日均PV数35亿，日均IP访问数3亿；腾讯QQ的最大在线用户数1.4亿（2011年数据）；淘宝2012年“双十一”活动一天交易额超过192亿，活动开始第一分钟独立访问用户达1000万。</p>
+
+<h3 id="12-高可用high-availability">1.2 高可用High Availability</h3>
+<p>系统7*24小时不间断服务。</p>
+
+<h3 id="13-海量数据">1.3 海量数据</h3>
+<p>需要存储、管理海量数据，需要使用大量服务器。Facebook每周上传的照片数据接近10亿，百度收录的网页数目数百亿，Google有近百万台服务器为全球用户提供服务。</p>
+
+<h3 id="14-用户分布广泛网络情况复杂">1.4 用户分布广泛、网络情况复杂</h3>
+<p>许多大型互联网都是为全球用户提供服务的，用户分布范围广，各地网络情况千差万别。在国内，还有各个运营商网络互通难的问题。而中美光缆的数次故障，也让一些对国内外用户依赖较大的网站不得不考虑在海外建立数据中心。</p>
+
+<h3 id="15-安全环境恶劣">1.5 安全环境恶劣</h3>
+<p>由于互联网的开放性，使得互联网站更容易受到攻击，大型网站几乎每天都会被黑客攻击。</p>
+
+<h3 id="16-需求快速变更发布频繁">1.6 需求快速变更，发布频繁</h3>
+<p>和传统软件的版本发布频率不同，互联网产品为快速适应市场，满足用户需求，其产品发布频率极高。一般大型网站的产品每周都有新版本发布上线，中小型网站的发布更频繁，有时候一天会发布几十次。</p>
+
+<h3 id="17-渐进式发展">1.7 渐进式发展</h3>
+<p>几乎所有的大型互联网网站都是从一个小网站开始，渐进地发展起来的。Facebook是扎克伯格同学在哈佛大学的宿舍里开发的；Google的第一台服务器部署在斯坦福大学的实验室；阿里巴巴是在马云家的客厅诞生的。好的互联网产品都是慢慢运营出来的，不是一开始就开发好的，这也正好与网站架构的发展演化过程对应。</p>
+
+<hr />
+<h1 id="2-大型网站架构技术一览">2. 大型网站架构技术一览</h1>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785943-a5304680-8bb4-11ea-8e91-3bac00f6e661.png" alt="image" /></p>
+<blockquote>
+  <p>网站系统架构层次</p>
+</blockquote>
+
+<h3 id="21-前端架构">2.1 前端架构</h3>
+<p>前端指用户请求到达网站应用服务器之前经历的环节，通常不包含网站业务逻辑，不处理动态内容。</p>
+
+<h5 id="211-浏览器优化技术">2.1.1 浏览器优化技术</h5>
+<p>并不是优化浏览器，而是通过优化响应页面，加快浏览器页面的加载和显示，常用的有<code class="language-plaintext highlighter-rouge">页面缓存</code>、<code class="language-plaintext highlighter-rouge">合并HTTP</code>减少请求次数、使用<code class="language-plaintext highlighter-rouge">页面压缩</code>等。</p>
+
+<h5 id="212-cdn">2.1.2 CDN</h5>
+<p>内容分发网络，部署在<code class="language-plaintext highlighter-rouge">网络运营商机房</code>，通过将<code class="language-plaintext highlighter-rouge">静态页面内容</code>分发到离用户最近最近的CDN服务器，使用户可以通过<strong>最短路径</strong>获取内容。</p>
+
+<h5 id="213-反向代理">2.1.3 反向代理</h5>
+<p>部署在<code class="language-plaintext highlighter-rouge">网站机房</code>，在应用服务器、静态资源服务器、图片服务器之前，提供<strong>页面缓存</strong>服务。</p>
+
+<h5 id="214-动静分离静态资源独立部署">2.1.4 动静分离，静态资源独立部署</h5>
+<p><code class="language-plaintext highlighter-rouge">静态资源</code>，如JS、CSS等文件部署在专门的服务器集群上，与Web应用<code class="language-plaintext highlighter-rouge">动态内容</code>服务分离，并使用专门的（二级）域名。</p>
+
+<h5 id="215-图片服务">2.1.5 图片服务</h5>
+<p>图片不是指网站Logo、按钮图标等，这些文件属于上面提到的静态资源，应该和JS、CSS部署在一起。这里的图片指<code class="language-plaintext highlighter-rouge">用户上传的图片</code>，如产品图片、用户头像等，图片服务同样适用独立部署的图片服务器集群，并使用独立（二级）域名。</p>
+
+<h5 id="216-dns">2.1.6 DNS</h5>
+<p>域名服务，将域名解析成IP地址，利用DNS可以实现DNS负载均衡，配置CDN也需要修改DNS，使域名解析后指向CDN服务器。</p>
+
+<h3 id="22-应用层架构">2.2 应用层架构</h3>
+<p>应用层是处理网站主要业务逻辑的地方。</p>
+
+<h5 id="221-开发框架">2.2.1 开发框架</h5>
+<p>网站业务是多变的，网站的大部分软件工程师都是在加班加点开发网站业务，一个好的开发框架至关重要。一个好的开发框架应该能够<code class="language-plaintext highlighter-rouge">分离关注面</code>，使美工、开发工程师可以各司其事，易于协作。同时还应该内置一些安全策略，预防<a href="http://www.cnblogs.com/Miss-mickey/p/6636813.html">Web攻击</a>。</p>
+
+<h5 id="222-页面渲染">2.2.2 页面渲染</h5>
+<p>将分别开发维护的<code class="language-plaintext highlighter-rouge">动态</code>内容和<code class="language-plaintext highlighter-rouge">静态</code>页面模板集成起来，组合成最终显示给用户的<code class="language-plaintext highlighter-rouge">完整</code>页面。</p>
+
+<h5 id="223-负载均衡">2.2.3 负载均衡</h5>
+<p>将多台应用服务器组成一个集群，通过负载均衡技术将用户请求分发到不同的服务器上，以应对大量用户<code class="language-plaintext highlighter-rouge">同时</code>访问时产生的<strong>高并发</strong>负载压力。</p>
+
+<h5 id="224-session管理">2.2.4 Session管理</h5>
+<p>为了实现高可用的应用服务器集群，应用服务器通常设计为<code class="language-plaintext highlighter-rouge">无状态</code>，不保存用户请求上下文信息。但是网站业务通常需要保持用户会话信息（记录用户行为轨迹），需要专门的机制管理Session，使集群内甚至跨集群的应用服务器可以共享Session。</p>
+
+<h5 id="225-动态页面静态化">2.2.5 动态页面静态化</h5>
+<p>对于访问量特别大而更新又不很频繁的动态页面，可以将其静态化，即生成一个静态页面，利用静态页面的优化手段加速用户访问，如CDN、反向代理、浏览器缓存等。</p>
+
+<h5 id="226-业务拆分">2.2.6 业务拆分</h5>
+<p>将复杂而庞大的业务拆分开来，形成多个规模较小的产品，独立开发、部署、维护，除了降低系统耦合度，也便于数据库业务分库。按业务对关系数据库进行拆分，技术难度相对较小，而效果又相对较好。</p>
+
+<h5 id="227-虚拟化服务器">2.2.7 虚拟化服务器</h5>
+<p>将一台物理服务器虚拟化成多台虚拟服务器，对于<code class="language-plaintext highlighter-rouge">并发访问较低</code>的业务，更容易用较少的资源搭建出高可用的应用服务器集群。</p>
+
+<h3 id="23-服务层架构">2.3 服务层架构</h3>
+<p>提供基础服务给<code class="language-plaintext highlighter-rouge">应用层</code>调用，完成网站业务。</p>
+
+<h5 id="231-分布式消息">2.3.1 分布式消息</h5>
+<p>利用消息队列机制，实现业务和业务、业务和服务之间的<code class="language-plaintext highlighter-rouge">异步</code>消息发送及<code class="language-plaintext highlighter-rouge">低耦合</code>的业务关系。</p>
+
+<h5 id="232-分布式服务">2.3.2 分布式服务</h5>
+<p>提供高性能、低耦合、易复用、易管理的分布式服务，在网站实现面向服务SOA架构或者<a href="https://www.jianshu.com/p/f792c26dca06">微服务Microservice架构</a>。</p>
+
+<h5 id="233-分布式缓存">2.3.3 分布式缓存</h5>
+<p>通过<code class="language-plaintext highlighter-rouge">可伸缩</code>的服务器集群提供大规模<code class="language-plaintext highlighter-rouge">热点数据</code>的缓存服务，是网站性能优化的重要手段。</p>
+
+<h5 id="234-分布式配置">2.3.4 分布式配置</h5>
+<p>系统运行需要配置许多参数，如果这些参数需要修改，比如分布式缓存集群加入新的缓存服务器，需要修改应用程序客户端的缓存服务器列表配置，并重启应用程序服务器。分布式配置在系统运行期提供配置动态推送服务，<strong>将配置修改实时推送到应用系统，无需重启服务器</strong>。</p>
+<blockquote>
+  <p>这里有两个点，</p>
+  <ol>
+    <li>配置的集中式管理（由war包的静态xx.properties文件 -&gt; 配置中心的动态获取、更新。如<a href="https://github.com/Qihoo360/QConf">QConf</a>，<a href="http://www.cnblogs.com/ityouknow/p/5584762.html">Disconf</a>，<a href="https://www.jianshu.com/p/14ab38601fe1">zk</a>）</li>
+    <li>代码的可动态更新配置能力（如日志level的<a href="https://www.jianshu.com/p/daa4f096e1c1">动态调整</a>）或者每次读conf都从源头<a href="http://reeboo.iteye.com/blog/1980961">去缓存再读</a></li>
+  </ol>
+</blockquote>
+
+<h3 id="24-存储层架构">2.4 存储层架构</h3>
+<p>提供数据、文件的<code class="language-plaintext highlighter-rouge">持久化</code>存储访问与管理服务。</p>
+
+<h5 id="241-分布式文件">2.4.1 分布式文件</h5>
+<p>网站在线业务需要存储的文件大部分都是图片、网页、视频等比较小的文件，但是这些文件的数量非常庞大，而且通常都在持续增加，需要<code class="language-plaintext highlighter-rouge">伸缩性</code>设计比较好的分布式文件系统。</p>
+
+<h5 id="242-关系数据库">2.4.2 关系数据库</h5>
+<p>大部分网站的主要业务是基于关系数据库开发的，但是关系数据库对集群伸缩性的支持表较差。通过在应用程序的<code class="language-plaintext highlighter-rouge">数据访问层</code>增加数据库访问的路由功能，根据业务配置将数据库访问<code class="language-plaintext highlighter-rouge">路由</code>到不同的物理数据库上，从而实现关系数据库的分布式访问。</p>
+
+<h5 id="243-nosql数据库">2.4.3 NoSQL数据库</h5>
+<p>目前各种<a href="https://zhuanlan.zhihu.com/p/28649559">NoSQL</a>数据库层出不穷，在内存管理、数据模型、集群分布式管理等方面各有优势。</p>
+
+<h5 id="244-数据同步">2.4.4 数据同步</h5>
+<p>拥有多个数据中心的网站必须在多个数据中心之间进行数据同步（<a href="http://blog.csdn.net/jameshadoop/article/details/46608683">CAP</a>），以保证每个数据中心都拥有完整的数据。在实践中，为了减轻数据库压力，将数据库的事务/动作日志（或者NoSQL的写操作Log）同步到其他数据中心，根据Log进行数据重演，实现数据同步，即同步<code class="language-plaintext highlighter-rouge">动作</code>，而非同步动作后的数据。</p>
+
+<h3 id="25-后台架构">2.5 后台架构</h3>
+<p>网站应用中，除了要处理用户的实时访问请求外，还有一些后台非实时数据分析要处理。</p>
+
+<h5 id="251-搜索引擎">2.5.1 搜索引擎</h5>
+<p>对数据进行全量、增量的更新，构建<code class="language-plaintext highlighter-rouge">索引</code>等。这些操作通过后台系统定时执行。</p>
+
+<h5 id="252-数据仓库">2.5.2 数据仓库</h5>
+<p>根据离线数据，提供数据分析OLAP与数据挖掘服务。</p>
+
+<h5 id="253-推荐系统">2.5.3 推荐系统</h5>
+<p>社交网站及购物网站通过挖掘人与人之间的关系，人和商品之间的关系，发展潜在的人际关系和购物兴趣，为用户提供个性化推荐服务。</p>
+
+<h3 id="26-数据采集与监控">2.6 数据采集与监控</h3>
+<p><code class="language-plaintext highlighter-rouge">监控</code>网站访问情况与系统运行情况，为网站运营决策和运维管理提供支持保障。</p>
+
+<h5 id="261-浏览器数据采集">2.6.1 浏览器数据采集</h5>
+<p>通过在网站页面中嵌入JS脚本<code class="language-plaintext highlighter-rouge">采集</code>用户浏览器环境与操作记录，分析用户行为。</p>
+
+<h5 id="262-服务器业务数据采集">2.6.2 服务器业务数据采集</h5>
+<p>服务器业务数据包括两种，一种是采集在服务器端记录的用户请求操作日志，如query记录；一种是采集应用程序运行期业务数据，如待处理消息数目等。</p>
+
+<h5 id="263-服务器性能数据采集">2.6.3 服务器性能数据采集</h5>
+<p>采集服务器性能数据，如系统负载、内存使用率、网卡进、出流量等。</p>
+
+<h5 id="264-系统监控">2.6.4 系统监控</h5>
+<p>将前述采集的数据以<code class="language-plaintext highlighter-rouge">图表</code>的方式展示，以便运营和运维人员监控网站运行状况，做到这一步仅仅是系统监视。更先进的做法是根据采集的数据进行自动化运维，自动处理系统异常状况，实现自动化控制。</p>
+
+<h5 id="265-系统报警">2.6.5 系统报警</h5>
+<p>如果采集来的数据超过预设的正常情况的<code class="language-plaintext highlighter-rouge">阀值</code>，比如系统负载过高，就通过邮件、短信、语音电话等方式发出警报信号，等待工程师人工干预。</p>
+
+<h3 id="27-网站安全架构">2.7 网站安全架构</h3>
+<p>保护网站免遭攻击及敏感信息的泄露。</p>
+
+<h5 id="271-web攻击">2.7.1 Web攻击</h5>
+<p>以HTTP请求的方式发起的攻击，危害最大的就是XSS和SQL注入攻击。但是只要措施得当，这两种攻击都是比较容易防范的。</p>
+
+<h5 id="272-数据保护">2.7.2 数据保护</h5>
+<p>敏感信息加密传输与存储，保护网站和用户资产。</p>
+
+<h3 id="28-数据中心机房架构">2.8 数据中心机房架构</h3>
+<p>大型网站需要的服务器规模数以十万计，机房物理架构也需要关注。</p>
+
+<h5 id="281-机房架构">2.8.1 机房架构</h5>
+<p>对于一个拥有十万台服务器的大型网站，每台服务器耗电（包括服务器本身耗电及空调耗电）每年大约需要人民币2000元，那么网站每年机房电费就需要两亿人民币。数据中心能耗问题日趋严重，Google、Facebook选择数据中心地理位置的时候趋向选择散热良好，供电充裕的地方。</p>
+
+<h5 id="282-机柜架构">2.8.2 机柜架构</h5>
+<p>包括机柜大小，网线布局、指示灯规格、不间断电源、电压规格（是48V直流电还是220V民用交流电）等一系列问题。</p>
+
+<h5 id="283-服务器架构">2.8.3 服务器架构</h5>
+<p>大型网站由于服务器采购规模庞大，大都采用定制服务器的方式代替购买服务器整机。根据网站应用需求，定制硬盘、内存、甚至CPU，同时去除不必要的外设接口（显示器输出接口，鼠标、键盘输入接口），并使空间结构利于散热。</p>
+
+<hr />
+<h1 id="3-大型网站架构的演进">3. 大型网站架构的演进</h1>
+<h3 id="31-单机网站初始阶段的网站架构">3.1 单机网站：初始阶段的网站架构</h3>
+<p>小型网站最开始没有太多人访问，只需要一台服务器就绰绰有余，应用程序、数据库、文件等所有资源都在一台服务器上（于小型博客类似），常见的<a href="https://en.wikipedia.org/wiki/LAMP_(software_bundle)">LAMP</a>(Linux+apache+mysql+php)架构。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785956-ab262780-8bb4-11ea-978e-b3f72b93ce73.png" alt="image" /></p>
+<blockquote>
+  <p>单机网站架构</p>
+</blockquote>
+
+<h3 id="32-单机负载告警应用服务与数据服务分离">3.2 单机负载告警，应用服务与数据服务分离</h3>
+<p>随着网站业务的发展，一台服务器逐渐不能满足需求。越来越多的用户访问导致性能越来越差，越来越多的数据导致存储空间不足。这时就需要将<code class="language-plaintext highlighter-rouge">应用</code>和<code class="language-plaintext highlighter-rouge">数据</code>分离。应用和数据分离后整个网站使用3台服务器：<code class="language-plaintext highlighter-rouge">应用服务器</code>、<code class="language-plaintext highlighter-rouge">文件服务器</code>和<code class="language-plaintext highlighter-rouge">数据库服务器</code>。这3台服务器对<code class="language-plaintext highlighter-rouge">硬件资源</code>的要求各不相同。</p>
+<blockquote>
+  <ul>
+    <li>应用服务器需要处理大量的业务逻辑，因此需要更快更强大的<code class="language-plaintext highlighter-rouge">CPU</code></li>
+    <li>数据库服务器需要快速磁盘<code class="language-plaintext highlighter-rouge">检索</code>和数据缓存，因此需要更快的<code class="language-plaintext highlighter-rouge">磁盘</code>和更大的<code class="language-plaintext highlighter-rouge">内存</code></li>
+    <li>文件服务器需要存储大量用户上传的文件，因此需要更大的<code class="language-plaintext highlighter-rouge">硬盘</code></li>
+  </ul>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785959-acefeb00-8bb4-11ea-9f11-c8afbbde6abf.png" alt="image" /></p>
+<blockquote>
+  <p>应用与数据服务器分离架构</p>
+</blockquote>
+
+<p>应用和数据分离后，<strong>不同特性的服务器承担不同的服务角色</strong>，网站的并发处理能力和数据存储空间得到了很大改善，支持网站业务进一步发展。
+但是随着用户逐渐增多，网站又一次面临挑战：<code class="language-plaintext highlighter-rouge">数据库压力</code>太大导致访问延迟，进而影响整个网站的性能，用户体验受到影响。这时需要对网站架构进一步优化。</p>
+
+<h3 id="33-数据库压力太大导致访问延迟使用缓存改善网站性能">3.3 数据库压力太大导致访问延迟，使用缓存改善网站性能</h3>
+<p>网站访问的特点和现实世界的财富分配一样遵循二八定律：80%的业务访问集中在20%的数据上(<a href="https://www.zhihu.com/question/28828068">热点数据hot data</a>)。
+既然大部分业务访问集中在一小部分数据上，那么如果把这一小部分数据缓存在内存中，就可以减少数据库的访问压力，提高整个网站的数据访问速度，改善数据库的写入性能了。
+网站使用的缓存可以分为两种：缓存在应用服务器上的<code class="language-plaintext highlighter-rouge">本地缓存</code>和缓存在专门的分布式缓存服务器上的<code class="language-plaintext highlighter-rouge">远程缓存</code>。</p>
+
+<blockquote>
+  <ul>
+    <li>本地缓存的访问速度更快一些，但是受应用服务器内存限制，其缓存数据量有限，而且会出现和应用程序争用内存的情况</li>
+    <li>远程分布式缓存可以使用集群的方式，部署大内存的服务器作为专门的缓存服务器，可以在理论上做到不受内存容量限制的缓存服务</li>
+  </ul>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785961-af524500-8bb4-11ea-9385-9a0695debddf.png" alt="image" /></p>
+<blockquote>
+  <p>应用服务器热点数据缓存架构</p>
+</blockquote>
+
+<p>使用缓存后，数据访问压力得到有效缓解（大部分request被cache拦截了，不会再深入到DB中检索），但是单一应用服务器能够处理的<code class="language-plaintext highlighter-rouge">请求连接</code>有限，在网站访问高峰期，<code class="language-plaintext highlighter-rouge">应用服务器</code>成为整个网站的瓶颈。</p>
+
+<h3 id="34-应用服务器负载告警使用应用服务器集群改善网站的并发处理能力">3.4 应用服务器负载告警，使用应用服务器集群改善网站的并发处理能力</h3>
+<p>使用集群是网站解决高并发、海量数据问题的常用手段。
+当一台服务器的处理能力、存储空间不足时，<strong>不要企图去更换更强大的服务器</strong>，对大型网站而言，不管多么强大的服务器，都满足不了网站持续增长的业务需求。这种情况下，更恰当的做法是<strong>增加一台服务器来分担原有服务器的访问及存储压力</strong>。
+对网站架构而言，<strong>只要能通过增加一台服务器的方式来改善<code class="language-plaintext highlighter-rouge">负载压力</code>，就可以以同样的方式持续增加服务器不断改善<code class="language-plaintext highlighter-rouge">系统性能</code></strong>，从而实现系统的<strong>可伸缩性</strong>。
+应用服务器实现集群是网站<code class="language-plaintext highlighter-rouge">可伸缩架构</code>设计中较为简单成熟的一种。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785965-b1b49f00-8bb4-11ea-9eb9-c3512b5c50c0.png" alt="image" /></p>
+<blockquote>
+  <p>应用服务器集群的可伸缩架构</p>
+</blockquote>
+
+<p>通过<code class="language-plaintext highlighter-rouge">负载均衡</code>(<a href="http://www.cnblogs.com/liqiu/p/3140329.html">Nginx</a>)调度服务器，可以将来自用户浏览器的访问请求分发到应用服务器集群中的<code class="language-plaintext highlighter-rouge">任何一台</code>服务器上，如果有更多用户，就在集群中加入更多的应用服务器，使应用服务器的压力不再成为整个网站的瓶颈。</p>
+
+<h3 id="35-数据库压力变大数据库读写分离">3.5 数据库压力变大，数据库读写分离</h3>
+<p>网站在使用缓存后，使对大部分数据<code class="language-plaintext highlighter-rouge">读操作</code>访问都可以不走数据库就能完成，但是仍有一部分读操作（缓存访问不命中、缓存过期）和全部的<code class="language-plaintext highlighter-rouge">写操作</code>都需要访问数据库。
+在网站的用户达到一定规模后，<code class="language-plaintext highlighter-rouge">数据库</code>因为负载压力过高而成为网站的瓶颈。 目前大部分的主流数据库都提供<a href="http://www.cnblogs.com/shuidao/p/3551238.html">主从热备</a>功能，通过配置两台数据库主从关系，可以将一台数据库服务器的数据更新同步到另一台服务器上。网站利用数据库的这一功能，实现数据库<strong>读写分离</strong>，从而改善数据库负载压力，即<strong>主写从读，然后主从同步复制</strong>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785969-b37e6280-8bb4-11ea-92ba-e364a55ea4b3.png" alt="image" /></p>
+<blockquote>
+  <p>数据库读写分离架构</p>
+</blockquote>
+
+<p>应用服务器在写数据的时候，访问<code class="language-plaintext highlighter-rouge">主数据库</code>，主数据库通过<code class="language-plaintext highlighter-rouge">主从复制机制</code>将数据更新同步到<code class="language-plaintext highlighter-rouge">从数据库</code>，这样当应用服务器读数据的时候，就可以通过从数据库获得数据。
+为了便于应用程序访问读写分离后的数据库，通常在应用服务器端使用专门的<a href="http://zuiyanwangyue.iteye.com/blog/347517">数据访问模块</a>，使数据库读写分离对应用透明。
+提到读写分离，我们更多的是想到数据库层面。事实上，广义的读写分离可以扩展到更多的场景。例如搜索引擎其实是一个读库。搜索引擎的技术解决了站内搜索时某些场景下读的问题，提供了更好的查询效率。缓存系统和搜索引擎、读库的定位是很类似的。</p>
+
+<h3 id="36-使用反向代理和cdn加速网站响应">3.6 使用反向代理和CDN加速网站响应</h3>
+<p>随着网站业务不断发展，用户规模越来越大，由于国内复杂的网络环境，不同地区的用户访问网站时，访问速度有时候差别很大。有研究表明，网站<code class="language-plaintext highlighter-rouge">访问延迟</code>和<code class="language-plaintext highlighter-rouge">用户流失率</code>正相关，网站访问越慢，用户越容易失去耐心而离开。为了提供更好的用户体验，留住用户，网站需要加速网站访问速度。主要手段有使用CDN和<a href="https://mp.weixin.qq.com/s/uTe0lpFOJdK0gcc3XmG74A">反向代理</a>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785975-b5e0bc80-8bb4-11ea-8465-0396a804d93c.png" alt="image" /></p>
+<blockquote>
+  <p>网站前端快速响应架构</p>
+</blockquote>
+
+<p>CDN 和反向代理的基本原理都是缓存，</p>
+<blockquote>
+  <ul>
+    <li>CDN 部署在网络提供商的机房，使用户在请求网站服务时，可以从距离自己最近的<code class="language-plaintext highlighter-rouge">网络提供商</code>机房获取数据</li>
+    <li>反向代理则部署在网站的中心机房，当用户请求到达中心机房后，首先访问的服务器是反向代理服务器，如果反向代理服务器中缓存着用户请求的资源，就将其直接返回给用户</li>
+  </ul>
+</blockquote>
+
+<p>使用 CDN 和反向代理的目的都是<strong>尽早返回数据给用户</strong>，一方面加快用户访问速度，另一方面也减轻后端服务器的负载压力。</p>
+
+<h3 id="37-使用分布式文件系统和分布式数据库系统">3.7 使用分布式文件系统和分布式数据库系统</h3>
+<p>任何强大的<code class="language-plaintext highlighter-rouge">单一服务器</code>都满足不了大型网站持续增长的业务需求。
+<code class="language-plaintext highlighter-rouge">数据库</code>经过<strong>读写分离</strong>后，从一台服务器拆分成两台服务器，但是随着网站业务的发展依然不能满足需求，这时需要使用<code class="language-plaintext highlighter-rouge">分布式数据库</code>。<code class="language-plaintext highlighter-rouge">文件系统</code>也一样，需要使用<code class="language-plaintext highlighter-rouge">分布式文件系统</code>。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785983-b8dbad00-8bb4-11ea-933d-81b00a375daa.png" alt="image" /></p>
+<blockquote>
+  <p>分布式文件、数据库架构</p>
+</blockquote>
+
+<p>分布式数据库是网站数据库拆分的最后手段，只有在单表数据规模非常庞大的时候才使用。不到不得已时，网站更常用的数据库拆分手段是<strong>业务分库</strong>，将不同业务的数据部署在不同的物理服务器上（<a href="https://tech.meituan.com/dianping_order_db_sharding.html">分库分表</a>）。</p>
+<blockquote>
+  <ul>
+    <li>分布式文件系统<a href="https://hadoop.apache.org/docs/r1.0.4/cn/hdfs_design.html">HDFS</a></li>
+    <li>分布式数据库系统<a href="https://www.zhihu.com/question/19841579">OceanBase</a></li>
+  </ul>
+</blockquote>
+
+<h3 id="38-弥补关系型数据库的不足使用nosql和搜索引擎">3.8 弥补关系型数据库的不足，使用NoSQL和搜索引擎</h3>
+<p>随着网站业务越来越复杂，对<code class="language-plaintext highlighter-rouge">数据存储</code>和<code class="language-plaintext highlighter-rouge">检索</code>的需求也越来越复杂，网站需要采用一些<strong>非关系数据库</strong>技术如NoSQL和非数据库查询技术如搜索引擎。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785986-bb3e0700-8bb4-11ea-9bde-dbfbe06ae2ff.png" alt="image" /></p>
+<blockquote>
+  <p>advanced data access架构</p>
+</blockquote>
+
+<p><a href="http://blog.csdn.net/xlgen157387/article/details/47908797">NoSQL</a>和<a href="https://zhuanlan.zhihu.com/p/33304359">搜索引擎</a>都是源自互联网的技术手段，对可伸缩的分布式特性具有更好的支持。应用服务器则通过一个统一数据访问模块访问各种数据，减轻应用程序管理诸多数据源的麻烦。</p>
+
+<h3 id="39-业务拆分">3.9 业务拆分</h3>
+<p>大型网站为了应对日益复杂的业务场景，通过使用分而治之的手段<strong>将整个网站业务分成不同的产品线</strong>。如大型购物交易网站都会将首页、商铺、订单、买家、卖家等拆分成不同的产品线，分归不同的业务团队负责。
+具体到技术上，也会根据<code class="language-plaintext highlighter-rouge">产品线</code>划分，<strong>将一个网站拆分成许多不同的应用，每个应用独立部署</strong>。应用之间可以通过一个超链接建立关系（在首页上的导航链接每个都指向不同的应用地址），也可以通过<a href="https://www.jianshu.com/p/689ce4205021">消息队列</a>进行数据分发，当然最多的还是通过访问同一个数据存储系统来构成一个关联的完整系统。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785988-be38f780-8bb4-11ea-8d2a-b9e5e1a69390.png" alt="image" /></p>
+<blockquote>
+  <p>业务拆分架构</p>
+</blockquote>
+
+<h3 id="310-分布式服务调用">3.10 分布式服务调用</h3>
+<p>随着业务<code class="language-plaintext highlighter-rouge">拆分</code>得越来越小，存储系统越来越庞大，应用系统的整体复杂度呈指数级增加，<code class="language-plaintext highlighter-rouge">部署维护</code>越来越困难。由于所有应用要和所有数据库系统连接，在数万台服务器规模的网站中，这些连接的数目是服务器规模的平方，导致<code class="language-plaintext highlighter-rouge">数据库连接资源</code>不足，<a href="https://en.wikipedia.org/wiki/Denial-of-service_attack">拒绝服务</a>。
+既然每一个应用系统都需要执行许多相同的业务操作，比如用户管理、商品管理、订单管理等，那么可以将这些<code class="language-plaintext highlighter-rouge">共用的业务</code>提取出来，独立部署。由这些<code class="language-plaintext highlighter-rouge">可复用</code>的业务连接数据库，提供共用业务服务，而应用系统只需要管理用户界面，通过<a href="https://my.oschina.net/guoenzhou/blog/504987">分布式服务调用</a>共用业务服务完成具体业务操作。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785989-c09b5180-8bb4-11ea-87fe-f065be426c62.png" alt="image" /></p>
+<blockquote>
+  <p>分布式服务调用架构</p>
+</blockquote>
+
+<p>大型网站的架构演化到这里，基本上大多数的技术问题都得以解决，诸如<strong>跨数据中心的实时数据同步</strong>、事务特性支持和具体网站业务相关的问题也都可以通过<code class="language-plaintext highlighter-rouge">组合改进</code>现有技术架构解决。
+在以上十个架构组织当中，有些单个的架构优化之路就很长，如果再多个组合起来，那么模块的兼容耦合衔接都会有不少的challenge。</p>
+
+<hr />
+<h1 id="大数据系统的架构">大数据系统的架构</h1>
+<p>TODO</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80785993-c2fdab80-8bb4-11ea-8254-80d32171fd8a.png" alt="image" /></p>
+<blockquote>
+  <p>大数据处理的关键层次架构</p>
+</blockquote>
+
+<blockquote>
+  <p><a href="https://hadoopecosystemtable.github.io/">The Hadoop Ecosystem Table</a></p>
+</blockquote>
+
+<hr />
+<h1 id="reference">Reference</h1>
+<ul>
+  <li><a href="http://www.hollischuang.com/archives/728">大型网站架构演化历程</a></li>
+  <li><a href="http://www.hollischuang.com/archives/1132">大型网站架构技术一览</a></li>
+  <li><a href="http://blog.csdn.net/u013177446/article/details/71177007">大型网站架构的演化</a></li>
+  <li><a href="http://blog.csdn.net/forezp/article/details/69196483">漫谈《大型网站技术架构》</a></li>
+  <li><a href="http://blog.csdn.net/column/details/big-site-design.html">大型网站技术架构csdn专题</a></li>
+  <li><a href="http://blog.csdn.net/tterminator/article/details/51037315">大数据处理的关键层次架构</a></li>
+  <li><a href="http://www.zhongkerd.com/news/content-884.html">大数据软件系统架构设计</a></li>
+  <li><a href="https://zhuanlan.zhihu.com/p/19962491">后Hadoop时代的大数据架构</a></li>
+</ul>
+
+<hr />
+<h1 id="待读书单">待读书单</h1>
+<ul>
+  <li><a href="https://book.douban.com/subject/25723064/">大型网站技术架构</a></li>
+  <li><a href="https://book.douban.com/subject/3924175/">构建高性能Web站点</a></li>
+  <li><a href="https://book.douban.com/subject/25723658/">大规模分布式存储系统</a></li>
+  <li><a href="https://book.douban.com/subject/25984046/">大数据日知录</a></li>
+</ul>
+</div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+<a class="a2a_button_facebook"></a>
+<a class="a2a_button_twitter"></a>
+<a class="a2a_button_google_plus"></a>
+<a class="a2a_button_linkedin"></a>
+</div>
+<script async src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><span>Last updated
+      <time itemprop="dateModified" datetime="2019-04-30T18:00:00+08:00">Apr 30, 2019</time>
+    </span><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/03/03/web-architect.html">大型网站与大数据系统的架构</a></div><div class="next"><span>NEXT</span><a href="/2018/03/04/github-ci.html">GitHub持续集成CI</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet --></div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="harry"><meta itemprop="url" content="/"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Send me an Email.">
+      <a class="button button--circle mail-button" itemprop="email" href="mailto:harry_c2016@163.com" target="_blank">
+        <i class="fas fa-envelope"></i>
+      </a><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/HaoXiansen" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>harry’s blog © 2020
+      </div>
+    </div>
+  </div>
+</footer></div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA ? initData(window.TEXT_SEARCH_DATA) : {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  function initData(data) {
+    var _data = [], i, j, key, keys, cur;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i], _data[key] = [];
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        cur.title = window.decodeUrl(cur.title);
+        cur.url = window.decodeUrl(cur.url);
+        _data[key].push(cur);
+      }
+    }
+    return _data;
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script></div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script>
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,2387 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>算法漫画阅读摘要 - harry’s blog</title>
+
+<meta name="description" content="记录一下个人对于公众号算法爱好者和程序员小灰的阅读摘要，B-树（B-tree）  B-树就是B树，中间的横线并不是减号，B减树的叫法是错误的  二叉查找树的时间复杂度是O(logN)，但是数据库索引是存储在磁盘上的，当数据量比较大的时候，索引的大小可能就有几个G。利用索引查询的时候，一般不能将其全部加载到内存，而...">
+<link rel="canonical" href="http://localhost:4000/2018/02/04/algorithm.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/browserconfig.xml">
+<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets --><script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.decodeUrl = function(str) {
+    return str ? decodeURIComponent(str.replace(/\+/g, '%20')) : '';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.4',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn1.lncld.net/static/js/3.4.1/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script></head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="473.000000pt" height="473.000000pt" viewBox="0 0 473.000000 473.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.11, written by Peter Selinger 2001-2013
+</metadata>
+<g transform="translate(0.000000,473.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 2370 l0 -1730 2365 0 2365 0 0 1730 0 1730 -2365 0 -2365 0 0
+-1730z m2720 995 c0 -97 -107 -215 -195 -215 -21 0 -25 5 -25 28 0 27 38 114
+62 142 29 34 107 77 146 79 7 1 12 -12 12 -34z m-279 -250 l71 -24 71 24 c122
+43 239 25 306 -49 l24 -26 -38 -37 c-114 -114 -94 -285 45 -374 l25 -16 -40
+-79 c-24 -47 -62 -102 -95 -136 -52 -54 -59 -58 -103 -58 -25 0 -69 9 -97 20
+-66 26 -91 25 -179 -5 -91 -31 -121 -25 -178 31 -118 119 -196 329 -179 484 9
+75 57 171 106 210 80 64 152 73 261 35z m-689 -1689 c-1 -91 -3 -103 -21 -91
+-12 7 -15 167 -4 179 18 18 25 -7 25 -88z m158 75 c0 -29 -11 -51 -25 -51 -12
+0 -12 16 1 58 6 19 24 14 24 -7z m348 -14 c3 -23 7 -26 31 -21 43 9 63 -17 59
+-79 -4 -70 -26 -74 -30 -5 -3 49 -5 53 -28 53 -22 0 -26 -5 -30 -48 -9 -82
+-25 -58 -28 41 -2 73 0 93 10 90 7 -3 14 -16 16 -31z m627 24 c7 -12 -12 -24
+-25 -16 -11 7 -4 25 10 25 5 0 11 -4 15 -9z m-1065 -26 c0 -8 7 -15 15 -15 8
+0 15 -7 15 -15 0 -8 -7 -15 -15 -15 -22 0 -20 -66 3 -79 27 -15 1 -37 -27 -22
+-16 9 -21 21 -21 56 0 24 -4 46 -9 49 -12 8 11 56 27 56 6 0 12 -7 12 -15z
+m993 -5 c19 -23 22 -40 7 -40 -5 0 -10 -18 -10 -40 0 -22 5 -40 10 -40 6 0 10
+-7 10 -15 0 -8 -6 -15 -12 -15 -26 0 -39 18 -40 56 0 21 -5 45 -11 52 -7 9 -6
+20 3 37 16 30 21 31 43 5z m-803 -25 c18 -21 3 -32 -22 -16 -15 9 -23 10 -32
+1 -13 -13 8 -30 36 -30 10 0 22 -9 28 -20 8 -15 6 -24 -10 -40 -11 -11 -26
+-20 -32 -20 -28 0 -57 13 -62 27 -5 12 1 14 35 8 32 -6 40 -4 37 6 -2 7 -18
+17 -35 21 -38 10 -46 29 -27 57 18 25 66 28 84 6z m180 0 c18 -21 3 -32 -22
+-16 -13 8 -24 9 -30 3 -15 -15 0 -32 27 -32 15 0 29 -9 36 -22 10 -18 8 -24
+-11 -40 -29 -23 -52 -23 -81 2 l-24 21 44 -7 c33 -5 42 -3 39 7 -2 7 -19 17
+-36 21 -54 14 -39 78 19 78 15 0 32 -7 39 -15z m280 5 c46 -25 29 -112 -25
+-126 -42 -10 -75 19 -75 66 0 57 50 87 100 60z m76 -27 c10 -59 17 -62 29 -13
+15 63 39 64 55 3 10 -40 14 -45 20 -28 5 11 9 30 9 42 1 12 6 25 11 28 23 14
+26 -8 10 -67 -22 -81 -43 -88 -62 -21 l-14 48 -15 -45 c-21 -67 -42 -63 -62 9
+-21 74 -21 81 -2 81 8 0 17 -14 21 -37z m337 25 c2 -7 4 -38 3 -68 -1 -42 -5
+-55 -16 -55 -11 0 -16 14 -18 54 -2 29 -1 60 2 67 7 17 22 18 29 2z m57 2 c0
+-6 8 -5 20 2 16 10 24 10 41 0 16 -10 24 -10 35 -1 7 6 24 9 38 5 19 -5 24
+-14 29 -52 2 -25 2 -54 0 -65 -10 -37 -28 -13 -31 40 -3 47 -5 52 -25 49 -19
+-3 -22 -10 -25 -56 -4 -70 -26 -65 -30 6 -3 43 -6 52 -21 52 -23 0 -31 -19
+-31 -72 0 -27 -4 -38 -12 -36 -8 3 -14 29 -16 71 -2 55 0 67 13 67 8 0 15 -5
+15 -10z m291 -11 c32 -32 21 -53 -29 -57 -28 -2 -42 -7 -39 -15 2 -7 20 -11
+41 -10 42 3 47 -12 10 -29 -52 -24 -103 33 -82 92 17 45 64 54 99 19z m65 -90
+c10 -17 -13 -36 -27 -22 -12 12 -4 33 11 33 5 0 12 -5 16 -11z m-1888 -336 c2
+-13 -1 -23 -6 -23 -5 0 -9 8 -8 17 0 10 -7 19 -16 21 -13 2 -18 -3 -18 -17 0
+-12 6 -21 13 -21 8 0 9 -3 1 -8 -6 -4 -14 -14 -17 -22 -3 -8 -6 7 -6 33 -1 47
+0 48 27 45 19 -2 28 -9 30 -25z m29 5 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3 -3
+4 -12 1 -19z m748 5 c-2 -10 -4 -31 -6 -48 -2 -30 -2 -30 -8 5 -4 19 -5 41 -3
+48 6 19 21 14 17 -5z m396 -28 c9 -25 13 -45 8 -45 -5 0 -9 7 -9 15 0 21 -37
+19 -50 -2 -10 -16 -11 -16 -5 2 20 57 28 75 34 75 3 0 13 -20 22 -45z m186
+-22 c-2 -16 -4 -5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m510 0 c-2 -16 -4
+-5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m347 20 c-4 -16 -2 -29 7 -35 12
+-8 11 -9 -1 -5 -9 2 -16 18 -18 41 -2 25 0 36 7 31 6 -3 8 -17 5 -32z m-2116
+4 c2 -11 -3 -17 -15 -16 -11 0 -13 3 -5 6 10 4 10 8 0 21 -11 13 -11 14 2 10
+8 -2 16 -12 18 -21z m56 17 c10 -4 16 -18 16 -35 0 -24 -4 -29 -25 -29 -30 0
+-35 29 -5 37 11 3 17 10 14 15 -3 5 -13 7 -21 4 -8 -3 -11 -1 -8 4 7 12 8 12
+29 4z m76 -5 c12 -8 10 -9 -7 -4 -29 8 -31 -11 -2 -20 27 -9 19 -29 -12 -32
+-14 -1 -17 0 -6 3 21 7 23 24 2 24 -15 0 -21 21 -8 33 9 9 15 9 33 -4z m68 -1
+c19 -19 14 -28 -13 -28 -28 0 -34 -16 -7 -23 13 -3 12 -4 -3 -3 -35 2 -30 65
+6 66 3 0 10 -5 17 -12z m59 -25 c-3 -10 -5 -4 -5 12 0 17 2 24 5 18 2 -7 2
+-21 0 -30z m73 22 c19 -23 8 -50 -20 -50 -16 0 -26 6 -28 18 -4 18 14 47 28
+47 4 0 13 -7 20 -15z m107 -26 c1 -24 0 -26 -4 -9 -3 14 -10 31 -16 39 -10 11
+-9 13 3 9 9 -3 16 -18 17 -39z m78 -19 c8 0 16 12 18 28 4 25 4 25 6 -5 1 -29
+-2 -33 -24 -33 -23 0 -25 4 -23 38 1 36 1 36 5 5 3 -19 10 -33 18 -33z m89 51
+c4 -5 -3 -7 -14 -4 -26 7 -26 -14 0 -22 11 -3 20 -11 20 -16 0 -15 -30 -23
+-42 -11 -8 8 -4 9 13 6 l24 -6 -24 20 c-13 11 -21 24 -17 31 9 13 33 15 40 2z
+m141 -26 c0 -23 -5 -31 -22 -33 -26 -4 -41 31 -22 54 20 24 44 13 44 -21z m48
+28 c-7 -2 -14 -19 -14 -36 -1 -25 -3 -27 -6 -9 -6 30 3 52 19 51 10 0 10 -2 1
+-6z m72 -3 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10 3 6 11 10 16 10 6 0 7 -4
+4 -10z m95 -5 c9 -10 9 -15 1 -15 -6 0 -11 5 -11 11 0 23 -25 1 -31 -27 l-7
+-29 -1 32 c-1 27 8 39 30 42 4 1 12 -6 19 -14z m198 -24 c-2 -17 -10 -27 -23
+-30 -11 -2 -23 -8 -27 -15 -4 -6 -8 8 -8 32 0 23 4 42 9 42 5 0 7 -8 4 -19 -6
+-23 14 -38 30 -22 9 9 8 16 -1 31 -10 16 -9 18 4 13 9 -3 14 -15 12 -32z m72
+24 c16 -19 6 -45 -20 -52 -11 -3 -21 -10 -21 -17 -1 -6 -5 5 -8 24 -5 25 -3
+38 8 48 19 16 26 15 41 -3z m100 -5 c9 -17 8 -20 -12 -20 -18 0 -20 2 -8 10 8
+5 11 12 8 15 -11 11 -28 -5 -28 -25 0 -10 8 -20 18 -23 13 -3 12 -4 -3 -3 -36
+2 -29 65 7 66 4 0 12 -9 18 -20z m95 10 c3 -5 0 -7 -8 -4 -8 3 -18 1 -21 -5
+-4 -5 3 -12 14 -16 11 -3 20 -13 20 -21 0 -15 -35 -20 -44 -5 -4 5 4 7 16 4
+l23 -5 -24 20 c-13 11 -21 24 -17 31 9 14 33 14 41 1z m75 -5 c16 -19 3 -55
+-20 -55 -10 0 -21 -6 -23 -12 -3 -7 -6 6 -6 29 -1 37 6 49 30 52 4 1 12 -6 19
+-14z m68 3 c19 -19 14 -28 -13 -28 -14 0 -25 -5 -25 -11 0 -7 11 -9 26 -6 16
+3 22 1 16 -5 -17 -17 -47 -4 -50 21 -5 34 24 51 46 29z m80 -8 c5 -13 3 -13
+-12 -1 -21 17 -42 1 -32 -24 4 -12 13 -15 28 -12 14 4 18 3 11 -4 -16 -16 -47
+-7 -51 14 -8 38 44 63 56 27z m67 10 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10
+3 6 11 10 16 10 6 0 7 -4 4 -10z m154 -3 c12 -16 5 -27 -18 -27 -14 0 -14 2
+-1 10 8 5 11 12 8 15 -11 11 -28 -5 -28 -27 0 -15 5 -19 20 -15 11 3 20 1 20
+-5 0 -5 -10 -8 -22 -6 -26 3 -35 32 -18 53 15 19 24 19 39 2z m74 -2 c-3 -9
+-8 -14 -10 -11 -3 3 -2 9 2 15 9 16 15 13 8 -4z m67 -11 c0 -8 -9 -14 -20 -14
+-11 0 -20 -5 -20 -11 0 -6 9 -9 20 -6 11 3 18 1 14 -4 -8 -13 -41 -11 -47 4
+-2 6 -1 21 4 32 4 11 8 14 8 8 1 -7 8 -13 17 -13 14 0 14 3 4 15 -11 13 -10
+14 4 9 9 -3 16 -12 16 -20z m66 -10 l1 -29 -4 28 c-5 35 -26 30 -34 -9 l-7
+-29 -1 32 c-1 30 12 44 34 39 6 -1 10 -16 11 -32z m-2095 -21 c10 3 17 1 13
+-4 -3 -5 -13 -9 -23 -9 -20 0 -31 26 -22 50 4 9 7 4 9 -13 3 -23 8 -28 23 -24z
+m419 37 c0 -5 -5 -10 -11 -10 -5 0 -7 5 -4 10 3 6 8 10 11 10 2 0 4 -4 4 -10z
+m490 -20 c0 -25 -4 -30 -25 -30 -17 0 -25 5 -24 18 0 10 3 12 6 5 6 -15 33
+-17 33 -3 0 6 -5 10 -10 10 -6 0 -5 6 2 15 18 19 18 19 18 -15z m777 -17 c-3
+-10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z m73 16 c0 -26 -3 -30 -22
+-27 -29 4 -35 28 -9 35 12 3 21 9 21 14 0 5 2 9 5 9 3 0 5 -14 5 -31z m181 -3
+c5 3 9 1 9 -5 0 -5 -4 -13 -10 -16 -5 -3 -10 -4 -10 -1 0 2 -2 10 -3 18 -2 7
+-2 10 0 5 3 -4 9 -5 14 -1z m-1994 -18 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3
+-3 4 -12 1 -19z m440 7 c0 -8 -4 -15 -9 -15 -4 0 -8 7 -8 15 0 8 4 15 8 15 5
+0 9 -7 9 -15z m33 6 c0 -6 -4 -12 -8 -15 -5 -3 -9 1 -9 9 0 8 4 15 9 15 4 0 8
+-4 8 -9z m-148 -43 c-8 -8 -9 -4 -5 13 4 13 8 18 11 10 2 -7 -1 -18 -6 -23z
+m-172 -98 c24 0 36 -18 20 -33 -9 -9 -11 -9 -8 2 2 8 -5 16 -14 19 -12 2 -18
+-5 -21 -25 -2 -15 -4 -5 -4 22 -1 28 1 42 4 33 2 -10 13 -18 23 -18z m205 13
+c5 -15 4 -16 -6 -5 -18 17 -39 15 -39 -3 0 -8 6 -15 14 -15 23 0 41 -29 27
+-43 -10 -9 -11 -9 -6 4 4 10 -3 19 -20 27 -36 17 -33 52 6 52 9 0 20 -8 24
+-17z m663 10 c-10 -2 -19 -12 -19 -21 -1 -16 -2 -16 -6 0 -2 9 -12 19 -21 21
+-9 3 1 5 23 5 22 0 32 -2 23 -5z m632 -8 c14 -17 0 -21 -17 -4 -18 18 -43 3
+-43 -24 0 -34 25 -54 45 -37 9 7 18 10 21 7 3 -3 -4 -10 -15 -17 -30 -16 -61
+3 -61 38 0 47 43 70 70 37z m-1556 -45 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4
+81 3 -3 7 -25 8 -48z m300 0 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4 81 3 -3 7
+-25 8 -48z m302 -26 c-3 -8 -11 -14 -18 -14 -9 0 -9 3 0 12 7 7 13 28 14 48
+l1 35 4 -33 c3 -19 2 -40 -1 -48z m109 66 c-4 -6 5 -10 19 -10 14 0 26 -2 26
+-4 0 -2 3 -13 6 -23 5 -17 5 -17 -6 0 -17 27 -43 22 -38 -8 3 -14 2 -25 -2
+-25 -9 0 -19 68 -11 75 8 9 12 5 6 -5z m276 -10 c15 0 19 -7 18 -32 -2 -31 -2
+-31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -2 -17 -4 -11 -5 17 0 25
+2 39 5 33 2 -7 13 -13 24 -13z m871 -23 c-5 -20 -6 -20 -12 -1 -4 10 -5 25 -2
+32 8 22 21 -6 14 -31z m-1931 -9 l-5 -33 -6 30 c-7 32 -3 48 9 41 4 -3 5 -20
+2 -38z m1260 29 c-1 -4 -1 -14 -1 -22 0 -26 -15 -16 -16 10 -1 15 2 25 8 23 5
+-2 9 -7 9 -11z m-1300 -4 c6 -34 5 -53 -2 -53 -5 0 -9 11 -9 24 0 15 -7 26
+-17 29 -14 4 -12 5 5 6 12 0 23 -2 23 -6z m265 -4 c3 -6 0 -15 -7 -20 -23 -15
+-34 -10 -13 6 17 13 18 14 1 15 -24 0 -32 -26 -16 -48 13 -15 12 -16 -3 -3
+-18 14 -24 42 -11 54 10 11 41 8 49 -4z m220 -7 c1 -7 0 -8 -3 -2 -2 5 -11 10
+-19 10 -17 0 -19 -31 -2 -48 7 -7 9 -12 6 -12 -4 0 -14 7 -22 16 -12 12 -13
+20 -5 35 11 22 41 22 45 1z m32 -7 c-3 -3 -9 2 -12 12 -6 14 -5 15 5 6 7 -7
+10 -15 7 -18z m31 -9 c-12 -26 -29 -35 -29 -16 0 6 4 10 9 10 5 0 13 9 16 21
+4 11 9 18 11 16 3 -2 -1 -16 -7 -31z m76 17 c5 -15 4 -16 -6 -5 -22 21 -42 15
+-37 -13 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m173 -9 c2
+-11 -5 -27 -15 -34 -15 -12 -16 -12 -5 0 19 21 15 52 -5 48 -11 -2 -18 -12
+-17 -25 0 -12 -3 -20 -8 -17 -10 6 -11 38 -1 48 14 14 48 1 51 -20z m142 17
+c0 -5 -10 -7 -22 -3 -14 3 -19 2 -14 -6 4 -7 14 -12 22 -12 8 0 14 -7 14 -16
+0 -14 -2 -14 -15 -1 -8 9 -20 17 -27 19 -6 2 -8 10 -4 16 8 14 46 16 46 3z
+m254 -6 c3 -8 1 -15 -4 -15 -6 0 -10 5 -10 10 0 6 -7 10 -16 10 -12 0 -15 -7
+-12 -25 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 12 12 41 7 47 -8z m66 -15 c0
+-16 -4 -30 -9 -30 -4 0 -6 11 -4 24 4 17 0 25 -14 29 -15 4 -14 5 5 6 18 1 22
+-4 22 -29z m115 13 c5 -15 4 -16 -6 -5 -22 21 -42 15 -37 -13 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m39 9 c-7 -4 -14 -18 -17 -32 -4
+-21 -4 -20 -6 8 -1 24 3 32 17 32 11 0 13 -3 6 -8z m66 -22 c0 -16 -2 -30 -4
+-30 -2 0 -6 14 -8 30 -3 17 -1 30 4 30 4 0 8 -13 8 -30z m66 -3 c1 -25 1 -25
+-3 -2 -6 33 -33 33 -33 0 0 -14 -3 -25 -7 -25 -5 0 -8 14 -8 30 0 27 3 30 25
+28 20 -2 25 -9 26 -31z m156 3 c3 -16 1 -30 -4 -30 -4 0 -8 14 -8 30 0 17 2
+30 4 30 2 0 6 -13 8 -30z m48 0 c0 -16 -4 -30 -8 -30 -5 0 -7 14 -4 30 2 17 6
+30 8 30 2 0 4 -13 4 -30z m70 20 c0 -5 -7 -7 -16 -3 -9 3 -20 0 -25 -8 -7 -11
+-9 -11 -9 4 0 12 8 17 25 17 14 0 25 -4 25 -10z m78 -10 c4 -12 2 -13 -9 -2
+-31 29 -57 -6 -26 -37 10 -10 9 -11 -5 -6 -18 7 -25 45 -11 59 12 11 46 2 51
+-14z m34 8 c-5 -7 -12 -22 -15 -33 -3 -13 -5 -9 -6 13 -1 23 3 32 15 32 12 0
+14 -3 6 -12z m75 -35 c-3 -10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z
+m72 15 c-2 -31 -2 -31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -4 -26
+-4 -26 -6 5 -1 28 2 32 24 32 22 0 25 -4 24 -32z m76 11 c5 -14 1 -27 -11 -38
+-17 -15 -17 -15 -5 1 16 21 8 48 -15 48 -12 0 -15 -7 -12 -25 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 14 14 42 6 48 -14z m-1138 -31 c-3 -7 -5 -2 -5 12 0
+14 2 19 5 13 2 -7 2 -19 0 -25z m-1045 15 c-10 -4 -10 -8 -1 -19 8 -9 8 -14 1
+-14 -15 0 -25 18 -17 30 3 6 12 10 18 9 8 0 8 -2 -1 -6z m1254 -12 c0 -11 -4
+-17 -8 -15 -4 3 -8 12 -8 20 0 8 4 14 8 14 4 0 8 -9 8 -19z m-880 -19 c-4 -3
+-14 2 -24 12 -16 18 -16 18 6 6 13 -6 21 -14 18 -18z m1461 16 c3 6 10 12 16
+12 7 0 5 -6 -4 -15 -16 -16 -49 -11 -49 7 0 6 7 4 17 -3 13 -11 17 -11 20 -1z
+m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
+-10z"/>
+<path d="M2404 1426 c-11 -29 1 -61 24 -64 24 -4 43 28 34 60 -5 22 -50 25
+-58 4z"/>
+<path d="M3160 1431 c0 -6 5 -13 10 -16 14 -9 52 4 45 16 -8 12 -55 12 -55 0z"/>
+<path d="M2550 1016 c0 -9 5 -16 10 -16 6 0 10 4 10 9 0 6 -4 13 -10 16 -5 3
+-10 -1 -10 -9z"/>
+<path d="M1540 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"/>
+<path d="M1675 1010 c-3 -5 1 -10 9 -10 9 0 16 5 16 10 0 6 -4 10 -9 10 -6 0
+-13 -4 -16 -10z"/>
+<path d="M1803 1004 c-8 -21 13 -42 28 -27 13 13 5 43 -11 43 -6 0 -13 -7 -17
+-16z"/>
+<path d="M2214 1006 c-7 -19 3 -36 22 -36 10 0 14 8 12 22 -4 26 -26 36 -34
+14z"/>
+<path d="M2707 1013 c-13 -12 -7 -43 7 -43 19 0 28 14 20 34 -7 17 -16 20 -27
+9z"/>
+<path d="M2977 1014 c-15 -15 -7 -45 11 -42 9 2 17 12 17 22 0 20 -16 31 -28
+20z"/>
+<path d="M3045 1010 c-3 -5 3 -10 15 -10 12 0 18 5 15 10 -3 6 -10 10 -15 10
+-5 0 -12 -4 -15 -10z"/>
+<path d="M3210 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"/>
+</g>
+</svg>
+<a title="harry's technology blog 
+" href="/">harry’s blog</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/_ios/">iOS</a></li><li class="navigation__item"><a href="/_flutter/">Flutter</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/_doc/">文档</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>算法漫画阅读摘要</h1></header></div><meta itemprop="headline" content="算法漫画阅读摘要"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=algorithm">algorithm</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 04, 2018</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="17">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2018-02-04T00:00:00+08:00">
+    <meta itemprop="keywords" content="algorithm"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>记录一下个人对于公众号<a href="http://chuansong.me/account/AlgorithmFans">算法爱好者</a>和<a href="http://blog.csdn.net/bjweimengshu">程序员小灰</a>的阅读摘要，</p>
+
+<hr />
+<h2 id="b-树b-tree">B-树（B-tree）</h2>
+<ul>
+  <li>B-树就是B树，中间的横线并不是减号，B减树的叫法是错误的</li>
+  <li>二叉查找树的时间复杂度是O(logN)，但是数据库索引是存储在磁盘上的，当数据量比较大的时候，索引的大小可能就有几个G。利用索引查询的时候，一般不能将其全部加载到内存，而是逐一加载每一个磁盘页，这里的磁盘页对应着索引树的节点!</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776411-e6186300-8b94-11ea-8f80-43fca71f8989.png" alt="image" /></p>
+<blockquote>
+  <p>存储样式</p>
+</blockquote>
+
+<p>决定磁盘IO次数的是索引树的高度（最下面的叶子节点高度是1，根节点的深度是1），为了减少磁盘IO的次数，就需要把原来<strong>瘦高</strong>的树结构变得<strong>矮胖</strong></p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776425-ee709e00-8b94-11ea-821b-03a66dfc305a.png" alt="image" /></p>
+<blockquote>
+  <p>二叉查找树</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776431-f16b8e80-8b94-11ea-9c71-7f70672bd8d9.png" alt="image" /></p>
+<blockquote>
+  <p>三阶B-树</p>
+</blockquote>
+
+<p>每一个节点最多包含k个孩子，k称为B-树的阶，k的大小取决于磁盘页的大小。特征：</p>
+
+<ul>
+  <li>root节点至少两个子节点</li>
+  <li>中间节点都包含k/2-1~k-1个元素和k/2~k个子节点</li>
+  <li>每个叶子节点都包含k/2-1~k-1个元素</li>
+  <li>所有叶子节点都位于同一层</li>
+  <li>节点中元素升序排列
+    <ul>
+      <li>3阶，k/2=2?</li>
+    </ul>
+  </li>
+</ul>
+
+<p>查询5的比较，</p>
+
+<ul>
+  <li>二叉查找树：9-&gt;5（<strong>2</strong>次）</li>
+  <li>B-树：9-&gt;(2,6)-&gt;(3,5)（<strong>5</strong>次）</li>
+</ul>
+
+<p>B-树在查询过程中的比较次数其实不比二叉查找树少（如查询5），但是由于加载的该页节点数量多，都在内存中，内存多次比较耗时远小于从二叉查找树的磁盘加载节点到内存中的耗时</p>
+
+<hr />
+<h2 id="b树btree">B+树（B+tree）</h2>
+<p>B+树是基于B-树的一种变体，有着更高的查询性能</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776438-f4ff1580-8b94-11ea-8313-393c30810e5a.png" alt="image" /></p>
+<blockquote>
+  <p>B+树snapshot</p>
+</blockquote>
+
+<p>特征：</p>
+
+<ul>
+  <li>每一个父节点的元素都出现于子节点中，是子节点的最大（或最小）元素</li>
+  <li>卫星数据，指的是索引元素所指向的数据记录
+    <ul>
+      <li>B-树中，每个节点都带有卫星数据</li>
+      <li>B+树中，只有叶子节点带有卫星数据，其余中间节点仅仅是索引，没有任何数据关联</li>
+      <li>B+树中间节点没有卫星数据，所以同样大小的磁盘页可以容纳更多的节点元素。意味着数据量相同的情况下，B+树比B-树更<strong>矮胖</strong>，因此查询时IO次数更少</li>
+      <li>B+树的查询必须最终查找到叶子节点，而B-树只要找到匹配元素即可，无论匹配元素处于根节点还是中间节点还是叶子节点</li>
+    </ul>
+  </li>
+  <li>所有叶子节点形成有序链表，便于范围查询，查询性能稳定</li>
+</ul>
+
+<hr />
+<h2 id="跳跃表skiplist">跳跃表（skiplist）</h2>
+<p>需求：搭建一个拍卖，拍卖商品几十万件对应数据库商品表的几十万条记录。</p>
+
+<p>方案：全量查询排序的处理？一般情况是先拿query去数据库index找到对应的doc，如果在master的时候将不同slave的docs merge起来再sort，最后又mater返回sorted result给client。</p>
+
+<p>拍卖行商品列表是线性的，最容易表达线性结构的自然是数组和链表，但是它们在插入新商品的时候，存在性能问题，</p>
+
+<ul>
+  <li>数组：
+    <ol>
+      <li>查位，查找新商品的插入位置，可以用二分查找法length/2, O(1)的随机查询性能，O(logN)</li>
+      <li>插入，原数组中大于新商品的都要右移，给新元素腾出空位，O(N)</li>
+      <li>总复杂度O(N)+O(logN)</li>
+    </ol>
+  </li>
+  <li>链表：
+    <ol>
+      <li>查位，无法使用二分查找，因为length不知道，只能新商品与原链表中的节点逐一比较大小来确定位置，O(N)</li>
+      <li>插入，链表插入是O(1)</li>
+      <li>总体复杂度O(N)</li>
+    </ol>
+  </li>
+</ul>
+
+<p>跳跃表是一种基于有序链表的扩展，简称跳表。
+跳跃表插入节点的流程：</p>
+
+<ol>
+  <li>新节点与各层索引节点逐一比较，确定原链表的插入位置，O(logN)</li>
+  <li>把新节点插入到原链表O(1)</li>
+  <li>利用抛硬币的随机方式，决定新节点是否提升为上一级索引O(logN)</li>
+  <li>总体时间复杂度O(logN)，空间复杂度O(N)</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776441-f9c3c980-8b94-11ea-9978-fbd50a7d97a5.png" alt="image" /></p>
+<blockquote>
+  <p>skiplist1</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776445-fcbeba00-8b94-11ea-965f-9c8fd7c42d74.png" alt="image" /></p>
+<blockquote>
+  <p>skiplist2</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776448-ffb9aa80-8b94-11ea-99a2-0ca6cb338e01.png" alt="image" /></p>
+<blockquote>
+  <p>skiplist3</p>
+</blockquote>
+
+<p>跳跃表利用了空间换时间策略。</p>
+
+<p>应用场景：</p>
+
+<ul>
+  <li>redis当中的sorted-set/lucene index就是使用了跳跃表这种有序链表（memory，跳跃表简化了集合插入复杂度）</li>
+  <li>而在关系型数据库中却是使用B+树这种数据结构来维护有序的记录集合（disk，B+树减少了磁盘IO次数）</li>
+</ul>
+
+<hr />
+<h2 id="动态规划dynamic-programming">动态规划（dynamic programming）</h2>
+
+<p>问题：需要爬上第十台阶。一步只能走1个台阶或2个台阶，那么还差一步就到第十个台阶，那么会出现多少种情况？</p>
+
+<p>F(10) = F(9) + F(8) (第一种是从9级到10级，第二种是从8级到10级）</p>
+
+<p>F(N) = F(N-1) + F(N-2) (N &gt;2)，状态转移方程，最优子结构，</p>
+
+<p>F(2) = 2，边界</p>
+
+<p>F(1) = 1，边界</p>
+
+<p>解法：</p>
+
+<ol>
+  <li>使用<strong>递归</strong>方式，但是递归方式N越大，重复计算部分就越多，O(2^N)</li>
+  <li><strong>备忘录</strong>算法replay，记录每次F(N)的结果，先找Map里的，没有再递归计算，O(N), O(N)</li>
+  <li>因为F(N)只需要保留F(N-1)和F(N-2)，只需要2个状态，而备忘录算法是保留全部状态，所以既不需要递归，也不需要备忘录算法，直接<strong>递推</strong>最简便，O(N), O(1)</li>
+</ol>
+
+<hr />
+<h2 id="找缺失数">找缺失数</h2>
+<p>题目：给出一个包含 0 .. N 中 N 个数的序列，找出0 .. N 中没有出现在序列中的那个数。
+解法：异或（0^1=1,1^1=0,0^0=0,0^N=N)
+result = 0^….^N^Array[0]^….^Array[N-1]</p>
+
+<hr />
+<h2 id="判断2的乘方">判断2的乘方</h2>
+<p>特征：</p>
+<ol>
+  <li>如果一个整数是2的乘方，那么它转换成2进制的时候，只有最高位是1（8 -&gt; 1000)</li>
+  <li>如果二进制结果减去1，那么就是全1的情况（ 8-1=7 -&gt; 111)</li>
+  <li>那么N ^ (N-1) -&gt; 0 （N是2的乘方数）</li>
+  <li>一般情况，N^N-1能够消除最右边的1 （7^6=111^110=110)</li>
+</ol>
+
+<hr />
+<h2 id="bitmap算法">bitmap算法</h2>
+<p>背景：通过用户标签，实现多样的用户群体统计。比如统计用户的男女比例，统计喜欢旅游的用户数量等。</p>
+
+<p>设计：mysql表结构
+<img src="https://user-images.githubusercontent.com/8369671/80776457-047e5e80-8b95-11ea-9740-7985dcb9c712.png" alt="image" /></p>
+<blockquote>
+  <p>mysql table snapshot</p>
+</blockquote>
+
+<p>要想统计所有90后的程序员该怎么做呢？
+<code class="language-plaintext highlighter-rouge">Select count（distinct Name） as 用户数 from table where age = '90后' and Occupation = '程序员'</code>；
+要想统计所有使用苹果手机或者00后的用户总合该怎么做？
+<code class="language-plaintext highlighter-rouge">Select count（distinct Name） as 用户数 from table where Phone = '苹果' or age = '00后'</code>；</p>
+
+<p>问题：
+随着标签越来越多，表结构的列数量就越来越多，同时sql语句的where拼接也越来越臃肿。</p>
+
+<p>BITMAP: 每个标签一个bitmap数组，数组长度表示为用户数，bitmap数组的数量表示为有多少类标签</p>
+<ol>
+  <li>建立用户名与用户id的映射（bitmap遍历不能用string，只能是bitmap数组的第几位）</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776471-09dba900-8b95-11ea-876a-1c0ba5c38bcb.png" alt="image" /></p>
+<blockquote>
+  <p>映射</p>
+</blockquote>
+
+<ol>
+  <li>让每一类标签存储包含此标签的所有用户ID（也可以是全部用户，只是第几位用户的数组posi为0而已），每一类标签都是一个独立的bitmap</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776475-0d6f3000-8b95-11ea-80c7-b2fe9ab90edf.png" alt="image" /></p>
+<blockquote>
+  <p>拆映射为标签</p>
+</blockquote>
+
+<ol>
+  <li>最后实现</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776479-1102b700-8b95-11ea-82c9-b376c7252ee9.png" alt="image" /></p>
+<blockquote>
+  <p>implementation</p>
+</blockquote>
+
+<ol>
+  <li>例子
+    <ul>
+      <li>如何查找使用苹果手机的程序员用户？</li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776501-1e1fa600-8b95-11ea-96a5-2ccc6966c147.png" alt="image" /></p>
+<blockquote>
+  <p>example1</p>
+</blockquote>
+
+<ul>
+  <li>如何查找所有男性或者00后的用户？</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776508-224bc380-8b95-11ea-8f88-bc9272fdf53d.png" alt="image" /></p>
+<blockquote>
+  <p>example2</p>
+</blockquote>
+
+<p>优势：</p>
+
+<ul>
+  <li>非常节约存储空间</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>高性能的位运算操作（&amp;，</td>
+          <td>，^）</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>劣势：</p>
+
+<ul>
+  <li>不支持非运算（！）。全量异或可以解决这个问题</li>
+</ul>
+
+<p>开源方案：
+java bitSet
+google EWAHCompressedBitmap</p>
+
+<p>bitmap进阶
+RLE游程编码</p>
+
+<hr />
+<h2 id="布隆算法bloomfilter">布隆算法bloomFilter</h2>
+<p>一种以bitMap集合为基础的去重算法。</p>
+
+<p>如果说爬虫，因为爬取得是网页URL，String类型，与数字类型不一样，因为不同string，hashCode可能相同，所有不能直接使用单个bitmap就来判断2个url是否相同。</p>
+
+<p>映射流程：（bloomFilter只需要一个bitMap，但是一个key多次要映射）</p>
+
+<ol>
+  <li>创建一个空的bitmap集合</li>
+  <li>把第一个URL按照<strong>三种hash</strong>算法，分别生成三个不同的hash值</li>
+  <li>分别判断key1的三个hash值对应的bitmap位置是否为1，只要全部都为1的情况，才认为key1已经存在了</li>
+</ol>
+
+<p>误判几率：</p>
+
+<ol>
+  <li>虽然bloomFilter极力降低了hash冲突的几率，但是仍存在一定的误判率</li>
+  <li>可以在单key hash次数与hash长度，冲突率之间做取舍</li>
+  <li>因为bloomFilter只用了一个bitmap，如果单个key的每次hash都对应一个bitmap，那么这样的方式就会占用翻倍的空间，反而不如用hashset好</li>
+  <li>如果想完全杜绝误判，可以增加一个白名单机制</li>
+</ol>
+
+<hr />
+<h2 id="决策树算法">决策树算法</h2>
+<p>树是一种很重要的数据结构，可以为我们缩小问题规模，实现高效的查找。</p>
+
+<p>背景：猜人名游戏。游戏中，出题者写下一个明星的名字，其他人需要猜出这个人是谁。当然，如果游戏规则仅此而已的话，几乎是无法猜出来的，因为问题的规模太大了。为了降低游戏的难度，答题者可以向出题者问问题，而出题者必须准确回答是或者否，答题者依据回答提出下一个问题，如果能够在指定次数内确定谜底，即为胜出，</p>
+
+<ul>
+  <li>是男的吗？Y</li>
+  <li>是亚洲人吗？Y</li>
+  <li>是中国人吗？N</li>
+  <li>是印度人吗？Y</li>
+  <li>……</li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776517-27107780-8b95-11ea-89c9-2a6abcb6563b.png" alt="image" /></p>
+<blockquote>
+  <p>decision tree snapshot</p>
+</blockquote>
+
+<p>算法思想：</p>
+
+<ol>
+  <li>每次选择其中一个特征对样本集合进行分类</li>
+  <li>对分类后的所有子集递归进行步骤1</li>
+</ol>
+
+<p>最重要的是第一步，即需要想出一个重要的策略，即选择什么样的特征可以实现最好的分类效果。使用纯净度来评价分类效果，熵来量化纯净度。
+熵表示一个系统的混乱程度，熵越大，说明数据集纯净度越低；当数据集都是同一个类别的时候，此时熵是0。目标就是使得熵最低。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776524-2bd52b80-8b95-11ea-87d7-4136155f6c95.png" alt="image" /></p>
+<blockquote>
+  <p>6组样本</p>
+</blockquote>
+
+<p>一共6组样本，每一组样本包含4个特征，分别是年龄段，学历，收入，婚姻状况，最后一列数所属分类，代表该组/用户是否购买了该产品。使用这些样本去训练一颗决策树如下：</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776529-2ed01c00-8b95-11ea-9a0e-80e94872b2d9.png" alt="image" /></p>
+<blockquote>
+  <p>6组样本的决策树</p>
+</blockquote>
+
+<p>使用上述决策树来判断一个新晋用户（需要将该用户的4个特征都拿到）是否会购买该产品。</p>
+
+<hr />
+<h2 id="a寻路算法启发式搜索">A*寻路算法/启发式搜索</h2>
+<p>前提：</p>
+
+<p>OpenList，可达格子</p>
+
+<p>CloseList，已达到格子</p>
+
+<p>F=G+H，G起点走到当前格的成本；H当前格到目标格的距离，不考虑障碍物。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776532-3263a300-8b95-11ea-8249-0c710d7b2a9a.png" alt="image" /></p>
+<blockquote>
+  <p>a star algorithm snapshot</p>
+</blockquote>
+
+<p>起点(1,2)，终点(5,2)。过程，</p>
+
+<ol>
+  <li>计算当期点的可达点</li>
+  <li>Fmin是(2,2)，所以将其加入移出openList，加入closeList</li>
+  <li>看当前格子(2,2)的上下左右，是否在openlist当中，如果不在，加入openList，并计算F</li>
+</ol>
+
+<hr />
+<h2 id="base64算法">Base64算法</h2>
+<p>文本协议(http)</p>
+
+<p>二进制协议（pb, thrift）</p>
+
+<p>字节码byte是8bit，base64可以将原来ASCII字符打印成6bit字符。8，6最小公倍数24。意味着可以用<strong>4</strong>个base64字符(TWFu)来表达<strong>3</strong>个传统的8bit字符(Man)。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776540-35f72a00-8b95-11ea-885a-eee4734703ed.png" alt="image" /></p>
+<blockquote>
+  <p>base64 encode</p>
+</blockquote>
+
+<p>base64索引表（0-A,46-u,19-T,20-U）</p>
+
+<hr />
+<h2 id="对称加密-vs-非对称加密-vs-hash"><a href="https://segmentfault.com/a/1190000004461428">对称加密 vs 非对称加密 vs hash</a></h2>
+<p>对称加密，一方通过密钥将信息加密后，把密文传给另一方，另一方通过这个相同的密钥将密文解密，转换成可以理解的明文，这类算法在加密和解密时使用<strong>相同</strong>的密钥，这组密钥成为在两个或多个成员间的共同秘密，</p>
+
+<p>加密和解密使用<code class="language-plaintext highlighter-rouge">相同</code>密钥的加密算法</p>
+<blockquote>
+  <p>明文 &lt;-&gt; 密钥 &lt;-&gt; 密文
+常见的对称加密算法有DES、3DES、Blowfish、IDEA、RC4、RC5、RC6和<strong>AES</strong></p>
+</blockquote>
+
+<p>非对称加密，首先要有一对key，一个被称为private key私钥，一个成为public key公钥，然后可以把你的public key分发给想给你传密文的用户，然后这些用户使用该public key加密过的密文，只有使用你的private key才能解密。也就是说，只要你自己保存好你的private key，就能确保，别人想给你发的密文不被破解，所以你不用担心<strong>盟友</strong>的密钥被盗，</p>
+
+<p>加密和解密使用<code class="language-plaintext highlighter-rouge">不同</code>密钥的加密算法，也称为公私钥加密</p>
+<blockquote>
+  <p>常见的非对称加密算法有：<strong>RSA</strong>、ECC（移动设备用）、Diffie-Hellman、El Gamal、DSA（数字签名用）</p>
+</blockquote>
+
+<p>SSH的加密原理中，使用到了RSA非对称加密算法</p>
+
+<p><a href="http://www.cnblogs.com/MikeChen/archive/2011/04/22/2024574.html">hash算法</a>，Hash算法特别的地方在于它是一种单向算法，用户可以通过Hash算法对目标信息生成一段特定长度的唯一的Hash值，却不能通过这个Hash值重新获得目标信息。因此Hash算法常用在不可还原的密码存储、信息完整性校验等。</p>
+<blockquote>
+  <p>常见的Hash算法有MD2、MD4、<strong>MD5</strong>、HAVAL、SHA</p>
+</blockquote>
+
+<p><a href="https://mp.weixin.qq.com/s/TG2MGcoIm19NNwxSOZ2ZIQ">消息安全传输</a>
+用户甲乙之间先建立安全通信信道，再开始传输具体消息，</p>
+
+<ol>
+  <li>甲生成pk1(public key，公钥)和sk1(secret key，私钥)</li>
+  <li>甲在Internet中传输pk1给乙（黑客可以截取到pk）</li>
+  <li>乙接收到pk1后，乙生成非对称加密(pk2, sk2)</li>
+  <li>乙用pk1对pk2加密，并传给甲（pk1加密的只有sk1能加密）（黑客可以截取pk1加密过的pk2）</li>
+  <li>甲收到<strong>pk1加密过的pk2</strong>后，用sk1解密，得到pk2</li>
+  <li>甲用pk2对<strong>对称密钥keyX</strong>加密，然后传给乙（可截取）</li>
+  <li>乙用sk2解密得到keyX</li>
+  <li>后续甲乙双方就基于keyX来通信（先非对称加密，再对称加密）</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776555-3d1e3800-8b95-11ea-8ba9-ee42a4cb6e66.png" alt="image" /></p>
+<blockquote>
+  <p>一次一密安全传输</p>
+</blockquote>
+
+<hr />
+<h2 id="md5算法-message-digest-algorithm">MD5算法, message digest algorithm</h2>
+<p>就是信息摘要的一种实现，它可以从任意长度的明文字符串生成128位的哈希值。</p>
+
+<p>生成：
+<img src="https://user-images.githubusercontent.com/8369671/80776563-40b1bf00-8b95-11ea-9368-2e5b478ea216.png" alt="image" /></p>
+<blockquote>
+  <p>md5 generation</p>
+</blockquote>
+
+<p>传输：
+<img src="https://user-images.githubusercontent.com/8369671/80776569-43acaf80-8b95-11ea-87b1-96fdc8dd6fbd.png" alt="image" /></p>
+<blockquote>
+  <p>md5 transmission</p>
+</blockquote>
+
+<p>传输内容是（拼接明文+MD5(拼接明文)）
+MD5破解
+一般不需要原文一致，而是MD5值一致即可。</p>
+
+<p>设MD5的哈希函数是H（X），那么：</p>
+
+<p>H(A) = M</p>
+
+<p>H(B) = M</p>
+
+<p>任意一个B即为破解结果。</p>
+
+<p>B有可能等于A，也可能不等于A。即<strong>殊途同归</strong>，</p>
+
+<ol>
+  <li>暴力枚举法：复杂度，假设只考虑大小写和数字，每一位有62种可能，那么8位密码的排列组合就是62^8（时间换空间）</li>
+  <li>字典法：62^8种可能性，每一对映射占xx=(128+8chars)位。那么需要62^8 * xx bit</li>
+  <li>彩虹表：函数族Rk(k=1,2,3,4,..)将hash密文空间映射回明文的字符空间</li>
+</ol>
+
+<p><a href="http://www.91ri.org/7593.html">彩虹表例子</a>，</p>
+
+<ul>
+  <li>qshud(明文) -&gt; e978c6b019ac22a3fd05b14d36621852(32位MD5密文），最简单的转化处理就是直接截取第一个字符e；</li>
+  <li>e -&gt; e1671797c52e15f763380b45e841ec32，截取前两位；</li>
+  <li>e1 -&gt; cd3dc8b6cffb41e4163dcbd857ca87da，截取前三位</li>
+  <li>cd3 -&gt; XXX，假设截取到前k位(k=8)</li>
+  <li>XXX -&gt; 5626cf5e6f1093c2840a16512f62c3b5</li>
+  <li>5626cf5e</li>
+  <li>最后存储字符串qshud和5626cf5e</li>
+  <li>下一步就是查表过程（从中间链的倒数开始遍历）</li>
+</ul>
+
+<hr />
+<h2 id="sha算法">SHA算法</h2>
+<p>哈希摘要算法
+和MD5算法类似，SHA(secure hash algorithm)也是一种生成信息摘要的算法。</p>
+
+<p>SHA-1,SHA-2,SHA-256，第一位数字大版本号，第二位数字是子版本号。</p>
+
+<p>SHA-1摘要长度160bit；而MD5的摘要长度是128bit，但MD5生成摘要的性能比SHA-1好。</p>
+
+<p>SHA-256：可以生成长度256bit的信息摘要。</p>
+
+<hr />
+<h2 id="aes算法advanced-encryption-standard">AES算法，advanced encryption standard</h2>
+<p>对称加密算法，</p>
+
+<ul>
+  <li>摘要算法是不可逆的，它的主要作用是对信息一致性和完整性的校验</li>
+  <li>对称加密算法是可逆的，它的主要作用是保证私密信息不被泄露</li>
+</ul>
+
+<p>AES128, AES192, AES256，指的是AES算法对不同长度密钥的使用。特点，</p>
+
+<ul>
+  <li>明文分组，AES并不是将整个明文全部加密成一整段密文，而是将明文拆成一个个独立的明文块，每一个明文块长度128bit，逐一加密后的密文块最后拼接在一起，成为AES加密结果</li>
+  <li>填充方式，如果最后一块明文块不够，需要将其填充为128/192/256bit
+    <ul>
+      <li>Nopadding，不做任何填充，但是要求明文必须是16字节的整数倍</li>
+      <li>PKCS5Padding（默认）</li>
+      <li>ISO10126Padding</li>
+    </ul>
+  </li>
+  <li>工作模式，表现在把明文块加密成密文块的处理过程中
+    <ul>
+      <li>CBC模式</li>
+      <li>ECB模式（默认）</li>
+      <li>CTR模式</li>
+      <li>CFB模式</li>
+      <li>OFB模式</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776577-49a29080-8b95-11ea-9bc3-fdc0fce1560e.png" alt="image" /></p>
+<blockquote>
+  <p>AES</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776585-4d361780-8b95-11ea-8a59-85feda7b0138.png" alt="image" /></p>
+<blockquote>
+  <p>java code example</p>
+</blockquote>
+
+<p>其中，</p>
+
+<ol>
+  <li>kgen.init(128, new…)，第一个参数决定了分组长度是128bit</li>
+  <li>Cipher.getInstance(“AES/CBC/NoPadding”)，决定了填充方式是NoPadding，工作模式是CBC</li>
+</ol>
+
+<p>AES加密不是一次就将明文变成密文的，而是先后经过很多轮加密，1+N+1轮，</p>
+
+<ol>
+  <li>初始轮 Initial round，1次</li>
+  <li>普通轮 rounds，N次</li>
+  <li>最终轮 final round，1次</li>
+</ol>
+
+<p>AES的分组长度对应的轮数如下，</p>
+
+<ol>
+  <li>AES128，10轮，N=8</li>
+  <li>AES192，12轮</li>
+  <li>AES256，14轮</li>
+</ol>
+
+<p>不同截断的round有不同的处理步骤，
+初始轮，</p>
+
+<ol>
+  <li>加轮密钥 addRoundKey</li>
+</ol>
+
+<p>普通轮，</p>
+
+<ol>
+  <li>字节代替 subBytes，就是把明文块的每一个字节都替代成另外一个字节</li>
+  <li>行移位 shiftRows，每行左移X个字节</li>
+  <li>列混淆 mixColumns，明文块矩阵与修补矩阵相乘</li>
+  <li>加轮密钥，这是唯一用到密钥的一步，明文块与密钥异或</li>
+</ol>
+
+<p>最终轮，</p>
+
+<ol>
+  <li>字节代替</li>
+  <li>行移位</li>
+  <li>加轮密钥</li>
+</ol>
+
+<p>解密过程与加密过程相反：最终轮 -&gt; 普通轮 -&gt; 初始轮</p>
+
+<p>工作模式，ECB明文块之间没有联系，完全并行；CBC模式，某一个明文块需要上一个明文块作“加盐”处理，内部IV变量为初始盐</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776589-52936200-8b95-11ea-9988-e0f87b2facd0.png" alt="image" /></p>
+<blockquote>
+  <p>AES ori</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776595-56bf7f80-8b95-11ea-9b21-ba7445e49882.png" alt="image" /></p>
+<blockquote>
+  <p>AES+salt</p>
+</blockquote>
+
+<hr />
+<h2 id="红黑树">红黑树</h2>
+<p>根节点的树深度（树高度）=1</p>
+
+<p>二叉查找树（binary search tree）特征，</p>
+
+<ol>
+  <li>左子树上所有结点的值均小于或等于它的根结点的值</li>
+  <li>右子树上所有结点的值均大于或等于它的根结点的值</li>
+  <li>左、右子树也分别为二叉排序树</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776599-5a530680-8b95-11ea-85d7-b4399b94107d.png" alt="image" /></p>
+<blockquote>
+  <p>二叉查找树BST snapshot1</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776608-5d4df700-8b95-11ea-84ac-ca6038a88499.png" alt="image" /></p>
+<blockquote>
+  <p>BST snapshot2</p>
+</blockquote>
+
+<p>红黑树（red black tree）是BST的自平衡优化，改善了BST的树高落差，除了符合BST的基本特性外，它还要符合以下特征，</p>
+
+<ol>
+  <li>节点是红色或者黑色</li>
+  <li>根节点一定是黑色</li>
+  <li>每个叶子节点都是黑色的空节点</li>
+  <li>每个红色节点的两个子节点都是黑色的（即每个叶子到根的所有路径上不能有两个连续的红色节点）</li>
+  <li><strong>对于任一节点而言，其到叶节点的每一条路径都包含相同数目的黑结点</strong></li>
+</ol>
+
+<p>由于有了上面的3+5点规则，才保证了红黑树的自平衡。红黑树从根节点到叶子节点的最长路径不会超过最短路径的2倍。当插入或者删除节点的时候，红黑树的规则很有可能被打破。这时候就需要作出一些调整，来继续维持3+5规则，这些调整主要包括变色和旋转，</p>
+
+<ol>
+  <li>变色，红黑互换</li>
+  <li>左旋，要符合BST的规则，就很容易理解b这个节点该放在哪个位置，因为Y要上来，但是x &lt; b &lt; y，所以b要在x的右节点，x又要在y的左节点。</li>
+  <li>右旋，y &lt; c &lt; x</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776615-60e17e00-8b95-11ea-94dc-fd59677f7df7.png" alt="image" /></p>
+<blockquote>
+  <p>左旋</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776622-64750500-8b95-11ea-9582-afc33a9b8dfb.png" alt="image" /></p>
+<blockquote>
+  <p>右旋</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776628-676ff580-8b95-11ea-90b0-f8d82dbb5454.png" alt="image" /></p>
+<blockquote>
+  <p>RBT before adjust</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776631-6a6ae600-8b95-11ea-9537-1f9bf2f5ddce.png" alt="image" /></p>
+<blockquote>
+  <p>RBT insert 21 and adjust</p>
+</blockquote>
+
+<hr />
+<h2 id="hashmap">HashMap</h2>
+<p>HashMap是一个用于存储Key-Value pair 键值对的集合，每一个键值对pairs也叫Entry。这个Entry分散存储在一个数组当中，这个数组就是HashMap的主干。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776636-6f2f9a00-8b95-11ea-9dbe-b0f325d0ee76.png" alt="image" /></p>
+<blockquote>
+  <p>hashmap snapshot1</p>
+</blockquote>
+
+<p>index = Hash(“apple”) = 2</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776643-7191f400-8b95-11ea-9ea0-af15309cb628.png" alt="image" /></p>
+<blockquote>
+  <p>hashmap snapshot2</p>
+</blockquote>
+
+<p>如果下一个index = Hash(“banana”) = 2，那么就发生碰撞，可以用链表来解决，链表头节点始终是最晚进入的Entry。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776647-75257b00-8b95-11ea-9021-b439d393a10f.png" alt="image" /></p>
+<blockquote>
+  <p>hashmap snapshot3</p>
+</blockquote>
+
+<p>put(k, v), 存储某个(key, value)时，调用Entry(k, v)的hashcode计算hash从而得到index，然后将Entry放入其中。</p>
+
+<p>get(key), 查找某个key的value，步骤如下，</p>
+
+<ol>
+  <li>key hash得到index，array(index)来O(1)定位到链表</li>
+  <li>线性查找链表，比较Entry(key, value)，keyInLink.equals(search_key)?，如果equal返回该Entry(search_key, value)的value，否则为null。碰撞链表查找性能O(N)，若为树就O(logN)
+    <ul>
+      <li>在Java 8中，如果一个bucket中碰撞冲突的元素超过某个限制(默认是8)，则使用红黑树来替换链表，从而提高速度</li>
+    </ul>
+  </li>
+</ol>
+
+<p>为什么hashMap的默认初始长度是16，并且每次自动扩展或是手动初始化时，长度必须是2的幂？</p>
+
+<p>选择2的幂，是为了服务于从key映射到index的hash算法。要求一个尽量均匀的hash函数，减少key的index碰撞。</p>
+
+<p>index = HashCode（Key） &amp; （hashMap_Length - 1）</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776658-78b90200-8b95-11ea-85a6-67bed0540dce.png" alt="image" /></p>
+<blockquote>
+  <p>2的幂</p>
+</blockquote>
+
+<p>看到hashMap_Length为2的幂，那么其低位全为1，就可以都将hashCode对应的低位信息都保留，从而增加index distinct count。这是后碰撞机率就完全依赖于HashCode自身的分布<a href="https://yikun.github.io/2015/04/01/Java-HashMap%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0/">均匀性</a>了。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776668-7d7db600-8b95-11ea-93e6-f581575d3e86.png" alt="image" /></p>
+<blockquote>
+  <p>summary</p>
+</blockquote>
+
+<hr />
+<h2 id="cocurrenthashmap">cocurrentHashmap</h2>
+<p>在jdk8之前，concurrentHashmap使用了分段锁segment来实现并发。
+concurrentHashmap当中每个segment各自持有一把锁，在保证线程安全的同时降低了锁的粒度，让并发操作效果更高。</p>
+
+<p>读写过程，</p>
+
+<p>Get方法，</p>
+
+<ol>
+  <li>为输入的key做hash运算，得到hash值</li>
+  <li>通过hash值，定位到对应的segment对象</li>
+  <li>再次通过hash值，定位到segment当中数组的具体位置</li>
+</ol>
+
+<p>Put方法，</p>
+
+<ol>
+  <li>为输入的key做hash运算，得到hash值</li>
+  <li>通过hash值，定位到对应的segment对象</li>
+  <li>获取可重入锁</li>
+  <li>再次通过hash值，定位到segment当中数组的具体位置</li>
+  <li>插入或覆盖hashEntry对象</li>
+  <li>释放锁</li>
+</ol>
+
+<p>在读写时都需要二次定位。首先定位到segment，之后定位到segment内的具体数组下标。</p>
+
+<p>返回concurrentHashmap的总元素数量的size()函数，大体逻辑，</p>
+
+<ol>
+  <li>遍历所有segment</li>
+  <li>把segment的元素数量累加起来，S1</li>
+  <li>把segment的修改次数累加起来，S2</li>
+  <li>判断所有segment的总修改次数是否大于上一次的总修改次数
+    <ol>
+      <li>如果大于，说明统计过程中有修改，重新统计，尝试次数+1</li>
+      <li>如果没有修改，统计结束</li>
+    </ol>
+  </li>
+  <li>如果尝试次数超过阈值(=2)，则对每一个segment加锁，再重新统计</li>
+  <li>再次判断所有segment的总修改次数是否大于上一次的总修改次数。由于已经加锁，次数一定和上次相等</li>
+  <li>释放锁，统计结束</li>
+</ol>
+
+<p>这里引入尝试次数，这种思想和乐观锁悲观锁的思想如出一辙。为了尽量不要锁住所有segment，首次乐观地假设求size过程中不会有修改。当尝试了一定次数之后，才无奈转为悲观锁，锁住所有segment来保证强一致性。</p>
+
+<p>在jdk8之后，废弃了segment改变，改为由CAS原理来实现，直接使用一个大数组，在发生碰撞的时候，产生链表，如果链表长度超过了阈值(=8)，则将链表转换为红黑树（寻址时间复杂度有O(N)降到O(logN)了，原作者认为引入红黑树之后，即使hash冲突比较严重，寻址效率也足够高）。</p>
+
+<hr />
+<h2 id="单例">单例</h2>
+<ul>
+  <li>双重锁检测</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Singleton {
+
+    private volatile static Singleton instance = null; //单例对象
+
+    private Singleton() { //构造函数,私有
+    }
+
+    public static Singleton getInstance() {
+        if (instance == null) { //双重检测机制
+            synchronized (Singleton.class) { //同步锁,要类级别的,不能是对象锁
+                if (instance == null) { //双重检测机制
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+</code></pre></div></div>
+<ul>
+  <li>静态内部类</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class Singleton {
+
+    private Singleton() {
+    }
+
+    public static Singleton getInstance() {
+        return LazyHolder.instance;
+    }
+
+    private static class LazyHolder {
+
+        private static final Singleton instance = new Singleton();
+    }
+
+}
+</code></pre></div></div>
+<ul>
+  <li>枚举</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public enum Singleton {
+    INSTANCE;
+}
+</code></pre></div></div>
+<ul>
+  <li>scala object</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>object Singleton {
+  private val instance = “I am singleton"
+
+  def getInstance() = {
+    instance
+  }
+}
+</code></pre></div></div>
+
+<hr />
+<h2 id="volatile关键字">volatile关键字</h2>
+<p>volatile如字面意思，不稳定的，变化无常的，所以需要被时刻关注着。
+其大概作用，</p>
+
+<ol>
+  <li>保证一个变量在线程之间的可见性，表现为即时更新变量值到主内存。基于CPU的内存屏障指令是<strong>可见性</strong>的保证，happen-before原则</li>
+  <li>阻止编译时和运行时的指令<strong>重排</strong>。编译时依靠内存屏障来阻止JVM编译器对指令的重排；运行时依靠CPU屏障指令来阻止重排</li>
+  <li>64位long/double<a href="https://github.com/closedevice/interview-about/blob/master/java/java-questions.md#volatile能使得一个非原子操作变成原子操作吗">安全读取</a>，因为 Java 中读取 long 类型变量不是原子的</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776677-853d5a80-8b95-11ea-9b73-fe4e6e300c6f.png" alt="image" /></p>
+<blockquote>
+  <p>线程间的可见性</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776685-88384b00-8b95-11ea-8247-f15748c39345.png" alt="image" /></p>
+<blockquote>
+  <p>指令重排</p>
+</blockquote>
+
+<ul>
+  <li><a href="https://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/">threadlocal</a>，一个关于创建线程局部变量的类</li>
+  <li><a href="http://blog.csdn.net/vernonzheng/article/details/8206349">Atomic原子类</a></li>
+  <li><a href="https://www.tuhd.top/2017/08/08/2017-08-08-concurrenthashmap/#总结">ConcurrentHashMap</a>，锁，jdk7基于segment，jdk8基于CAS</li>
+</ul>
+
+<hr />
+<h2 id="netty">Netty</h2>
+<p>远程过程调用，</p>
+
+<ol>
+  <li>http协议（简单明了，但是很多头信息）</li>
+  <li><a href="https://www.jianshu.com/p/9c858808831c">socket</a>（偏底层，要注意高并发）
+    <ol>
+      <li>阻塞IO，blocking io，一个线程对应一个socket
+<img src="https://user-images.githubusercontent.com/8369671/80776693-8bcbd200-8b95-11ea-97c3-60b0d40dbc89.png" alt="image" />
+        <blockquote>
+          <p>BIO</p>
+        </blockquote>
+      </li>
+      <li>非阻塞IO，non-blocking io，多路复用的思路，一个线程/选择器selector去处理多个socket
+<img src="https://user-images.githubusercontent.com/8369671/80776708-8f5f5900-8b95-11ea-88d6-e02332ec3f9a.png" alt="image" />
+        <blockquote>
+          <p>NIO</p>
+        </blockquote>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>Netty本身是一个基于java NIO的网络框架，封装了java NIO的复杂底层细节，提供简单易用的抽象概念来编程。</p>
+
+<p>Netty是一个<strong>半成品</strong>，不能开箱即用，必须在其基础之上做点定制，利用它开发出自己的应用程序，然后才能运行（类似spring那样）。grpc，dubbo这些<a href="http://colobu.com/2016/09/05/benchmarks-of-popular-rpc-frameworks/">rpc框架</a>的底层用的就是Netty</p>
+
+<hr />
+<h2 id="微服务架构">微服务架构</h2>
+<p>单体架构优点，</p>
+
+<ol>
+  <li>便于管理，所有代码都在一个项目当中</li>
+</ol>
+
+<p>但是当其产品规模越来越大时，缺点就更为突出，</p>
+
+<ol>
+  <li>项目过于臃肿，当大大小小的功能模块都集中在同一项目的时候，整个项目必然会变得臃肿，让开发者难以维护</li>
+  <li>资源无法隔离，整个单体系统的各个功能模块都依赖于同样的数据库、内存、IO等资源，一旦某个功能模块对资源使用不当，整个系统的其他功能都会被拖垮</li>
+  <li>无法灵活扩展，当系统的访问量越来越大的时候，单体系统固然可以进行水平扩展（多个实例），部署在多台机器上组成集群。但是这种扩展并非灵活的扩展。比如我们现在的性能瓶颈是支付模块，希望只针对支付模块做水平扩展，这一点在单体系统是做不到的（因为部署是整个项目的部署，而整个项目不仅仅包含支付模块）</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776714-938b7680-8b95-11ea-88ce-e735bcf71b59.png" alt="image" /></p>
+<blockquote>
+  <p>单体架构</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776717-95edd080-8b95-11ea-8a23-76b3e64c6f82.png" alt="image" /></p>
+<blockquote>
+  <p>单体架构水平扩展</p>
+</blockquote>
+
+<p><a href="https://www.toutiao.com/a6466730692716790285/">微服务架构</a>是为了解决上述臃肿单项目问题，将单项目拆开成多个独立的服务，然后各自调用，特点如下，</p>
+
+<ol>
+  <li>可灵活扩展，比如根据每个服务的吞吐量不同，支付服务需要部署20台机器，用户服务需要部署30台机器，而商品服务只需要部署10台机器。这种灵活部署只有微服务架构才能实现</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776725-9ab28480-8b95-11ea-88fa-3a8f7fefd5af.png" alt="image" /></p>
+<blockquote>
+  <p>单体架构 vs. 微服务架构</p>
+</blockquote>
+
+<ol>
+  <li>资源的有效隔离，每一个微服务拥有独立的数据源，假如微服务A想要读写微服务B的数据库，只能调用微服务B对外暴露的接口来完成。这样有效避免了服务之间争用数据库和缓存资源所带来的问题</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776733-9e460b80-8b95-11ea-93ac-17b92cb31da1.png" alt="image" /></p>
+<blockquote>
+  <p>各个模块调用各自的DB</p>
+</blockquote>
+
+<ol>
+  <li>团队组织架构的调整</li>
+</ol>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776743-a1d99280-8b95-11ea-96e7-dedf5b2c6bfc.png" alt="image" /></p>
+<blockquote>
+  <p>单体架构组织架构</p>
+</blockquote>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776749-a56d1980-8b95-11ea-9a9d-7a4c76da80e6.png" alt="image" /></p>
+<blockquote>
+  <p>微服务组织架构</p>
+</blockquote>
+
+<ol>
+  <li>拆分出很多业务模块，增加了开发和测试复杂度</li>
+  <li>难以保证不同服务之间的数据一致性，所引入的分布式事务和异步补偿机制可以缓解一致性问题，但也增加了设计和开发难度</li>
+</ol>
+
+<p>总而言之，微服务架构的核心思想是，一个应用是由多个小的、相互独立的、微服务组成，这些服务运行在自己的进程中，开发和发布都没有依赖。不同服务通过一些轻量级交互机制来通信，例如 RPC、HTTP 等，服务可独立扩展伸缩，每个服务定义了明确的边界，不同的服务甚至可以采用不同的编程语言来实现，由独立的团队来维护。</p>
+
+<p>SOA vs 微服务</p>
+
+<ul>
+  <li>SOA，粗粒度，系统之间的服务调用。<strong>合</strong>，把很多系统串联在一起</li>
+  <li>微服务，细粒度，按业务拆分成不同的服务。<strong>拆</strong>，把很多功能模块拆分出来提供服务</li>
+</ul>
+
+<hr />
+<h2 id="threadpoolexecutor"><a href="https://juejin.im/post/5a743c526fb9a063557d7eba#heading-5">ThreadPoolExecutor</a></h2>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80776754-a9993700-8b95-11ea-8feb-4faeac5e20ee.png" alt="image" /></p>
+<blockquote>
+  <p>线程池处理流程 From moonandstar08</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//构造函数
+public ThreadPoolExecutor(int corePoolSize,
+                          int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue&lt;Runnable&gt; workQueue,
+                          ThreadFactory threadFactory,
+                          RejectedExecutionHandler handler)
+</code></pre></div></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>parameter</th>
+      <th>CHN</th>
+      <th>meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>corePoolSize</td>
+      <td>核心线程数</td>
+      <td>核心线程是lazy constructor，会一直存在于线程池中（即使这个线程一直空闲），有任务要执行时，如果核心线程没有被占用，会优先用核心线程执行任务。数量一般情况下设置为CPU核数的2倍</td>
+    </tr>
+    <tr>
+      <td>maximumPoolSize</td>
+      <td>最大线程数 = 核心线程数 + <strong>非核心线程数</strong></td>
+      <td>核心线程都被占用了，但上游任务持续压过来，若等待队列满了，则需要再创建线程来处理</td>
+    </tr>
+    <tr>
+      <td>keepAliveTime</td>
+      <td>非核心线程闲置超时时长</td>
+      <td>当一个线程空闲了，超过一定的时间（keepAliveTime）时，线程池会判断，如果当前运行的线程数大于corePoolSize，那么这个线程就被停掉。所以线程池的所有任务完成后，它最终会收缩到corePoolSize的大小</td>
+    </tr>
+    <tr>
+      <td>TimeUnit</td>
+      <td>keepAliveTime的单位</td>
+      <td>MILLISECONDS, MINUTES, HOURS等</td>
+    </tr>
+    <tr>
+      <td>BlockingQueue</td>
+      <td>线程池中的任务队列</td>
+      <td>* <strong>SynchronousQueue</strong>直接提交<br /> * LinkedBlockingQueue无界队列<br /> * ArrayBlockingQueue有界队列<br /> * DelayQueue延时队列</td>
+    </tr>
+    <tr>
+      <td>ThreadFactory</td>
+      <td>创建线程的工厂</td>
+      <td>可以用线程工厂给每个创建出来的线程设置名字。一般情况下无须设置该参数，默认<strong>pool-poolNumber-thread-threadNumber</strong></td>
+    </tr>
+    <tr>
+      <td>RejectedExecutionHandler</td>
+      <td>饱和策略</td>
+      <td>* <strong>AbortPolicy</strong>不处理且抛异常<br /> * CallerRunsPolicy由调用者（调用线程池的主线程）执行<br /> * DiscardOldestPolicy抛弃等待队列中最老的<br /> * DiscardPolicy抛弃当前任务</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="工作规则">工作规则</h4>
+<ol>
+  <li>如果curPoolSize &lt; corePoolSize，则创建新线程执行任务</li>
+  <li>如果curPoolSize &gt; corePoolSize，且等待队列未满，则进入等待队列</li>
+  <li>如果curPoolSize &gt; corePoolSize，且等待队列已满，且小于maximumPoolSize，则创建新线程执行任务</li>
+  <li>如果curPoolSize &gt; corePoolSize，且等待队列已满，且大于maximumPoolSize，则调用<strong>饱和策略</strong>来处理该任务</li>
+  <li>线程池里的每个线程执行完任务后不会立刻退出，而是会去检查下等待队列里是否还有线程任务需要执行，如果在keepAliveTime里等不到新的任务了，那么线程就会退出，直至baseline = corePoolSize条</li>
+</ol>
+
+<h4 id="线程池具体实现">线程池具体实现</h4>
+<ul>
+  <li>FixedThreadPool</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//可重用固定线程数的线程池，超出的线程会在队列中等待
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue&lt;Runnable&gt;());
+    }
+//其corePoolSize == maximumPoolSize，即不设置非核心线程
+//keepAliveTime为0L表示多余的线程会立刻终止
+</code></pre></div></div>
+
+<ul>
+  <li>CachedThreadPool</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//无穷大的线程池
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue&lt;Runnable&gt;());
+    }
+//corePoolSize是0，maximumPoolSize是Int的最大值，也就是说CachedThreadPool没有核心线程，全部都是非核心线程，并且没有上限
+//keepAliveTime是60秒，就是说空闲线程等待新任务60秒，超时则销毁
+</code></pre></div></div>
+
+<ul>
+  <li>SingleThreadExecutor</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//单个线程工作的线程池
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue&lt;Runnable&gt;()));
+    }
+//按入队顺序逐一进行任务
+</code></pre></div></div>
+
+<ul>
+  <li>ScheduledThreadPool</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//定时或者周期性运行任务的线程池
+public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
+        return new ScheduledThreadPoolExecutor(corePoolSize);
+    }
+
+public ScheduledThreadPoolExecutor(int corePoolSize) {
+        super(corePoolSize, Integer.MAX_VALUE,
+              DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
+              new DelayedWorkQueue());
+    }
+//等待队列DelayedWorkQueue是无界的，所以maximumPoolSize参数无效
+</code></pre></div></div>
+
+<hr />
+<h2 id="图">图</h2>
+<p>由顶点，边，权重和方向组成的一种数据结构。</p>
+
+<p><img src="https://user-images.githubusercontent.com/8369671/80777624-67252980-8b98-11ea-9e27-ee3b129452ef.png" alt="image" /></p>
+<blockquote>
+  <p>带权重的有向图（A-&gt;B=10, B-&gt;A=20），无向图就是<code class="language-plaintext highlighter-rouge">A &lt;-&gt; B</code></p>
+</blockquote>
+
+<h4 id="图的存储方式">图的存储方式</h4>
+<ol>
+  <li>邻接矩阵（二维数组）
+ <img src="https://user-images.githubusercontent.com/8369671/80777638-7015fb00-8b98-11ea-8da2-7d7de1b6e0e6.png" alt="image" />
+    <blockquote>
+      <p>无向图，是对称矩阵，即grid(i)(j) = grid(j)(i)</p>
+    </blockquote>
+
+    <p><img src="https://user-images.githubusercontent.com/8369671/80777691-a05d9980-8b98-11ea-9937-3abca970030e.png" alt="image" /></p>
+    <blockquote>
+      <p>有向图</p>
+    </blockquote>
+
+    <ul>
+      <li>优点：简单直观</li>
+      <li>缺点：空间复杂度太高，O(n^2)，n是顶点数</li>
+    </ul>
+  </li>
+  <li>邻接表
+ <img src="https://user-images.githubusercontent.com/8369671/80777705-a8b5d480-8b98-11ea-97f8-4eeb5bc0c400.png" alt="image" />
+    <blockquote>
+      <p>类似hashmap的entry开链表，保存每个顶点能够到达的节点</p>
+    </blockquote>
+
+    <ul>
+      <li>优点：空间O(n)</li>
+      <li>缺点：找从该点<code class="language-plaintext highlighter-rouge">出发</code>是O(n)，但是找<code class="language-plaintext highlighter-rouge">到达</code>该点就是O(n^2)</li>
+    </ul>
+  </li>
+  <li>逆邻接表
+ <img src="https://user-images.githubusercontent.com/8369671/80777711-b53a2d00-8b98-11ea-8d98-ea1820e1903d.png" alt="image" />
+    <blockquote>
+      <p>保存能够到达该顶点的节点</p>
+    </blockquote>
+  </li>
+  <li>十字链表
+ <img src="https://user-images.githubusercontent.com/8369671/80777722-bb300e00-8b98-11ea-9fce-8c96dbf35873.png" alt="image" />
+    <blockquote>
+      <p>合并后再压缩</p>
+    </blockquote>
+  </li>
+  <li><a href="https://blog.csdn.net/bible_reader/article/details/71250117">邻接多重表</a>  <br />
+ <img src="https://user-images.githubusercontent.com/8369671/80777729-c2571c00-8b98-11ea-94fa-61f22b04d3f9.png" alt="image" />
+    <blockquote>
+      <p>无向图</p>
+    </blockquote>
+
+    <p><img src="https://user-images.githubusercontent.com/8369671/80777736-c7b46680-8b98-11ea-96f6-1633963ac19d.png" alt="image" /></p>
+    <blockquote>
+      <p>邻接表，idx=0表示顶点A</p>
+    </blockquote>
+
+    <p><img src="https://user-images.githubusercontent.com/8369671/80777745-d0a53800-8b98-11ea-921a-3dccacf4d774.png" alt="image" /></p>
+    <blockquote>
+      <p>邻接多重表</p>
+    </blockquote>
+  </li>
+</ol>
+
+<h4 id="常用算法">常用算法</h4>
+<p>bfs and dfs</p>
+
+<ol>
+  <li>单源最短路径
+    <ul>
+      <li>单个点到任意点到最短路径</li>
+      <li><a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra</a>，权重不能为负
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    def networkDelayTimeAC2(times: Array[Array[Int]], N: Int, K: Int): Int = {
+      import scala.collection.mutable
+      import scala.collection.mutable.ListBuffer
+        
+      val graph = Array.fill(N)(ListBuffer[(Int, Double)]()) // 节点-&gt;list[邻近节点 -&gt; 距离]
+        
+      // base
+      for (p &lt;- times) graph(p(0) - 1).append((p(1) - 1, p(2)))
+      val pq = mutable.PriorityQueue[(Int, Double)]()(Ordering.by(e =&gt; -e._2)) // sort by distance in asc
+      val visited = mutable.Set[Int]()
+      pq.enqueue((K - 1, 0)) // 自己到自己
+        
+      // loop, bfs
+      val dist = Array.fill(N)(0d) // 固定idx=K-1的点到其他所有点的距离
+      while (pq.nonEmpty) {
+        val (idx, d) = pq.dequeue()
+        if (!visited.contains(idx)) {
+          dist(idx) = d // pq是asc,所以是小的先出,那么就是idx的时候,最小是d,之后因为visited,idx不会再被更新了
+          visited.add(idx)
+          for ((idx2, d2) &lt;- graph(idx)) {
+            if (!visited.contains(idx2)) pq.enqueue((idx2, d + d2)) // dist距离是A-&gt;B. 现在发现B有邻近节点C,所以A-&gt;B-&gt;C=d+d2
+          }
+        }
+      }
+        
+      // res
+      println(dist.toList)
+      var res = Double.MinValue
+      for (e &lt;- dist) res = math.max(res, e)
+      if (visited.size == N) res.toInt else -1 // 都遍历到了,所以visited满的
+    }
+</code></pre></div>        </div>
+      </li>
+      <li><a href="https://zh.wikipedia.org/wiki/%E8%B4%9D%E5%B0%94%E6%9B%BC-%E7%A6%8F%E7%89%B9%E7%AE%97%E6%B3%95">Bellman-Ford</a>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    def networkDelayTimeAC(times: Array[Array[Int]], N: Int, K: Int): Int = {
+      val dist = Array.fill(N)(Double.MaxValue)
+        
+      // base
+      dist(K - 1) = 0 // 自己到自己,idx=K-1
+        
+      // loop
+      for (_ &lt;- 1 until N)
+        for (p &lt;- times) {
+          val (u, v, w) = (p(0) - 1, p(1) - 1, p(2))
+          dist(v) = math.min(dist(v), dist(u) + w)
+        }
+        
+      // res
+      println(dist.toList)
+      var res = Double.MinValue
+      for (e &lt;- dist) {
+        if (e &gt;= Double.MaxValue) return -1
+        res = math.max(res, e)
+      }
+      res.toInt
+    }
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>多源最短路
+    <ul>
+      <li>任意点到任意点到最短路径</li>
+      <li><a href="https://zh.wikipedia.org/wiki/Floyd-Warshall%E7%AE%97%E6%B3%95">Floyd-Warshall</a>
+        <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    def networkDelayTime(times: Array[Array[Int]], N: Int, K: Int): Int = {
+      val dist = Array.fill(N, N)(Double.MaxValue)
+        
+      // base
+      for (i &lt;- 0 until N) dist(i)(i) = 0 // 自己到自己
+      for (p &lt;- times) dist(p(0) - 1)(p(1) - 1) = p(2) // u-&gt;v的距离, -1是因为label从1开始
+        
+      // loop
+      for (k &lt;- 0 until N)
+        for (i &lt;- 0 until N)
+          for (j &lt;- 0 until N) {
+            dist(i)(j) = math.min(dist(i)(j), dist(i)(k) + dist(k)(j)) // 这里会出现max+max=Infinity的情况,但是取了min,所以最后还是max
+          }
+        
+      // res
+      dist.foreach(e =&gt; println(e.toList))
+      var res = Double.MinValue
+      for (i &lt;- 0 until N) {
+        val cur = dist(K - 1)(i) // 固定idx=K-1的点到其他所有点的距离
+        if (cur &gt;= Double.MaxValue) return -1
+        res = math.max(res, cur)
+      }
+      res.toInt
+    }
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<blockquote>
+  <p>题外话：今天约谈了，集火啊。</p>
+</blockquote>
+
+<hr />
+</div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+<a class="a2a_button_facebook"></a>
+<a class="a2a_button_twitter"></a>
+<a class="a2a_button_google_plus"></a>
+<a class="a2a_button_linkedin"></a>
+</div>
+<script async src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><span>Last updated
+      <time itemprop="dateModified" datetime="2019-05-08T18:00:00+08:00">May 08, 2019</time>
+    </span><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2018/02/04/algorithm.html">算法漫画阅读摘要</a></div><div class="next"><span>NEXT</span><a href="/2018/02/09/architect.html">什么是架构师？</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet --></div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="harry"><meta itemprop="url" content="/"><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"><li title="Send me an Email.">
+      <a class="button button--circle mail-button" itemprop="email" href="mailto:harry_c2016@163.com" target="_blank">
+        <i class="fas fa-envelope"></i>
+      </a><li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/HaoXiansen" target="_blank">
+          <div class="icon"><svg fill="#000000" width="24px" height="24px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z" />
+</svg>
+</div>
+        </a>
+      </li></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>harry’s blog © 2020
+      </div>
+    </div>
+  </div>
+</footer></div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA ? initData(window.TEXT_SEARCH_DATA) : {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  function initData(data) {
+    var _data = [], i, j, key, keys, cur;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i], _data[key] = [];
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        cur.title = window.decodeUrl(cur.title);
+        cur.url = window.decodeUrl(cur.url);
+        _data[key].push(cur);
+      }
+    }
+    return _data;
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script></div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script>
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>

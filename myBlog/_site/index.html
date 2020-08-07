@@ -1,0 +1,1771 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>Home - harry’s blog</title>
+
+<meta name="description" content="harry's technology blog 
+">
+<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/browserconfig.xml">
+<meta name="theme-color" content="#ffffff"><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets --><script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.decodeUrl = function(str) {
+    return str ? decodeURIComponent(str.replace(/\+/g, '%20')) : '';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.4',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn1.lncld.net/static/js/3.4.1/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script></head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root">
+<div class="page__main js-page-main page__viewport cell cell--auto">
+
+      <div class="page__main-inner">
+<div class="page__header d-print-none">
+<header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand">
+<?xml version="1.0" standalone="no"?>
+
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="473.000000pt" height="473.000000pt" viewbox="0 0 473.000000 473.000000" preserveaspectratio="xMidYMid meet">
+<metadata>
+Created by potrace 1.11, written by Peter Selinger 2001-2013
+</metadata>
+<g transform="translate(0.000000,473.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+<path d="M0 2370 l0 -1730 2365 0 2365 0 0 1730 0 1730 -2365 0 -2365 0 0
+-1730z m2720 995 c0 -97 -107 -215 -195 -215 -21 0 -25 5 -25 28 0 27 38 114
+62 142 29 34 107 77 146 79 7 1 12 -12 12 -34z m-279 -250 l71 -24 71 24 c122
+43 239 25 306 -49 l24 -26 -38 -37 c-114 -114 -94 -285 45 -374 l25 -16 -40
+-79 c-24 -47 -62 -102 -95 -136 -52 -54 -59 -58 -103 -58 -25 0 -69 9 -97 20
+-66 26 -91 25 -179 -5 -91 -31 -121 -25 -178 31 -118 119 -196 329 -179 484 9
+75 57 171 106 210 80 64 152 73 261 35z m-689 -1689 c-1 -91 -3 -103 -21 -91
+-12 7 -15 167 -4 179 18 18 25 -7 25 -88z m158 75 c0 -29 -11 -51 -25 -51 -12
+0 -12 16 1 58 6 19 24 14 24 -7z m348 -14 c3 -23 7 -26 31 -21 43 9 63 -17 59
+-79 -4 -70 -26 -74 -30 -5 -3 49 -5 53 -28 53 -22 0 -26 -5 -30 -48 -9 -82
+-25 -58 -28 41 -2 73 0 93 10 90 7 -3 14 -16 16 -31z m627 24 c7 -12 -12 -24
+-25 -16 -11 7 -4 25 10 25 5 0 11 -4 15 -9z m-1065 -26 c0 -8 7 -15 15 -15 8
+0 15 -7 15 -15 0 -8 -7 -15 -15 -15 -22 0 -20 -66 3 -79 27 -15 1 -37 -27 -22
+-16 9 -21 21 -21 56 0 24 -4 46 -9 49 -12 8 11 56 27 56 6 0 12 -7 12 -15z
+m993 -5 c19 -23 22 -40 7 -40 -5 0 -10 -18 -10 -40 0 -22 5 -40 10 -40 6 0 10
+-7 10 -15 0 -8 -6 -15 -12 -15 -26 0 -39 18 -40 56 0 21 -5 45 -11 52 -7 9 -6
+20 3 37 16 30 21 31 43 5z m-803 -25 c18 -21 3 -32 -22 -16 -15 9 -23 10 -32
+1 -13 -13 8 -30 36 -30 10 0 22 -9 28 -20 8 -15 6 -24 -10 -40 -11 -11 -26
+-20 -32 -20 -28 0 -57 13 -62 27 -5 12 1 14 35 8 32 -6 40 -4 37 6 -2 7 -18
+17 -35 21 -38 10 -46 29 -27 57 18 25 66 28 84 6z m180 0 c18 -21 3 -32 -22
+-16 -13 8 -24 9 -30 3 -15 -15 0 -32 27 -32 15 0 29 -9 36 -22 10 -18 8 -24
+-11 -40 -29 -23 -52 -23 -81 2 l-24 21 44 -7 c33 -5 42 -3 39 7 -2 7 -19 17
+-36 21 -54 14 -39 78 19 78 15 0 32 -7 39 -15z m280 5 c46 -25 29 -112 -25
+-126 -42 -10 -75 19 -75 66 0 57 50 87 100 60z m76 -27 c10 -59 17 -62 29 -13
+15 63 39 64 55 3 10 -40 14 -45 20 -28 5 11 9 30 9 42 1 12 6 25 11 28 23 14
+26 -8 10 -67 -22 -81 -43 -88 -62 -21 l-14 48 -15 -45 c-21 -67 -42 -63 -62 9
+-21 74 -21 81 -2 81 8 0 17 -14 21 -37z m337 25 c2 -7 4 -38 3 -68 -1 -42 -5
+-55 -16 -55 -11 0 -16 14 -18 54 -2 29 -1 60 2 67 7 17 22 18 29 2z m57 2 c0
+-6 8 -5 20 2 16 10 24 10 41 0 16 -10 24 -10 35 -1 7 6 24 9 38 5 19 -5 24
+-14 29 -52 2 -25 2 -54 0 -65 -10 -37 -28 -13 -31 40 -3 47 -5 52 -25 49 -19
+-3 -22 -10 -25 -56 -4 -70 -26 -65 -30 6 -3 43 -6 52 -21 52 -23 0 -31 -19
+-31 -72 0 -27 -4 -38 -12 -36 -8 3 -14 29 -16 71 -2 55 0 67 13 67 8 0 15 -5
+15 -10z m291 -11 c32 -32 21 -53 -29 -57 -28 -2 -42 -7 -39 -15 2 -7 20 -11
+41 -10 42 3 47 -12 10 -29 -52 -24 -103 33 -82 92 17 45 64 54 99 19z m65 -90
+c10 -17 -13 -36 -27 -22 -12 12 -4 33 11 33 5 0 12 -5 16 -11z m-1888 -336 c2
+-13 -1 -23 -6 -23 -5 0 -9 8 -8 17 0 10 -7 19 -16 21 -13 2 -18 -3 -18 -17 0
+-12 6 -21 13 -21 8 0 9 -3 1 -8 -6 -4 -14 -14 -17 -22 -3 -8 -6 7 -6 33 -1 47
+0 48 27 45 19 -2 28 -9 30 -25z m29 5 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3 -3
+4 -12 1 -19z m748 5 c-2 -10 -4 -31 -6 -48 -2 -30 -2 -30 -8 5 -4 19 -5 41 -3
+48 6 19 21 14 17 -5z m396 -28 c9 -25 13 -45 8 -45 -5 0 -9 7 -9 15 0 21 -37
+19 -50 -2 -10 -16 -11 -16 -5 2 20 57 28 75 34 75 3 0 13 -20 22 -45z m186
+-22 c-2 -16 -4 -5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m510 0 c-2 -16 -4
+-5 -4 22 0 28 2 40 4 28 2 -13 2 -35 0 -50z m347 20 c-4 -16 -2 -29 7 -35 12
+-8 11 -9 -1 -5 -9 2 -16 18 -18 41 -2 25 0 36 7 31 6 -3 8 -17 5 -32z m-2116
+4 c2 -11 -3 -17 -15 -16 -11 0 -13 3 -5 6 10 4 10 8 0 21 -11 13 -11 14 2 10
+8 -2 16 -12 18 -21z m56 17 c10 -4 16 -18 16 -35 0 -24 -4 -29 -25 -29 -30 0
+-35 29 -5 37 11 3 17 10 14 15 -3 5 -13 7 -21 4 -8 -3 -11 -1 -8 4 7 12 8 12
+29 4z m76 -5 c12 -8 10 -9 -7 -4 -29 8 -31 -11 -2 -20 27 -9 19 -29 -12 -32
+-14 -1 -17 0 -6 3 21 7 23 24 2 24 -15 0 -21 21 -8 33 9 9 15 9 33 -4z m68 -1
+c19 -19 14 -28 -13 -28 -28 0 -34 -16 -7 -23 13 -3 12 -4 -3 -3 -35 2 -30 65
+6 66 3 0 10 -5 17 -12z m59 -25 c-3 -10 -5 -4 -5 12 0 17 2 24 5 18 2 -7 2
+-21 0 -30z m73 22 c19 -23 8 -50 -20 -50 -16 0 -26 6 -28 18 -4 18 14 47 28
+47 4 0 13 -7 20 -15z m107 -26 c1 -24 0 -26 -4 -9 -3 14 -10 31 -16 39 -10 11
+-9 13 3 9 9 -3 16 -18 17 -39z m78 -19 c8 0 16 12 18 28 4 25 4 25 6 -5 1 -29
+-2 -33 -24 -33 -23 0 -25 4 -23 38 1 36 1 36 5 5 3 -19 10 -33 18 -33z m89 51
+c4 -5 -3 -7 -14 -4 -26 7 -26 -14 0 -22 11 -3 20 -11 20 -16 0 -15 -30 -23
+-42 -11 -8 8 -4 9 13 6 l24 -6 -24 20 c-13 11 -21 24 -17 31 9 13 33 15 40 2z
+m141 -26 c0 -23 -5 -31 -22 -33 -26 -4 -41 31 -22 54 20 24 44 13 44 -21z m48
+28 c-7 -2 -14 -19 -14 -36 -1 -25 -3 -27 -6 -9 -6 30 3 52 19 51 10 0 10 -2 1
+-6z m72 -3 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10 3 6 11 10 16 10 6 0 7 -4
+4 -10z m95 -5 c9 -10 9 -15 1 -15 -6 0 -11 5 -11 11 0 23 -25 1 -31 -27 l-7
+-29 -1 32 c-1 27 8 39 30 42 4 1 12 -6 19 -14z m198 -24 c-2 -17 -10 -27 -23
+-30 -11 -2 -23 -8 -27 -15 -4 -6 -8 8 -8 32 0 23 4 42 9 42 5 0 7 -8 4 -19 -6
+-23 14 -38 30 -22 9 9 8 16 -1 31 -10 16 -9 18 4 13 9 -3 14 -15 12 -32z m72
+24 c16 -19 6 -45 -20 -52 -11 -3 -21 -10 -21 -17 -1 -6 -5 5 -8 24 -5 25 -3
+38 8 48 19 16 26 15 41 -3z m100 -5 c9 -17 8 -20 -12 -20 -18 0 -20 2 -8 10 8
+5 11 12 8 15 -11 11 -28 -5 -28 -25 0 -10 8 -20 18 -23 13 -3 12 -4 -3 -3 -36
+2 -29 65 7 66 4 0 12 -9 18 -20z m95 10 c3 -5 0 -7 -8 -4 -8 3 -18 1 -21 -5
+-4 -5 3 -12 14 -16 11 -3 20 -13 20 -21 0 -15 -35 -20 -44 -5 -4 5 4 7 16 4
+l23 -5 -24 20 c-13 11 -21 24 -17 31 9 14 33 14 41 1z m75 -5 c16 -19 3 -55
+-20 -55 -10 0 -21 -6 -23 -12 -3 -7 -6 6 -6 29 -1 37 6 49 30 52 4 1 12 -6 19
+-14z m68 3 c19 -19 14 -28 -13 -28 -14 0 -25 -5 -25 -11 0 -7 11 -9 26 -6 16
+3 22 1 16 -5 -17 -17 -47 -4 -50 21 -5 34 24 51 46 29z m80 -8 c5 -13 3 -13
+-12 -1 -21 17 -42 1 -32 -24 4 -12 13 -15 28 -12 14 4 18 3 11 -4 -16 -16 -47
+-7 -51 14 -8 38 44 63 56 27z m67 10 c-3 -5 -11 -10 -16 -10 -6 0 -7 5 -4 10
+3 6 11 10 16 10 6 0 7 -4 4 -10z m154 -3 c12 -16 5 -27 -18 -27 -14 0 -14 2
+-1 10 8 5 11 12 8 15 -11 11 -28 -5 -28 -27 0 -15 5 -19 20 -15 11 3 20 1 20
+-5 0 -5 -10 -8 -22 -6 -26 3 -35 32 -18 53 15 19 24 19 39 2z m74 -2 c-3 -9
+-8 -14 -10 -11 -3 3 -2 9 2 15 9 16 15 13 8 -4z m67 -11 c0 -8 -9 -14 -20 -14
+-11 0 -20 -5 -20 -11 0 -6 9 -9 20 -6 11 3 18 1 14 -4 -8 -13 -41 -11 -47 4
+-2 6 -1 21 4 32 4 11 8 14 8 8 1 -7 8 -13 17 -13 14 0 14 3 4 15 -11 13 -10
+14 4 9 9 -3 16 -12 16 -20z m66 -10 l1 -29 -4 28 c-5 35 -26 30 -34 -9 l-7
+-29 -1 32 c-1 30 12 44 34 39 6 -1 10 -16 11 -32z m-2095 -21 c10 3 17 1 13
+-4 -3 -5 -13 -9 -23 -9 -20 0 -31 26 -22 50 4 9 7 4 9 -13 3 -23 8 -28 23 -24z
+m419 37 c0 -5 -5 -10 -11 -10 -5 0 -7 5 -4 10 3 6 8 10 11 10 2 0 4 -4 4 -10z
+m490 -20 c0 -25 -4 -30 -25 -30 -17 0 -25 5 -24 18 0 10 3 12 6 5 6 -15 33
+-17 33 -3 0 6 -5 10 -10 10 -6 0 -5 6 2 15 18 19 18 19 18 -15z m777 -17 c-3
+-10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z m73 16 c0 -26 -3 -30 -22
+-27 -29 4 -35 28 -9 35 12 3 21 9 21 14 0 5 2 9 5 9 3 0 5 -14 5 -31z m181 -3
+c5 3 9 1 9 -5 0 -5 -4 -13 -10 -16 -5 -3 -10 -4 -10 -1 0 2 -2 10 -3 18 -2 7
+-2 10 0 5 3 -4 9 -5 14 -1z m-1994 -18 c-3 -8 -6 -5 -6 6 -1 11 2 17 5 13 3
+-3 4 -12 1 -19z m440 7 c0 -8 -4 -15 -9 -15 -4 0 -8 7 -8 15 0 8 4 15 8 15 5
+0 9 -7 9 -15z m33 6 c0 -6 -4 -12 -8 -15 -5 -3 -9 1 -9 9 0 8 4 15 9 15 4 0 8
+-4 8 -9z m-148 -43 c-8 -8 -9 -4 -5 13 4 13 8 18 11 10 2 -7 -1 -18 -6 -23z
+m-172 -98 c24 0 36 -18 20 -33 -9 -9 -11 -9 -8 2 2 8 -5 16 -14 19 -12 2 -18
+-5 -21 -25 -2 -15 -4 -5 -4 22 -1 28 1 42 4 33 2 -10 13 -18 23 -18z m205 13
+c5 -15 4 -16 -6 -5 -18 17 -39 15 -39 -3 0 -8 6 -15 14 -15 23 0 41 -29 27
+-43 -10 -9 -11 -9 -6 4 4 10 -3 19 -20 27 -36 17 -33 52 6 52 9 0 20 -8 24
+-17z m663 10 c-10 -2 -19 -12 -19 -21 -1 -16 -2 -16 -6 0 -2 9 -12 19 -21 21
+-9 3 1 5 23 5 22 0 32 -2 23 -5z m632 -8 c14 -17 0 -21 -17 -4 -18 18 -43 3
+-43 -24 0 -34 25 -54 45 -37 9 7 18 10 21 7 3 -3 -4 -10 -15 -17 -30 -16 -61
+3 -61 38 0 47 43 70 70 37z m-1556 -45 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4
+81 3 -3 7 -25 8 -48z m300 0 c2 -23 0 -38 -4 -33 -13 13 -16 93 -4 81 3 -3 7
+-25 8 -48z m302 -26 c-3 -8 -11 -14 -18 -14 -9 0 -9 3 0 12 7 7 13 28 14 48
+l1 35 4 -33 c3 -19 2 -40 -1 -48z m109 66 c-4 -6 5 -10 19 -10 14 0 26 -2 26
+-4 0 -2 3 -13 6 -23 5 -17 5 -17 -6 0 -17 27 -43 22 -38 -8 3 -14 2 -25 -2
+-25 -9 0 -19 68 -11 75 8 9 12 5 6 -5z m276 -10 c15 0 19 -7 18 -32 -2 -31 -2
+-31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -2 -17 -4 -11 -5 17 0 25
+2 39 5 33 2 -7 13 -13 24 -13z m871 -23 c-5 -20 -6 -20 -12 -1 -4 10 -5 25 -2
+32 8 22 21 -6 14 -31z m-1931 -9 l-5 -33 -6 30 c-7 32 -3 48 9 41 4 -3 5 -20
+2 -38z m1260 29 c-1 -4 -1 -14 -1 -22 0 -26 -15 -16 -16 10 -1 15 2 25 8 23 5
+-2 9 -7 9 -11z m-1300 -4 c6 -34 5 -53 -2 -53 -5 0 -9 11 -9 24 0 15 -7 26
+-17 29 -14 4 -12 5 5 6 12 0 23 -2 23 -6z m265 -4 c3 -6 0 -15 -7 -20 -23 -15
+-34 -10 -13 6 17 13 18 14 1 15 -24 0 -32 -26 -16 -48 13 -15 12 -16 -3 -3
+-18 14 -24 42 -11 54 10 11 41 8 49 -4z m220 -7 c1 -7 0 -8 -3 -2 -2 5 -11 10
+-19 10 -17 0 -19 -31 -2 -48 7 -7 9 -12 6 -12 -4 0 -14 7 -22 16 -12 12 -13
+20 -5 35 11 22 41 22 45 1z m32 -7 c-3 -3 -9 2 -12 12 -6 14 -5 15 5 6 7 -7
+10 -15 7 -18z m31 -9 c-12 -26 -29 -35 -29 -16 0 6 4 10 9 10 5 0 13 9 16 21
+4 11 9 18 11 16 3 -2 -1 -16 -7 -31z m76 17 c5 -15 4 -16 -6 -5 -22 21 -42 15
+-37 -13 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m173 -9 c2
+-11 -5 -27 -15 -34 -15 -12 -16 -12 -5 0 19 21 15 52 -5 48 -11 -2 -18 -12
+-17 -25 0 -12 -3 -20 -8 -17 -10 6 -11 38 -1 48 14 14 48 1 51 -20z m142 17
+c0 -5 -10 -7 -22 -3 -14 3 -19 2 -14 -6 4 -7 14 -12 22 -12 8 0 14 -7 14 -16
+0 -14 -2 -14 -15 -1 -8 9 -20 17 -27 19 -6 2 -8 10 -4 16 8 14 46 16 46 3z
+m254 -6 c3 -8 1 -15 -4 -15 -6 0 -10 5 -10 10 0 6 -7 10 -16 10 -12 0 -15 -7
+-12 -25 3 -13 1 -22 -3 -19 -11 6 -12 38 -2 47 12 12 41 7 47 -8z m66 -15 c0
+-16 -4 -30 -9 -30 -4 0 -6 11 -4 24 4 17 0 25 -14 29 -15 4 -14 5 5 6 18 1 22
+-4 22 -29z m115 13 c5 -15 4 -16 -6 -5 -22 21 -42 15 -37 -13 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 13 13 41 7 48 -10z m39 9 c-7 -4 -14 -18 -17 -32 -4
+-21 -4 -20 -6 8 -1 24 3 32 17 32 11 0 13 -3 6 -8z m66 -22 c0 -16 -2 -30 -4
+-30 -2 0 -6 14 -8 30 -3 17 -1 30 4 30 4 0 8 -13 8 -30z m66 -3 c1 -25 1 -25
+-3 -2 -6 33 -33 33 -33 0 0 -14 -3 -25 -7 -25 -5 0 -8 14 -8 30 0 27 3 30 25
+28 20 -2 25 -9 26 -31z m156 3 c3 -16 1 -30 -4 -30 -4 0 -8 14 -8 30 0 17 2
+30 4 30 2 0 6 -13 8 -30z m48 0 c0 -16 -4 -30 -8 -30 -5 0 -7 14 -4 30 2 17 6
+30 8 30 2 0 4 -13 4 -30z m70 20 c0 -5 -7 -7 -16 -3 -9 3 -20 0 -25 -8 -7 -11
+-9 -11 -9 4 0 12 8 17 25 17 14 0 25 -4 25 -10z m78 -10 c4 -12 2 -13 -9 -2
+-31 29 -57 -6 -26 -37 10 -10 9 -11 -5 -6 -18 7 -25 45 -11 59 12 11 46 2 51
+-14z m34 8 c-5 -7 -12 -22 -15 -33 -3 -13 -5 -9 -6 13 -1 23 3 32 15 32 12 0
+14 -3 6 -12z m75 -35 c-3 -10 -5 -2 -5 17 0 19 2 27 5 18 2 -10 2 -26 0 -35z
+m72 15 c-2 -31 -2 -31 -6 -5 -2 15 -10 27 -18 27 -8 0 -16 -12 -18 -27 -4 -26
+-4 -26 -6 5 -1 28 2 32 24 32 22 0 25 -4 24 -32z m76 11 c5 -14 1 -27 -11 -38
+-17 -15 -17 -15 -5 1 16 21 8 48 -15 48 -12 0 -15 -7 -12 -25 3 -13 1 -22 -3
+-19 -11 6 -12 38 -2 47 14 14 42 6 48 -14z m-1138 -31 c-3 -7 -5 -2 -5 12 0
+14 2 19 5 13 2 -7 2 -19 0 -25z m-1045 15 c-10 -4 -10 -8 -1 -19 8 -9 8 -14 1
+-14 -15 0 -25 18 -17 30 3 6 12 10 18 9 8 0 8 -2 -1 -6z m1254 -12 c0 -11 -4
+-17 -8 -15 -4 3 -8 12 -8 20 0 8 4 14 8 14 4 0 8 -9 8 -19z m-880 -19 c-4 -3
+-14 2 -24 12 -16 18 -16 18 6 6 13 -6 21 -14 18 -18z m1461 16 c3 6 10 12 16
+12 7 0 5 -6 -4 -15 -16 -16 -49 -11 -49 7 0 6 7 4 17 -3 13 -11 17 -11 20 -1z
+m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
+-10z"></path>
+<path d="M2404 1426 c-11 -29 1 -61 24 -64 24 -4 43 28 34 60 -5 22 -50 25
+-58 4z"></path>
+<path d="M3160 1431 c0 -6 5 -13 10 -16 14 -9 52 4 45 16 -8 12 -55 12 -55 0z"></path>
+<path d="M2550 1016 c0 -9 5 -16 10 -16 6 0 10 4 10 9 0 6 -4 13 -10 16 -5 3
+-10 -1 -10 -9z"></path>
+<path d="M1540 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"></path>
+<path d="M1675 1010 c-3 -5 1 -10 9 -10 9 0 16 5 16 10 0 6 -4 10 -9 10 -6 0
+-13 -4 -16 -10z"></path>
+<path d="M1803 1004 c-8 -21 13 -42 28 -27 13 13 5 43 -11 43 -6 0 -13 -7 -17
+-16z"></path>
+<path d="M2214 1006 c-7 -19 3 -36 22 -36 10 0 14 8 12 22 -4 26 -26 36 -34
+14z"></path>
+<path d="M2707 1013 c-13 -12 -7 -43 7 -43 19 0 28 14 20 34 -7 17 -16 20 -27
+9z"></path>
+<path d="M2977 1014 c-15 -15 -7 -45 11 -42 9 2 17 12 17 22 0 20 -16 31 -28
+20z"></path>
+<path d="M3045 1010 c-3 -5 3 -10 15 -10 12 0 18 5 15 10 -3 6 -10 10 -15 10
+-5 0 -12 -4 -15 -10z"></path>
+<path d="M3210 980 c0 -5 7 -10 15 -10 8 0 15 5 15 10 0 6 -7 10 -15 10 -8 0
+-15 -4 -15 -10z"></path>
+</g>
+</svg>
+<a title="harry's technology blog 
+" href="/">harry’s blog</a>
+</div>
+<button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button>
+</div>
+<nav class="navigation">
+        <ul>
+<li class="navigation__item navigation__item--active"><a href="/">主页</a></li>
+<li class="navigation__item"><a href="/_ios/">iOS</a></li>
+<li class="navigation__item"><a href="/_flutter/">Flutter</a></li>
+<li class="navigation__item"><a href="/archive.html">Archive</a></li>
+<li class="navigation__item"><a href="/_doc/">文档</a></li>
+<li class="navigation__item"><a href="/about.html">About</a></li>
+<li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li>
+</ul>
+      </nav>
+</div>
+  </header>
+</div>
+<div class="page__content"><div class="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"></div>
+
+              <div class="col-main cell cell--auto">
+<!-- start custom main top snippet -->
+
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home">
+<meta itemprop="author" content="harry">
+<div class="js-article-content">
+<div class="layout--articles">
+<div class="article-list items items--divided">
+<article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/07/27/00_scylladb.html"><h2 itemprop="headline" class="item__header">scylladb关注点</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+最近看到scylladb的与其他db的比较文档比较全面, 其中与cassandra对比更是超出一截, 所以过来看看,
+
+其是基于C++ seastar9,10重写的column-base nosql, 实现了CAP中的AP,
+
+  masterless, hash ring是P
+  replication_factor和WAL commit log是A, 因此at least one, 所以不能做到C
+
+
+
+
+  CAP theorem
+
+
+Version
+
+  scylladb, 4.1.2
+  scylla-monitoring, 3.4.2
+
+
+Architect
+read and write flow
+
+
+  read and write flow, cred...</div>
+<p><a href="/2020/07/27/00_scylladb.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=scylladb">scylladb</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jul 27, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="112">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-07-27T00:00:00+08:00">
+    <meta itemprop="keywords" content="scylladb">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/07/20/00_stock_buy_sell_point.html"><h2 itemprop="headline" class="item__header">stock buy and sell point</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+将cmoney1里面的技术指标内容整理一下, 使之适合自己观看习惯,
+
+  短线用小时线粒度, 长线用日线粒度
+
+
+线
+注意用线是小时线还是日线,
+
+MA
+短线投资人可用5MA + 20MA 看多空走势,
+
+
+  收盘价 &gt; 5MA &gt; 20MA: 多头市场
+    
+      通常表示短线呈现上涨趋势的多头市场
+    
+  
+  收盘价 &lt; 5MA &lt; 20MA: 空头市场
+    
+      通常表示短线呈现下跌趋势的空头市场
+    
+  
+  5MA &lt; 收盘价 &lt; 20MA: 盘整市场
+    
+      通常表示短线呈现横向趋势的盘整市场
+    
+  
+
+
+用5MA, 20MA 操作的经验法则,
+
+  当股价跌...</div>
+<p><a href="/2020/07/20/00_stock_buy_sell_point.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=stock">stock</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jul 20, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="111">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-07-20T00:00:00+08:00">
+    <meta itemprop="keywords" content="stock">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/07/06/00_stock_screening.html"><h2 itemprop="headline" class="item__header">stock screening</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+今天总结一下最近学到的选股流程,
+
+介绍其中的指标和网站,
+
+Metric
+overview
+
+
+
+  https://www.gurufocus.com/stock/fb
+
+
+returns ration
+
+
+
+  https://www.cnbc.com/quotes/?symbol=fb
+
+
+price forecast
+
+
+
+  https://money.cnn.com/quote/forecast/forecast.html?symb=FB
+
+
+peer comparison
+
+
+
+  https://www.gurufocus.com/term/ev2ebitda/NAS:FB/EV-to-EBITDA/Facebook
+
+
+financial stat...</div>
+<p><a href="/2020/07/06/00_stock_screening.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=stock">stock</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jul 06, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-07-06T00:00:00+08:00">
+    <meta itemprop="keywords" content="stock">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/23/00_kafka.html"><h2 itemprop="headline" class="item__header">apache kafka关注点</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+上次的mq看了pulsar, 这次看看更多start的kafka, 因为组件相对少(bookeeper), 所以code相对更多(自处理), 另外总体感觉source code(v2.5.0)比较复杂. wrap了很多层.
+
+比如system.exit()和addShutdownHook()
+
+这是一个简单的draft, 也没有画图, 之后有机会再补充.
+
+
+
+  kafka消息生成流程, credit: flykinghg1
+
+
+startup
+args 
+new KafkaConfig
+  - val NumPartitions = 1
+  - val LogDir = "/tmp/kafka-logs"
+
+new KafkaServerStartable()
+k...</div>
+<p><a href="/2020/06/23/00_kafka.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu">
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=source-code">source-code</a>
+            </li>
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=kafka">kafka</a>
+            </li>
+</ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jun 23, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="109">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-06-23T00:00:00+08:00">
+    <meta itemprop="keywords" content="source-code,kafka">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/21/00_sg-japanese-buffet.html"><h2 itemprop="headline" class="item__header">eaten japanese buffets in singapore</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+感觉japan是一个比较clean, polite的地方, 当然其中的food也是很精致, 其中比较喜欢的是sashimi.
+
+虽然平时也会到japan restaurant单点ala carte, 但是还是没有到buffet吃的开, 特别是运动过后的下一餐.
+
+即便我的味蕾很差, 吃不出来细腻的味道, 但是鲜美应该还是可以taste到吧? 餐厅环境, 食物整洁也是很重要的参考.
+
+singapore buffet
+
+
+  
+    
+      restaurant
+      fee(S$)
+      remark
+    
+  
+  
+    
+      kiseki
+      22.8 ~ 39.8
+      5楼?
+    
+    
+      s...</div>
+<p><a href="/2020/06/21/00_sg-japanese-buffet.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=food">food</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jun 21, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="108">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-06-21T00:00:00+08:00">
+    <meta itemprop="keywords" content="food">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/14/00_pulsar.html"><h2 itemprop="headline" class="item__header">apache pulsar关注点</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+最近看到mq这块, kafka很火(star 16k), 而且融入了scala. 那么市场上其alternative apache pulsar表现如何? 所以clone(v2.5.2)下来粗略看了看, 下面是个人对其的关注点
+
+Architect
+cluster level
+一个pulsar cluster由以下组件构成, 
+
+
+  pulsar cluster, credit: apache
+
+
+
+  broker是中间层
+  zk是服务发现, 选主和集中配置
+  bookKeeper是持久化层
+    
+      quorum replica机制, broker通过BK client并发发送写操作到N个bookies(副本), 然后等待相关bookies返回q...</div>
+<p><a href="/2020/06/14/00_pulsar.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu">
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=source-code">source-code</a>
+            </li>
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=pulsar">pulsar</a>
+            </li>
+</ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jun 14, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-06-14T00:00:00+08:00">
+    <meta itemprop="keywords" content="source-code,pulsar">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/09/00_stock.html"><h2 itemprop="headline" class="item__header">stock learning</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+月初时, 看到新加坡这边的正常利息实在太低了(75K SGD本金一年是37.5 SGD利息, 0.05%), 即便达标one interest(每个月至少消费500 SGD)利率也即3.68%(而且本金上限是75K, 多出的都只是按照base interest来算).
+
+
+
+  base interest only
+
+
+
+
+  base plus one interest
+
+
+
+
+  larger deposits
+
+
+如果在国内, 由于top互联网公司都有互联网金融牌照, 可以转移到他们的基金产品进行简单投资. 这样至少比活期在银行有利, 而且灵活性和流动性没有受到太大限制.
+
+而年初经历了COVID-19 pandemic, trade war, HK natio...</div>
+<p><a href="/2020/06/09/00_stock.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=stock">stock</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jun 09, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="106">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-06-09T00:00:00+08:00">
+    <meta itemprop="keywords" content="stock">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/07/00_piano.html"><h2 itemprop="headline" class="item__header">piano learning</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+琴来了, 哈哈.
+
+偶然random到一首钢琴曲2, 看着视频发呆了, 听着旋律也发呆了. 所以试着让自己也学一学, 希望有朝一日我也能简单连续弹出一些喜欢的曲子.
+
+认识键盘
+88个键 = 52个白键 + 36个黑键, 一共分为7个区(octaves),
+
+
+
+  分区(C1-C7)
+
+
+认识五线谱
+主要记录着,
+
+  谱号clef
+    
+      高音谱号treble
+  
+        
+          EGBDF(Every Great Band Draws Fans), FACE
+        
+      
+      低音谱号bass
+  
+        
+          GBDFA(Good Boy Does Fine Always...</div>
+<p><a href="/2020/06/07/00_piano.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=piano">piano</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jun 07, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="105">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-06-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="piano">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/05/28/00_book-recommender.html"><h2 itemprop="headline" class="item__header">A simple book recommender</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+最近起点合同问题纷纷扰扰, 与此同时在知乎上看到别人推书的post, 其中推书君作者回答了一波, 然后下面有网友提出一些建议, 当然还有其他网友基于ta的见解来推荐.
+
+在大数据时代, 信息爆炸, 我们获取信息的渠道主要集中于主动搜索(类似Google)和被动推荐(类似AD).
+
+想着最近WFH, 看看如果自己来实现一个book/novel的推荐系统, 会是怎样的一个过程. 下面记录一下本次探索.
+
+素材准备
+关于推荐, 记得刚刚毕业的时候看过一点协同过滤, 主要是两大类, 一类是基于人, 一类是基于物,
+
+  基于人, 甲乙两人, 现在已知甲喜欢物品A和B, 而乙喜欢物品A, 由此可以得出, 乙大概率会喜欢物品B(similar with甲, 可能这里物品样本只有2...</div>
+<p><a href="/2020/05/28/00_book-recommender.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu">
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=architect">architect</a>
+            </li>
+<li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=recommender-systems">recommender-systems</a>
+            </li>
+</ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>May 28, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="104">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-05-28T00:00:00+08:00">
+    <meta itemprop="keywords" content="architect,recommender-systems">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/05/02/00_big-data-one-stack.html"><h2 itemprop="headline" class="item__header">One Stack Big Data Platform</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+分布式本质论: 高吞吐(high throughput), 高可用(high available), 低延迟(low latency), 可扩展(high scalability).
+
+整合一下个人对于大数据平台, 数据中台, 数据仓库的技术栈, 这里有一个它们之间差异的回答,
+
+- 数据库阶段, 主要是OLTP(联机事务处理)的需求
+- 数据仓库阶段, OLAP(联机分析处理)成为主要需求
+- 数据平台阶段, 主要解决BI和报表需求的技术问题
+- 数据中台阶段, 通过系统来对接OLTP和OLAP的需求, 强调数据业务化的能力
+
+
+当然, 主要看具体业务需求, 一切脱离业务的架构都是耍流氓. 业务开展到哪里, 架构也要跟着并延展些.
+
+另外, 有些框架经过多年的发展,...</div>
+<p><a href="/2020/05/02/00_big-data-one-stack.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=architect">architect</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>May 02, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="103">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-05-02T00:00:00+08:00">
+    <meta itemprop="keywords" content="architect">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/04/26/00_one-song.html"><h2 itemprop="headline" class="item__header">《壞孩子的天空》</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+<img class="emoji" title=":hushed:" alt=":hushed:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f62f.png" height="20" width="20">，今晚在youtu上听到一个合集，其中有一首Edison的《壞孩子的天空》。
+
+啊…, 前奏一起，就回忆起小时候(初中?)买他专辑的情景。记得约在傍晚6点，在地巷(球场)打完球，带着在市场买的鱼饼和汽水，往家悠悠晃晃地走着，经过桥头(北侧)的时候，瞥到一个卖唱片的地摊，一个手里晃着纸扇，戴着厚厚眼镜，看到客人围观而笑起来满嘴烟味和几颗零散金牙的大叔，坐在钓鱼凳上。应该是这个形象了，哈哈，记不太清楚了。
+
+当时我比较喜欢的歌手有Edison和Nicholas(当然后面也买了《VIVA》)，记得当时买的是下图这个盗版唱片，哈哈，coolcool的眼神，微微仰望的迷惘，跟我们当时的初中男生如此的相似。而银色的jacket充满了未来感，背景大胆的撞色更为凸显。...</div>
+<p><a href="/2020/04/26/00_one-song.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=music">music</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Apr 26, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="102">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-04-26T00:00:00+08:00">
+    <meta itemprop="keywords" content="music">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/04/15/00_one-song.html"><h2 itemprop="headline" class="item__header">《愿你决定》</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+最近由于疫情，都在WFH，所以重拾了音乐外放。
+
+打开NetEaseMusicWorld+之后，发现《愿你决定》是favorite。虽然有时候电脑开着，人却没在听，但这也说明了该曲单向循环的潜力。
+
+
+
+不记得什么时候开始听到这首歌的，只记得肥虫之前喜欢《共同渡过》，不知道她对该曲如何。也记得在开往广州的列车上也在听这首歌。
+
+願你決定
+
+  
+
+
+《願你決定》
+作曲: 羅文聰
+編曲: Adrian Chan
+填詞: 林振強
+
+歌詞:
+年月悄悄遠走了
+悄悄得彷似午夜晚風飄
+每剛感覺到卻又已走了
+前塵舊歌可知多少?
+不過忘不了 是流年中 虛空裡
+竟會有一曲這樣妙
+
+旋律載滿你的愛
+這戀曲音韻創自你笑聲
+每當心碎了挫敗跌倒了
+凝神靜聽這舊調
+一切重生了 在流年中 虛空裡
+...</div>
+<p><a href="/2020/04/15/00_one-song.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=music">music</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Apr 15, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="101">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-04-15T00:00:00+08:00">
+    <meta itemprop="keywords" content="music">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/03/05/00_flink-kubernetes-framework.html"><h2 itemprop="headline" class="item__header">Flink Kubernetes CD Framework</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+Continuous deployment is a strategy for software releases wherein any code commit that passes the automated testing phase is automatically released into the production environment, making changes that are visible to the software’s users.
+
+  from techtarget
+
+
+
+
+
+
+  A diagram about how to deploy a flink application while codes change
+  
+ ...</div>
+<p><a href="/2020/03/05/00_flink-kubernetes-framework.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=kubernetes">kubernetes</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Mar 05, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="100">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-03-05T00:00:00+08:00">
+    <meta itemprop="keywords" content="kubernetes">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/01/08/00_2019-summary.html"><h2 itemprop="headline" class="item__header">2019年跑步总结</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+
+
+  Five matches in 2019 totally, all of them were finished
+
+
+
+  A quite special year, leaving the long-live mainland
+
+
+
+
+
+  
+
+
+  五月天 -《乾杯》
+
+
+
+Collection
+01
+0101 Kuala Lumpur Countdown, about Apology
+
+  Possibly a bad situation leading to bad language at that time, should be more gentle
+
+
+
+
+
+
+02
+0217 Hong Kong Marathon, 354
+
+  Nothing c...</div>
+<p><a href="/2020/01/08/00_2019-summary.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=summary">summary</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Jan 08, 2020</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="96">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2020-01-08T00:00:00+08:00">
+    <meta itemprop="keywords" content="summary">
+</div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2019/12/30/01_golang-concurrency-communication-lock-vs-channel.html"><h2 itemprop="headline" class="item__header">golang concurrency</h2></a></header>
+          <div class="item__description">
+<div class="article__content" itemprop="description articleBody">Overview
+go里面开启一个线程是很简单的，直接引入go关键字就会开启一条新的goroutine
+
+当然能以嵌套的方式，在goroutine里面再开goroutine
+
+GMP
+
+  调度本质：调度器P将协程G合理地分配到系统线程M上执行
+
+
+调度过程:
+
+  生产G，先创建一个G对象，G会先被保存到某个P的local queue，如果local queue full了(256个G对象)，那么新来的G对象就被save到global queue
+  消费G，M先从local，再从global queue取，如果还没有则从其他p的local queue取(netpoll)
+    
+      如果能找到G，则M开始寻找空闲P以运行G
+      如果没能找到G，则M自旋或者休眠
+ ...</div>
+<p><a href="/2019/12/30/01_golang-concurrency-communication-lock-vs-channel.html">Read more</a></p>
+</div>
+<div class="article__info clearfix">
+<ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm" href="/archive.html?tag=golang">golang</a>
+            </li></ul>
+<ul class="right-col menu">
+<li>
+<i class="far fa-calendar-alt"></i> <span>Dec 30, 2019</span>
+            </li>
+<li>
+<i class="far fa-eye"></i> <span class="js-pageview" data-page-key="94">0</span> views</li>
+</ul>
+</div>
+<meta itemprop="author" content="harry">
+<meta itemprop="datePublished" content="2019-12-30T00:00:00+08:00">
+    <meta itemprop="keywords" content="golang">
+</div>
+      </article>
+</div>
+</div>
+<div class="layout--home"><div class="pagination">
+<p>145 post articles, 10 pages.</p>
+    <div class="pagination__menu">
+      <ul class="menu menu--nowrap">
+<li><div class="button button--secondary button--circle disabled">
+            <i class="fas fa-angle-left"></i>
+          </div></li>
+<li>
+              <div class="button button--primary button--circle focus"><span>1</span></div>
+            </li>
+<li>
+                  <a class="button button--secondary button--circle" href="/page2"><span>2</span></a>
+                </li>
+<li>
+                  <a class="button button--secondary button--circle" href="/page3"><span>3</span></a>
+                </li>
+<li>
+                  <a class="button button--secondary button--circle" href="/page4"><span>4</span></a>
+                </li>
+<li><span class="pagination__omit"><i class="fas fa-ellipsis-h"></i></span></li>
+<li>
+                  <a class="button button--secondary button--circle" href="/page10"><span>10</span></a>
+                </li>
+<li><a class="button button--secondary button--circle" href="/page2">
+            <i class="fas fa-angle-right"></i>
+          </a></li>
+</ul>
+    </div>
+  </div></div>
+<script>/*(function () {
+
+})();*/
+</script>
+
+
+</div>
+<section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet -->
+</div>
+            </div></div></div>
+<div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main">
+<div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="harry">
+<meta itemprop="url" content="/">
+<div class="footer__author-links">
+<div class="author-links">
+  <ul class="menu menu--nowrap menu--inline">
+<li title="Send me an Email.">
+      <a class="button button--circle mail-button" itemprop="email" href="mailto:harry_c2016@163.com" target="_blank">
+        <i class="fas fa-envelope"></i>
+      </a>
+</li>
+<li title="Follow me on Github.">
+        <a class="button button--circle github-button" itemprop="sameAs" href="https://github.com/HaoXiansen" target="_blank">
+          <div class="icon">
+<svg fill="#000000" width="24px" height="24px" viewbox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path class="svgpath" data-index="path_0" fill="#272636" d="M0 525.2c0 223.6 143.3 413.7 343 483.5 26.9 6.8 22.8-12.4 22.8-25.4l0-88.7c-155.3 18.2-161.5-84.6-172-101.7-21.1-36-70.8-45.2-56-62.3 35.4-18.2 71.4 4.6 113.1 66.3 30.2 44.7 89.1 37.2 119 29.7 6.5-26.9 20.5-50.9 39.7-69.6C248.8 728.2 181.7 630 181.7 513.2c0-56.6 18.7-108.7 55.3-150.7-23.3-69.3 2.2-128.5 5.6-137.3 66.5-6 135.5 47.6 140.9 51.8 37.8-10.2 80.9-15.6 129.1-15.6 48.5 0 91.8 5.6 129.8 15.9 12.9-9.8 77-55.8 138.8-50.2 3.3 8.8 28.2 66.7 6.3 135 37.1 42.1 56 94.6 56 151.4 0 117-67.5 215.3-228.8 243.7 26.9 26.6 43.6 63.4 43.6 104.2l0 128.8c0.9 10.3 0 20.5 17.2 20.5C878.1 942.4 1024 750.9 1024 525.3c0-282.9-229.3-512-512-512C229.1 13.2 0 242.3 0 525.2L0 525.2z"></path>
+</svg>
+</div>
+        </a>
+      </li>
+</ul>
+</div>
+</div>
+    </div>
+<div class="site-info mt-2">
+      <div>harry’s blog © 2020
+      </div>
+    </div>
+  </div>
+</footer>
+</div>
+</div>
+    </div>
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal">
+<script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text">
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA ? initData(window.TEXT_SEARCH_DATA) : {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  function initData(data) {
+    var _data = [], i, j, key, keys, cur;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i], _data[key] = [];
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        cur.title = window.decodeUrl(cur.title);
+        cur.url = window.decodeUrl(cur.url);
+        _data[key].push(cur);
+      }
+    }
+    return _data;
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script>
+</div>
+</div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script>
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>
