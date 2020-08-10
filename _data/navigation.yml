@@ -1,14 +1,8 @@
 header:
   - title: 主页
     url: /
-  - title: iOS
-    url: /_ios/
-  - title: Flutter
-    url: /_flutter/
   - title: Archive
     url: /archive.html
-  - title: 文档
-    url: /_doc/
   - title: About
     url: /about.html
 

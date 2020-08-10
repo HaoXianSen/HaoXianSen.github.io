@@ -16,7 +16,9 @@
           {%- endif -%}
         </div>
         {%- if site.search.provider -%}
-          <button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button>
+          <button class="button button--secondary button--circle search-button js-search-toggle">
+          <div class="icon">{%- include svg/icon/social/icons8-windows-metro-100.svg -%}</div>
+          </button>
         {%- endif -%}
       </div>
       {%- if site.data.navigation.header -%}
@@ -35,7 +37,7 @@
             {%- endif -%}
           {%- endfor -%}
           {%- if site.search.provider -%}
-            <li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li>
+            <li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon">{%- include svg/icon/social/icons8-windows-metro-100.svg -%}</div></button></li>
           {%- endif -%}
         </ul>
       </nav>
