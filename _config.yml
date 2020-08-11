@@ -112,10 +112,10 @@ comments:
   gitalk:
     clientID    : "94156de881bfeb261eac"
     clientSecret: "2675ee08f2fc782693cf0a22c1feb3b2a3cc877b"
-    repository  : "https://github.com/HaoXianSen"
+    repository  : "https://github.com/HaoXianSen/HaoXianSen.github.io.git"
     owner       : "HaoXianSen"
-    #admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
-      #- "your-github-id"
+    admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
+      - "16781976"
       #- "the-other-admin-github-id"
 # comments:
 #   provider: valine
