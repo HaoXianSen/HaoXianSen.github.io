@@ -115,7 +115,7 @@ comments:
     repository  : "HYHComment"
     owner       : "HaoXianSen"
     admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
-      - "16781976"
+      - "HaoXianSen"
       #- "the-other-admin-github-id"
 # comments:
 #   provider: valine
