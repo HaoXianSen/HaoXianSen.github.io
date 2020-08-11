@@ -22,7 +22,7 @@ key: 101
 
 最近项目中在横向滑动的PageViewController（WMPageController）里嵌入了Flutter 的 CustomScrollView，原本会觉得一切ok，却出现了一个致命的问题：安卓嵌入之后滑动流程稳定，没有任何问题，iOS 嵌入之后出现Flutter 页面滑动卡顿、不流畅，体现在触发flutter 列表滑动的同时，会触发原生横滑，且必须垂直滑动（无一点左右的滑动偏移）才会稳定触发Flutter 列表的滑动，否则容易触发左右横滑，所以我们习惯了单手用手机的人，根本无法顺畅滑动。如下面的gif（其实我已经很努力的在上下滑了，很明显上下滑动的距离大于水平滑动的距离，用户的用意也应该是要上下滑动，但是却触发了横滑）：
 
-<img src="/screenshots/1595228716860927.png" alt="1595228716860927" style="zoom:80%;" />
+<img src="https://github.com/HaoXianSen/HaoXianSen.github.io/blob/master/screenshots/1595228716860927.png" alt="1595228716860927" style="zoom:80%;" />
 
 #### 解决方式
 
@@ -139,7 +139,7 @@ key: 101
 
 处理之后的效果：
 
-<img src="/screenshots/屏幕录制2020-07-20 下午4.22.56.png" alt="屏幕录制2020-07-20 下午4.22.56" style="zoom:40%;" />
+<img src="https://github.com/HaoXianSen/HaoXianSen.github.io/blob/master/screenshots/flutter_and_ios_matter_sh2.png" alt="屏幕录制2020-07-20 下午4.22.56" style="zoom:40%;" />
 
 #### 总结
 
