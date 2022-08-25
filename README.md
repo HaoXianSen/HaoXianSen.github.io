@@ -1,11 +1,14 @@
 # Personal Blog
-[chenfh5 blog](https://chenfh5.github.io)
+[harry blog](https://haoxiansen.github.io)
 
 # Quickstart
-0. fork [blog project](https://github.com/chenfh5/chenfh5.github.io)
+0. fork [blog project](https://github.com/HaoXianSen/HaoXianSen.github.io)
 0. rename
-0. install [jekyll](https://jekyllrb.com/docs/)
-0. bundle install
+### Quick auto start
+    open your terminal, and `sh install.sh`
+### manual
+    0. install [jekyll](https://jekyllrb.com/docs/)
+    0. bundle install
 0. modify
    - change configuration to fit your style
    - add new article into `_post` directory

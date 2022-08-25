@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "项目依赖jekyll，正在自动检测是否安装..."
+if command -v bundle exec jekyll
+then
+    echo "已经安装 jekyll 并且 已经开启sever 🍺🍺🍺"
+    bundle exec jekyll serve
+else
+    echo "未安装，正在自动安装，请稍后..."
+    sudo bundle install
+    sudo gem install jekyll bundler
+    echo "恭喜安装完成🍺🍺🍺"
+fi
