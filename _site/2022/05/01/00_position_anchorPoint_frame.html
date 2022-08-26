@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>00_position、anchorpoint、frame理解 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>position、anchorPoint、frame理解 - harry’s blog</title>
 
-<meta name="description" content="-–title: position、anchorPoint、frame理解tags: iOSkey: 107# article_header:# type: cover#  image:# src: https://user-images.githubusercontent.com/8369671/8091504...">
-<link rel="canonical" href="http://localhost:4000/2022/05/01/00_position-anchorPoint-frame%E7%90%86%E8%A7%A3.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="前情提要​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿...">
+<link rel="canonical" href="http://0.0.0.0:4000/2022/05/01/00_position_anchorPoint_frame.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -460,30 +460,14 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>00_position、anchorpoint、frame理解</h1></header></div><meta itemprop="headline" content="00_position、anchorpoint、frame理解"><div class="article__info clearfix"><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>position、anchorPoint、frame理解</h1></header></div><meta itemprop="headline" content="position、anchorPoint、frame理解"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>-–</p>
-
-<p>title: position、anchorPoint、frame理解</p>
-
-<p>tags: iOS</p>
-
-<p>key: 107</p>
-
-<p># article_header:</p>
-
-<p># type: cover</p>
-
-<p>#  image:</p>
-
-<p># src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png</p>
-
-<p>-–</p>
-
-<hr />
-
-<h4 id="前情提要">前情提要</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
 
 <p>​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。</p>
 
@@ -507,7 +491,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
 <p>对于bounds 来说，他是自身的坐标系，如果我们修改了他的origin，那么他的子view就会以这个点为为原点来计算位置，比如：一个红色的view，我们设置了他的bounds.origin为（-20， 20），那么他就会改变自己的本地坐标系的原点为-20，-20，那么当我们设置一个蓝色的子viewframe的origin为（0，0），那么这个子view就会向右下偏移20，因为当前左上角的原点为-20，-20，（0，0）点的位置在右下角偏移20的位置，所以最后看到蓝色view并不是靠着左上角。文字描述有点。。。费劲，还是想办法画图吧。。。</p>
 
-<p><img src="/Users/haoyh02/Library/Application Support/typora-user-images/image-20210929181748669.png" alt="image-20210929181748669" /></p>
+<p><img src="/assets/image-20210929181748669.png" alt="image-20210929181748669" /></p>
 
 <p>大概就是这样的一个过程，所以bounds.origin的修改会导致子view的位置改变，那么修改bounds的size呢？ 改变自己bounds的size会使自身的大小发生变化，从而影响frame，不会影响父view</p>
 
@@ -517,7 +501,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
 <p>也画个图吧。。。</p>
 
-<p><img src="/Users/haoyh02/Library/Application Support/typora-user-images/image-20210929183736725.png" alt="image-20210929183736725" /></p>
+<p><img src="/assets/image-20210929183736725.png" alt="image-20210929183736725" /></p>
 
 <p>基本上通过上边的介绍，我想你和我都掌握这几个属性的真正含义。</p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2022-05-01T00:00:00+08:00"><!-- start custom article footer snippet -->

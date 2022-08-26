@@ -5,7 +5,7 @@
 
 <meta name="description" content="harry's technology blog 
 ">
-<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="http://0.0.0.0:4000/"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -462,6 +462,22 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="harry"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2022/05/01/00_position_anchorPoint_frame.html"><h2 itemprop="headline" class="item__header">position、anchorPoint、frame理解</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
+
+​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。
+
+进入正文
+
+frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view
+
+bounds：表示了一个view的本地坐标系下，参照物是自身，...</div><p><a href="/2022/05/01/00_position_anchorPoint_frame.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2020/06/08/01_flutter_and_ios_matter.html"><h2 itemprop="headline" class="item__header">解决原生横滑scrollView和Flutter 纵滑CustomScroll的冲突</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
 

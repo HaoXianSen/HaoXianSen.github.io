@@ -1,22 +1,20 @@
-\---
-
+---
 title: position、anchorPoint、frame理解
 
 tags: iOS
 
 key: 107
 
-\# article_header:
+#article_header:
 
-\# type: cover
+#type: cover
 
-\#  image:
+#image:
 
-\# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
+ #src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
+---
 
-\---
 
------
 
 #### 前情提要
 
@@ -44,7 +42,7 @@ frame 没什么可说的，我们以前frame布局，用的再熟练不过了，
 
 对于bounds 来说，他是自身的坐标系，如果我们修改了他的origin，那么他的子view就会以这个点为为原点来计算位置，比如：一个红色的view，我们设置了他的bounds.origin为（-20， 20），那么他就会改变自己的本地坐标系的原点为-20，-20，那么当我们设置一个蓝色的子viewframe的origin为（0，0），那么这个子view就会向右下偏移20，因为当前左上角的原点为-20，-20，（0，0）点的位置在右下角偏移20的位置，所以最后看到蓝色view并不是靠着左上角。文字描述有点。。。费劲，还是想办法画图吧。。。
 
-![image-20210929181748669](/Users/haoyh02/Library/Application Support/typora-user-images/image-20210929181748669.png)
+![image-20210929181748669](/assets/image-20210929181748669.png)
 
 大概就是这样的一个过程，所以bounds.origin的修改会导致子view的位置改变，那么修改bounds的size呢？ 改变自己bounds的size会使自身的大小发生变化，从而影响frame，不会影响父view
 
@@ -56,6 +54,6 @@ frame 没什么可说的，我们以前frame布局，用的再熟练不过了，
 
 也画个图吧。。。
 
-![image-20210929183736725](/Users/haoyh02/Library/Application Support/typora-user-images/image-20210929183736725.png)
+![image-20210929183736725](/assets/image-20210929183736725.png)
 
 基本上通过上边的介绍，我想你和我都掌握这几个属性的真正含义。
