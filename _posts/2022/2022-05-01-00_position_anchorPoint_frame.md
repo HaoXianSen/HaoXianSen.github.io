@@ -5,16 +5,14 @@ tags: iOS
 
 key: 107
 
-#article_header:
+# article_header:
 
-#type: cover
+# type: cover
 
-#image:
+# image:
 
- #src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
+# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
 ---
-
-
 
 #### 前情提要
 
