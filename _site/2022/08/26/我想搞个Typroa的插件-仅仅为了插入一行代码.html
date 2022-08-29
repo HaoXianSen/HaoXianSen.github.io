@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>position、anchorPoint、frame理解 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>我想搞个mac app 插件，仅仅为了Typora插入几行预置文字 - harry’s blog</title>
 
-<meta name="description" content="前情提要​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿...">
-<link rel="canonical" href="http://localhost:4000/2022/05/01/00_position_anchorPoint_frame.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="前提为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那...">
+<link rel="canonical" href="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -460,51 +460,214 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>position、anchorPoint、frame理解</h1></header></div><meta itemprop="headline" content="position、anchorPoint、frame理解"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>我想搞个mac app 插件，仅仅为了Typora插入几行预置文字</h1></header></div><meta itemprop="headline" content="我想搞个mac app 插件，仅仅为了Typora插入几行预置文字"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=MAC">MAC</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=Plugin">Plugin</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 26, 2022</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-26T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,MAC,Plugin"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h2 id="前提">前提</h2>
 
-<p>​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。</p>
+<p>为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如</p>
 
-<h4 id="进入正文">进入正文</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>title: position、anchorPoint、frame理解
 
-<p>frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view</p>
+tags: iOS
 
-<p>bounds：表示了一个view的本地坐标系下，参照物是自身，他的修改不会改变frame，但是会改变其的子view的位置，为什么呢？稍后我会画图解释</p>
+key: 107
 
-<p>position：这是CALayer的属性，我的理解是他的物理中心点，他和anchorPoint有着密切的关系</p>
+# article_header:
 
-<p>anchorPoint：也是CALayer的属性，翻译过来叫做锚点，也就是固定的点，他的坐标系是以unit 坐标系定义，左上角为(0,0)， 右上角(1, 0), 左下角(0,1), 右下角(1,1)</p>
+# type: cover
 
-<p>好！概念都说完了，但是这个概念只能让我们理解一部分，并不能真实的理解到他们的具体作用，下面我们用图的概念去一点点理解</p>
+# image:
 
-<h4 id="深入">深入</h4>
+# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
+</code></pre></div></div>
 
-<p>frame 没什么可说的，我们以前frame布局，用的再熟练不过了，他就是view在其父view中位置</p>
+<p>OK，所以首先呢我把Typora的所有文档看了一遍，没有入口可配置。那咋办？</p>
 
-<p>如果我们修改了frame，那么就会直接影响到他的位置和大小。</p>
+<p>想法也就从这诞生了，我能不能写个插件，在Typora 新建文件的时候，手动插入预置文字，接下来记录插件开发过程，成功不成功最后见分晓！</p>
 
-<p>对于bounds 来说，他是自身的坐标系，如果我们修改了他的origin，那么他的子view就会以这个点为为原点来计算位置，比如：一个红色的view，我们设置了他的bounds.origin为（-20， 20），那么他就会改变自己的本地坐标系的原点为-20，-20，那么当我们设置一个蓝色的子viewframe的origin为（0，0），那么这个子view就会向右下偏移20，因为当前左上角的原点为-20，-20，（0，0）点的位置在右下角偏移20的位置，所以最后看到蓝色view并不是靠着左上角。文字描述有点。。。费劲，还是想办法画图吧。。。</p>
+<h2 id="着手干查资料">着手干（查资料）</h2>
 
-<p><img src="/assets/image-20210929181748669.png" alt="image-20210929181748669" /></p>
+<p>通过查看资料，我们需要两个东西辅助，1.<a href="https://www.jianshu.com/p/1e3fe0a8c048">class-dump)</a> 2. <a href="https://github.com/Tyilo/insert_dylib">insert_dylib</a></p>
 
-<p>大概就是这样的一个过程，所以bounds.origin的修改会导致子view的位置改变，那么修改bounds的size呢？ 改变自己bounds的size会使自身的大小发生变化，从而影响frame，不会影响父view</p>
+<p> 基本原理就是：</p>
 
-<p>那么对于position 和anchorPoint，我受一片他人的文章影响，有一个很恰当的比喻：</p>
+<p>Mach-O 二进制文件Load Commands中的 LC_LOAD_DYLIB 标头告诉 macOS在执行期间要加载哪些动态库 (dylib)。所以我们只需要在二进制文件中添加一条LC_LOAD_DYLIB就可以。而<a href="https://github.com/Tyilo/insert_dylib">insert_dylib</a>工具已经为我们实现了添加的功能</p>
 
-<p>一幅画，anchorPoint就相当于在这个画的四个角或者中间沾一块胶（或者你有高档的什么固定的都行。。），而position就相当于这块胶要沾在哪个位置，这么来说的话他应该是和anchor重合的，比如说position为墙壁的某个点，anchorPoint为画的中间（0.5，0.5），那么画就会沾到position的位置，我们view默认的position就是view的中心点相对于父view的点，所以如果我们改变anchor的话就类比刚才图片的问题，是那个角或者中点固定到这个position点而已。</p>
+<p>接下来一个一个解释：</p>
 
-<p>也画个图吧。。。</p>
+<ol>
+  <li>
+    <p>class-dump</p>
 
-<p><img src="/assets/image-20210929183736725.png" alt="image-20210929183736725" /></p>
+    <p>通过名字我们大概能猜到这是一个什么工具，类似一个解释类的工具，确实他也是干这个的，正确安装之后，我们可以通过class-dump [option] Mach-o文件，输出mac app的暴露类的相关属性，OK，我们用的就是class-dump -H Mach-o文件 输出头文件，我们通过头文件查看mac app源头文件，然后找到需要hook的类进行hook（具体的安装可以点击超链接查看）</p>
+  </li>
+  <li>
+    <p>insert_dylib</p>
 
-<p>基本上通过上边的介绍，我想你和我都掌握这几个属性的真正含义。</p>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2022-05-01T00:00:00+08:00"><!-- start custom article footer snippet -->
+    <p>这个工具，可以帮助我们插入一个dylib 到Mach-o二进制文件中，所以也就是说我们需要做一个framework然后通过这个库，嵌入到app的Mach-o二进制文件里</p>
+  </li>
+</ol>
+
+<p>ok，工具都全乎了，接下来的时间，就是需要我们做一个framework，这个framework是用专门hook的动态库。</p>
+
+<p>当然hook，Objective-C里就是runtime里的Swizzing Method搞定，这个iOS 开发应该都用过不少（常规技术）</p>
+
+<ol>
+  <li>
+    <p>具体实践</p>
+
+    <ol>
+      <li>
+        <p>new project - framework</p>
+
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Library:Application%20Support:typora-user-images:image-20220829140442928.png" alt="image-20220829140442928" /></p>
+
+        <p>我们新建一个framework，用来做动态库</p>
+      </li>
+      <li>
+        <p>查看class-dump的类，hook 找到的类做功能</p>
+
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Library:Application%20Support:typora-user-images:image-20220829140836995.png" alt="image-20220829140836995" /></p>
+
+        <p>cd 到 /Applications/Typora.app/Contents/MacOS/</p>
+
+        <p>使用class-dump -H /Applications/Typora.app/Contents/MacOS/Typora -o /Users/haoyh02/Desktop/typora.h 输出头文件解析到桌面目标目录，如下</p>
+
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Library:Application%20Support:typora-user-images:image-20220829141211348.png" alt="image-20220829141211348" /></p>
+
+        <p>ok，接下来我就需要分析头文件，找出自己需要hook的类，以及方法，当然这个过程才是最漫长的，而且是不断的尝试出来的。具体的分析我就不赘述了，就是看代码呗。</p>
+
+        <p>最终我们找到了LibraryCommands 类，他大概就是一些文件命令处理，比如新建文件，当然我们hook的是这个类，但是具体文件处理则是Document这个类，集成于NSDocument。</p>
+
+        <p>具体看代码</p>
+
+        <div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//</span>
+<span class="c1">//  TyporaAutoRejectHook.m</span>
+<span class="c1">//  TyporaAutoReject</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 郝玉鸿 on 2022/8/26.</span>
+<span class="c1">//</span>
+      
+<span class="cp">#import &lt;Foundation/Foundation.h&gt;
+#import &lt;AppKit/AppKit.h&gt;
+#import "TyporaAutoReject.h"
+#import &lt;objc/runtime.h&gt;
+</span>      
+<span class="kt">void</span> <span class="nf">ty_hook</span><span class="p">(</span><span class="n">Class</span> <span class="n">originClass</span><span class="p">,</span> <span class="n">SEL</span> <span class="n">originSelector</span><span class="p">,</span> <span class="n">Class</span> <span class="n">swizzClass</span><span class="p">,</span> <span class="n">SEL</span> <span class="n">swizzSelector</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Method</span> <span class="n">originalMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">originClass</span><span class="p">,</span> <span class="n">originSelector</span><span class="p">);</span>
+        <span class="n">Method</span> <span class="n">swizzledMethod</span> <span class="o">=</span> <span class="n">class_getInstanceMethod</span><span class="p">(</span><span class="n">swizzClass</span><span class="p">,</span> <span class="n">swizzSelector</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">originalMethod</span> <span class="o">&amp;&amp;</span> <span class="n">swizzledMethod</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">method_exchangeImplementations</span><span class="p">(</span><span class="n">originalMethod</span><span class="p">,</span> <span class="n">swizzledMethod</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+      
+<span class="k">@interface</span> <span class="nc">Document</span> <span class="p">:</span> <span class="nc">NSDocument</span>
+      
+<span class="k">@end</span>
+      
+<span class="k">@interface</span> <span class="nc">LibraryCommands</span><span class="p">:</span> <span class="nc">NSObject</span>
+      
+<span class="k">@property</span><span class="p">(</span><span class="n">retain</span><span class="p">)</span> <span class="n">Document</span> <span class="o">*</span><span class="n">document</span><span class="p">;</span>
+      
+<span class="k">@end</span>
+      
+<span class="k">@implementation</span> <span class="nc">NSObject</span> <span class="p">(</span><span class="nl">Typora</span><span class="p">)</span>
+      
+<span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">hookThunder</span><span class="p">{</span>
+    <span class="n">ty_hook</span><span class="p">(</span><span class="n">objc_getClass</span><span class="p">(</span><span class="s">"LibraryCommands"</span><span class="p">),</span> <span class="k">@selector</span><span class="p">(</span><span class="n">createFile</span><span class="o">:</span><span class="p">),</span> <span class="p">[</span><span class="n">self</span> <span class="nf">class</span><span class="p">],</span> <span class="k">@selector</span><span class="p">(</span><span class="n">hook_newDocument</span><span class="o">:</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">hook_newDocument</span><span class="p">:(</span><span class="n">id</span><span class="p">)</span><span class="nv">args</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">hook_newDocument</span><span class="p">:</span><span class="n">args</span><span class="p">];</span>
+          
+    <span class="n">dispatch_after</span><span class="p">(</span><span class="n">dispatch_time</span><span class="p">(</span><span class="n">DISPATCH_TIME_NOW</span><span class="p">,</span> <span class="p">(</span><span class="kt">int64_t</span><span class="p">)(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">)),</span> <span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">LibraryCommands</span> <span class="o">*</span><span class="n">commans</span> <span class="o">=</span> <span class="p">(</span><span class="n">LibraryCommands</span> <span class="o">*</span><span class="p">)</span><span class="n">self</span><span class="p">;</span>
+        <span class="n">Document</span> <span class="o">*</span><span class="n">document</span> <span class="o">=</span> <span class="n">commans</span><span class="p">.</span><span class="n">document</span><span class="p">;</span>
+        <span class="n">NSString</span> <span class="o">*</span><span class="n">injectString</span> <span class="o">=</span> <span class="s">@"---</span><span class="se">\n</span><span class="s">title: &lt;xxxx&gt; </span><span class="se">\n</span><span class="s">tags: [iOS] [MAC] [Plugin]&gt; </span><span class="se">\n</span><span class="s">key: xxx </span><span class="se">\n</span><span class="s"># article_header:</span><span class="se">\n</span><span class="s"># type: cover </span><span class="se">\n</span><span class="s"># image:</span><span class="se">\n</span><span class="s"> # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png </span><span class="se">\n</span><span class="s">---"</span><span class="p">;</span>
+        <span class="p">[</span><span class="n">document</span> <span class="nf">setValue</span><span class="p">:</span><span class="n">injectString</span> <span class="nf">forKeyPath</span><span class="p">:</span><span class="s">@"content"</span><span class="p">];</span>
+              
+        <span class="p">[</span><span class="n">document</span> <span class="nf">writeToURL</span><span class="p">:</span><span class="n">document</span><span class="p">.</span><span class="n">fileURL</span> <span class="nf">ofType</span><span class="p">:</span><span class="n">document</span><span class="p">.</span><span class="n">fileType</span> <span class="n">error</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+        <span class="p">[</span><span class="n">document</span> <span class="nf">performSelector</span><span class="p">:</span><span class="n">NSSelectorFromString</span><span class="p">(</span><span class="s">@"syncToClient"</span><span class="p">)];</span>
+        <span class="p">[</span><span class="n">document</span> <span class="nf">performSelector</span><span class="p">:</span><span class="n">NSSelectorFromString</span><span class="p">(</span><span class="s">@"syncToSelf"</span><span class="p">)];</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+      
+<span class="k">@end</span>
+      
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">__attribute__</span><span class="p">((</span><span class="n">constructor</span><span class="p">))</span> <span class="n">initialize</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">NSObject</span> <span class="nf">hookThunder</span><span class="p">];</span>
+<span class="p">}</span>
+      
+</code></pre></div>        </div>
+
+        <p>很简单，思路就是hook到新建文件的方法，然后2s之后，文件内插入一段预置文字。然后同步界面。</p>
+      </li>
+      <li>
+        <p>copy framework的产出（编译，products/xxx.framework）到mac app 下的contents/MacOS</p>
+
+        <p>OK，接下来我们需要build工程，得到products/xxx.framework 产物。xcode13 隐藏了products，我们只需要打开pbxproj文件, 修改mainGroup 和 productRefGroup 一样（本身也是一样的，我们只需要copy再次保存就好了），保存就可以出现，也可以到DerivedData里去找</p>
+
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Library:Application%20Support:typora-user-images:image-20220829141839812.png" alt="image-20220829141839812" /></p>
+
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Library:Application%20Support:typora-user-images:image-20220829141945528.png" alt="image-20220829141945528" /></p>
+
+        <p>然后copy framework，到/Applications/Typora.app/Contents/ 下即可。</p>
+      </li>
+      <li>
+        <p>执行insert_dylib 命令</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ./insert_dylib <span class="nt">--all-yes</span> /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora 
+</code></pre></div>        </div>
+
+        <p>执行这个命令后，即可嵌入framework</p>
+      </li>
+      <li>
+        <p>重新打开应用</p>
+
+        <p>一定要重新打开应用，否则不生效（这个其实不用想也是这样，毕竟我们是编译型程序）</p>
+      </li>
+      <li>
+        <p>ok，当然这个步骤很麻烦，为了我们能更好的重复验证，我写了脚本执行，这些命令</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      
+<span class="nb">sudo rm</span> <span class="nt">-d</span> <span class="nt">-r</span> /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework
+<span class="nb">sudo mv</span> <span class="nt">-f</span> /Users/haoyh02/Library/Developer/Xcode/DerivedData/TyporaAutoReject-duhvxgpyrtuykugkepbmpmhciiyh/Build/Products/Debug/<span class="k">*</span> /Applications/Typora.app/Contents/MacOS/
+./insert_dylib <span class="nt">--all-yes</span> /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora
+</code></pre></div>        </div>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>​</p>
+
+<p>​	至此，我们为Typora做的小插件，完全生效了。我们来看一下效果：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/:Users:haoyh02:Desktop:result.png" alt="result" /></p>
+
+<p>​</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://www.jianshu.com/p/1e3fe0a8c048">安装class-dump</a></p>
+
+<p><a href="https://lemonlie.com/develop-plug-in-for-mac-app/">如何为macOS应用开发插件</a></p>
+
+<p><a href="https://github.com/Tyilo/insert_dylib">insert_dylib</a></p>
+
+<p><a href="https://github.com/nygard/class-dump">class-dump</a></p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2022-08-26T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -512,7 +675,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/06/08/01_flutter_and_ios_matter.html">解决原生横滑scrollView和Flutter 纵滑CustomScroll的冲突</a></div><div class="next"><span>NEXT</span><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">我想搞个mac app 插件，仅仅为了Typora插入几行预置文字</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2022/05/01/00_position_anchorPoint_frame.html">position、anchorPoint、frame理解</a></div></div></div>
 
 </div>
 
