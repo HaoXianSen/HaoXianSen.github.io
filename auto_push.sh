@@ -1,6 +1,6 @@
 #!/bin/bash
 git fetch
-git stash .
+git stash 
 git pull origin master
 git stash pop
 git status 
