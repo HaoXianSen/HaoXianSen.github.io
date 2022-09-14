@@ -1,6 +1,6 @@
 ---
 title: Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）
-tags: iOS pre-commit-hooks
+tags: [iOS] [pre-commit hooks]
 key: 109
 # article_header:
 # type: cover 
@@ -70,7 +70,9 @@ OK，解决方法之一就是我们之间使用Clang-format，我们知道其实
 
 ![image-20220914150033308](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220914150033image-20220914150033308.png)
 
+### github
 
+https://github.com/HaoXianSen/Objective-CLint
 
 #### 联系方式
 
