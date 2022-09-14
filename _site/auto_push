@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+cd "$DIR" || exit 0
+
+git stash 
+git fetch
+git pull origin master
+git stash pop
+git status 
+git add .
+git commit -m "更新文章"
+git status
+git push origin master
+
+exit 0
+

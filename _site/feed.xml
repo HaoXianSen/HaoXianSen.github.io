@@ -1,5 +1,73 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-08-29T15:36:31+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
-</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">我想搞个mac app 插件，仅仅为了Typora插入几行预置文字</title><link href="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html" rel="alternate" type="text/html" title="我想搞个mac app 插件，仅仅为了Typora插入几行预置文字" /><published>2022-08-26T00:00:00+08:00</published><updated>2022-08-26T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6,%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81</id><content type="html" xml:base="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">&lt;h2 id=&quot;前提&quot;&gt;前提&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-09-14T17:59:52+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</title><link href="http://localhost:4000/2022/09/14/Objective_CLint.html" rel="alternate" type="text/html" title="Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）" /><published>2022-09-14T00:00:00+08:00</published><updated>2022-09-14T00:00:00+08:00</updated><id>http://localhost:4000/2022/09/14/Objective_CLint</id><content type="html" xml:base="http://localhost:4000/2022/09/14/Objective_CLint.html">&lt;h1 id=&quot;objective-clint&quot;&gt;Objective-CLint&lt;/h1&gt;
+&lt;p&gt;创建一个轻量级的、支持pre-commit的Objective-C 的静态检查&lt;/p&gt;
+
+&lt;h3 id=&quot;感谢&quot;&gt;感谢&lt;/h3&gt;
+&lt;p&gt;感谢 &lt;a href=&quot;https://github.com/square/spacecommander&quot;&gt;spacecommander&lt;/a&gt;作者提供的Objective-C lint的思路以及open source
+本文大部分是基于 &lt;a href=&quot;https://github.com/square/spacecommander&quot;&gt;spacecommander&lt;/a&gt;累加的一些新功能。再次感谢开源作者，非常棒👍🏻&lt;/p&gt;
+
+&lt;h3 id=&quot;架构构思&quot;&gt;架构/构思&lt;/h3&gt;
+&lt;h4 id=&quot;1前因&quot;&gt;1.前因&lt;/h4&gt;
+&lt;p&gt;因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用&lt;a href=&quot;https://pre-commit.com/&quot;&gt;pre-commit&lt;/a&gt;那么
+就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。&lt;/p&gt;
+
+&lt;p&gt;OK，解决方法之一就是我们之间使用Clang-format，我们知道其实OCLint也是基于Clang-format做的，那么在寻找的过程中发现了有伟大的 spacecommander 作者已经帮助我们集成了Clang-format
+作者除此之外还解决了可能会引起Clang-format有歧义的代码修改、以及Clang-format 扫不到的一些规则修改。&lt;/p&gt;
+
+&lt;p&gt;那么有了伟大的 spacecommander 作为基础，我们就可以利用他做一个pre-commit hook，用来OClint&lt;/p&gt;
+
+&lt;h4 id=&quot;2相关实现改动&quot;&gt;2.相关实现、改动&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;在spacecommander 的基础上，实现了支持pre-commit，更方便集成&lt;/li&gt;
+  &lt;li&gt;spacecommander 只是对比了format之后行数，以用来比较是否有不否和规则的代码出现，不够明显，我们采用diff的方式对比了
+ format之前和之后的代码，使得开发者能更清楚，自己哪些地方代码不规范&lt;/li&gt;
+  &lt;li&gt;spacecommander 提供了api 一键format代码，我们不提供此功能，因为我总觉得只有多次的认识到不规范的代码，才能保证下次写出规范的代码&lt;/li&gt;
+  &lt;li&gt;提供了diff之后可视化输出，打开html，一眼即可看到不规范的代码&lt;/li&gt;
+  &lt;li&gt;修改了部分自定义规则代码，以适应灵活的代码不规范&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/HaoXianSen/Objective-CLint/blob/main/.clang-format&quot;&gt;.clang-format&lt;/a&gt; 配置了更多的clang 规则&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;使用&quot;&gt;使用&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装 pre-commit , &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew install pre-commit&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;在工程根目录添加(即.git同级目录)添加 &lt;a href=&quot;https://github.com/HaoXianSen/Objective-CLint/blob/main/.pre-commit-config.yaml&quot;&gt;.pre-commit-config.yaml&lt;/a&gt;&lt;/p&gt;
+
+    &lt;p&gt;并配置为：&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fail_fast: false
+repos:
+  - repo: https://github.com/HaoXianSen/Objective-CLint.git
+    rev: v0.0.2
+    hooks:
+      - id: objc-lint
+        name: objc-format
+        entry: format-objc-hook
+        language: script
+        require_serial: true
+        verbose: true
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;&lt;strong&gt;高阶使用&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;fork 工程，可修改、增加自定义规则，以及.clang 规则&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;相关截图&quot;&gt;相关截图&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220914145908image-20220914145906934.png&quot; alt=&quot;image-20220914145906934&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220914145930image-20220914145930603.png&quot; alt=&quot;image-20220914145930603&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220914150033image-20220914150033308.png&quot; alt=&quot;image-20220914150033308&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;联系方式&quot;&gt;联系方式&lt;/h4&gt;
+
+&lt;p&gt;harry_c2016@163.com&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><category term="pre-commit-hooks" /><summary type="html">Objective-CLint 创建一个轻量级的、支持pre-commit的Objective-C 的静态检查 感谢 感谢 spacecommander作者提供的Objective-C lint的思路以及open source 本文大部分是基于 spacecommander累加的一些新功能。再次感谢开源作者，非常棒👍🏻 架构/构思 1.前因 因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用pre-commit那么 就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。 OK，解决方法之一就是我们之间使用Clang-format，我们知道其实OCLint也是基于Clang-format做的，那么在寻找的过程中发现了有伟大的 spacecommander 作者已经帮助我们集成了Clang-format 作者除此之外还解决了可能会引起Clang-format有歧义的代码修改、以及Clang-format 扫不到的一些规则修改。 那么有了伟大的 spacecommander 作为基础，我们就可以利用他做一个pre-commit hook，用来OClint 2.相关实现、改动 在spacecommander 的基础上，实现了支持pre-commit，更方便集成 spacecommander 只是对比了format之后行数，以用来比较是否有不否和规则的代码出现，不够明显，我们采用diff的方式对比了 format之前和之后的代码，使得开发者能更清楚，自己哪些地方代码不规范 spacecommander 提供了api 一键format代码，我们不提供此功能，因为我总觉得只有多次的认识到不规范的代码，才能保证下次写出规范的代码 提供了diff之后可视化输出，打开html，一眼即可看到不规范的代码 修改了部分自定义规则代码，以适应灵活的代码不规范 .clang-format 配置了更多的clang 规则 使用 安装 pre-commit , brew install pre-commit 在工程根目录添加(即.git同级目录)添加 .pre-commit-config.yaml 并配置为： fail_fast: false repos: - repo: https://github.com/HaoXianSen/Objective-CLint.git rev: v0.0.2 hooks: - id: objc-lint name: objc-format entry: format-objc-hook language: script require_serial: true verbose: true 高阶使用 fork 工程，可修改、增加自定义规则，以及.clang 规则 相关截图 联系方式 harry_c2016@163.com</summary></entry><entry><title type="html">关于iOS 代码质量把控研究</title><link href="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html" rel="alternate" type="text/html" title="关于iOS 代码质量把控研究" /><published>2022-08-29T00:00:00+08:00</published><updated>2022-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS%20%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"></content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><summary type="html"></summary></entry><entry><title type="html">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</title><link href="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html" rel="alternate" type="text/html" title="我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字" /><published>2022-08-26T00:00:00+08:00</published><updated>2022-08-26T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6,%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81</id><content type="html" xml:base="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">&lt;h2 id=&quot;前提&quot;&gt;前提&lt;/h2&gt;
 
 &lt;p&gt;为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如&lt;/p&gt;
 
