@@ -1,4 +1,6 @@
 #!/bin/bash
+DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+cd "$DIR" || exit 0
 echo "项目依赖jekyll，正在自动检测是否安装..."
 if command -v bundle exec jekyll
 then

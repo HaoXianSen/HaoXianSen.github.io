@@ -3,8 +3,8 @@
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "$DIR" || exit 0
 
-git fetch
 git stash 
+git fetch
 git pull origin master
 git stash pop
 git status 
