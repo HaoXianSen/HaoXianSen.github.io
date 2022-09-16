@@ -489,7 +489,15 @@ OK，解决方法之一就是我们之间使用Clang-f...</div><p><a href="/2022
     <meta itemprop="keywords" content="iOS,pre-commit,hooks"></div>
       </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">关于iOS 代码质量把控研究</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody"></div><p><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">前提
+
+code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。
+
+所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！
+
+Lint 时机
+
+我们熟知的Objective-C lint，有OClint、Infer; swift 有swiftLint，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？...</div><p><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=iOS">iOS</a>
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 29, 2022</span>

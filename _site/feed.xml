@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-09-16T17:46:15+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2022-09-16T17:49:01+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
 </subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</title><link href="http://localhost:4000/2022/09/14/Objective_CLint.html" rel="alternate" type="text/html" title="Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）" /><published>2022-09-14T00:00:00+08:00</published><updated>2022-09-14T00:00:00+08:00</updated><id>http://localhost:4000/2022/09/14/Objective_CLint</id><content type="html" xml:base="http://localhost:4000/2022/09/14/Objective_CLint.html">&lt;h1 id=&quot;objective-clint&quot;&gt;Objective-CLint&lt;/h1&gt;
 &lt;p&gt;创建一个轻量级的、支持pre-commit的Objective-C 的静态检查&lt;/p&gt;
 
@@ -71,7 +71,258 @@ repos:
 
 &lt;h4 id=&quot;联系方式&quot;&gt;联系方式&lt;/h4&gt;
 
-&lt;p&gt;harry_c2016@163.com&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><category term="pre-commit" /><category term="hooks" /><summary type="html">Objective-CLint 创建一个轻量级的、支持pre-commit的Objective-C 的静态检查 感谢 感谢 spacecommander作者提供的Objective-C lint的思路以及open source 本文大部分是基于 spacecommander累加的一些新功能。再次感谢开源作者，非常棒👍🏻 架构/构思 1.前因 因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用pre-commit那么 就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。 OK，解决方法之一就是我们之间使用Clang-format，我们知道其实OCLint也是基于Clang-format做的，那么在寻找的过程中发现了有伟大的 spacecommander 作者已经帮助我们集成了Clang-format 作者除此之外还解决了可能会引起Clang-format有歧义的代码修改、以及Clang-format 扫不到的一些规则修改。 那么有了伟大的 spacecommander 作为基础，我们就可以利用他做一个pre-commit hook，用来OClint 2.相关实现、改动 在spacecommander 的基础上，实现了支持pre-commit，更方便集成 spacecommander 只是对比了format之后行数，以用来比较是否有不否和规则的代码出现，不够明显，我们采用diff的方式对比了 format之前和之后的代码，使得开发者能更清楚，自己哪些地方代码不规范 spacecommander 提供了api 一键format代码，我们不提供此功能，因为我总觉得只有多次的认识到不规范的代码，才能保证下次写出规范的代码 提供了diff之后可视化输出，打开html，一眼即可看到不规范的代码 修改了部分自定义规则代码，以适应灵活的代码不规范 .clang-format 配置了更多的clang 规则 使用 安装 pre-commit , brew install pre-commit 在工程根目录添加(即.git同级目录)添加 .pre-commit-config.yaml 并配置为： fail_fast: false repos: - repo: https://github.com/HaoXianSen/Objective-CLint.git rev: v0.0.2 hooks: - id: objc-lint name: objc-format entry: format-objc-hook language: script require_serial: true verbose: true 高阶使用 fork 工程，可修改、增加自定义规则，以及.clang 规则 相关截图 github https://github.com/HaoXianSen/Objective-CLint 联系方式 harry_c2016@163.com</summary></entry><entry><title type="html">关于iOS 代码质量把控研究</title><link href="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html" rel="alternate" type="text/html" title="关于iOS 代码质量把控研究" /><published>2022-08-29T00:00:00+08:00</published><updated>2022-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS%20%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"></content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><summary type="html"></summary></entry><entry><title type="html">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</title><link href="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html" rel="alternate" type="text/html" title="我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字" /><published>2022-08-26T00:00:00+08:00</published><updated>2022-08-26T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6,%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81</id><content type="html" xml:base="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">&lt;h2 id=&quot;前提&quot;&gt;前提&lt;/h2&gt;
+&lt;p&gt;harry_c2016@163.com&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><category term="pre-commit" /><category term="hooks" /><summary type="html">Objective-CLint 创建一个轻量级的、支持pre-commit的Objective-C 的静态检查 感谢 感谢 spacecommander作者提供的Objective-C lint的思路以及open source 本文大部分是基于 spacecommander累加的一些新功能。再次感谢开源作者，非常棒👍🏻 架构/构思 1.前因 因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用pre-commit那么 就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。 OK，解决方法之一就是我们之间使用Clang-format，我们知道其实OCLint也是基于Clang-format做的，那么在寻找的过程中发现了有伟大的 spacecommander 作者已经帮助我们集成了Clang-format 作者除此之外还解决了可能会引起Clang-format有歧义的代码修改、以及Clang-format 扫不到的一些规则修改。 那么有了伟大的 spacecommander 作为基础，我们就可以利用他做一个pre-commit hook，用来OClint 2.相关实现、改动 在spacecommander 的基础上，实现了支持pre-commit，更方便集成 spacecommander 只是对比了format之后行数，以用来比较是否有不否和规则的代码出现，不够明显，我们采用diff的方式对比了 format之前和之后的代码，使得开发者能更清楚，自己哪些地方代码不规范 spacecommander 提供了api 一键format代码，我们不提供此功能，因为我总觉得只有多次的认识到不规范的代码，才能保证下次写出规范的代码 提供了diff之后可视化输出，打开html，一眼即可看到不规范的代码 修改了部分自定义规则代码，以适应灵活的代码不规范 .clang-format 配置了更多的clang 规则 使用 安装 pre-commit , brew install pre-commit 在工程根目录添加(即.git同级目录)添加 .pre-commit-config.yaml 并配置为： fail_fast: false repos: - repo: https://github.com/HaoXianSen/Objective-CLint.git rev: v0.0.2 hooks: - id: objc-lint name: objc-format entry: format-objc-hook language: script require_serial: true verbose: true 高阶使用 fork 工程，可修改、增加自定义规则，以及.clang 规则 相关截图 github https://github.com/HaoXianSen/Objective-CLint 联系方式 harry_c2016@163.com</summary></entry><entry><title type="html">关于iOS 代码质量把控研究</title><link href="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html" rel="alternate" type="text/html" title="关于iOS 代码质量把控研究" /><published>2022-08-29T00:00:00+08:00</published><updated>2022-08-29T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS%20%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">&lt;h3 id=&quot;前提&quot;&gt;前提&lt;/h3&gt;
+
+&lt;p&gt;code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。&lt;/p&gt;
+
+&lt;p&gt;所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！&lt;/p&gt;
+
+&lt;h3 id=&quot;lint-时机&quot;&gt;Lint 时机&lt;/h3&gt;
+
+&lt;p&gt;我们熟知的Objective-C lint，有&lt;a href=&quot;https://docs.oclint.org/en/stable/index.html#usage&quot;&gt;OClint&lt;/a&gt;、&lt;a href=&quot;https://fbinfer.com/&quot;&gt;Infer&lt;/a&gt;; swift 有&lt;a href=&quot;https://github.com/realm/SwiftLint&quot;&gt;swiftLint&lt;/a&gt;，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;放到build时期？&lt;/p&gt;
+
+    &lt;p&gt;这种方案被我们pass掉了，首先放到build时期会增加我们的build时间，第二事实上我们需要嵌入脚本到项目里，可能会影响到打包。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;放到git push 之后gitlab pipeline时期？&lt;/p&gt;
+
+    &lt;p&gt;这种方案不出意外也被pass了，首先如果知道pipeline job的人都知道，我们需要配置runner, 本身来说配置加集成，可能就不是一个容易的事情，而且对于我来说我觉得这个事情，太晚了，lint 有问题，还等再次push….&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;放到pre commit时期？&lt;/p&gt;
+
+    &lt;p&gt;Ok, 对于比较合适的事情，我觉得就是在precommit时期，因为基于git 管理，我们代码每次改动之后都需要commit，那么commit事情去做lint这件事情，是非常合适的，如果存在问题，那么就修改之后，再次commit。时间上，时机上我觉得都很合适&lt;/p&gt;
+
+    &lt;p&gt;ok， 对于 lint 放到哪个时机的问题，我们已经确定–pre commit时期&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;pre-commit&quot;&gt;&lt;a href=&quot;https://pre-commit.com/#install&quot;&gt;pre-commit&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;git 其实为我们提供了很多种的hook方式，随便打开一个.git文件夹就可以看到一堆的hooks example文件，如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220915152238image-20220915152237340.png&quot; alt=&quot;image-20220915152237340&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;OK，所以其实我们想要hook，就变得非常容易，只要我们修改pre-commit为可执行文件，并在里边按照example嵌入执行代码即可。&lt;/p&gt;
+
+&lt;p&gt;这一步，早就有人帮我们做了，那就是&lt;a href=&quot;https://pre-commit.com/#install&quot;&gt;pre-commit&lt;/a&gt; 他不仅简单了我们的操作，并且起到了脚本lint代码分离的效果，他通过.pre-commit-config.yaml 文件中的配置，在执行git commit时候执行&lt;a href=&quot;https://pre-commit.com/#install&quot;&gt;pre-commit&lt;/a&gt; 脚本，再而执行到安装的pre-commit代码里，进行clone .pre-commit-config.yaml里配置的repo，以及分析，执行对应的hook代码。&lt;/p&gt;
+
+&lt;p&gt;接下来简单的介绍一下&lt;a href=&quot;https://pre-commit.com/#install&quot;&gt;pre-commit&lt;/a&gt; 相关的东西：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装&lt;/p&gt;
+
+    &lt;p&gt;Mac 推荐使用：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew install pre-commit&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;其他安装：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pip install pre-commit&lt;/code&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;conda install -c conda-forge pre-commit&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;配置&lt;/p&gt;
+
+    &lt;p&gt;安装完pre-commit之后，在.git 同级目录，添加.pre-commit-config.yaml 文件，则可支持pre-commit&lt;/p&gt;
+
+    &lt;p&gt;.pre-commit-config.yaml的相关配置：&lt;/p&gt;
+
+    &lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;repos&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;https://github.com/pre-commit/pre-commit-hooks&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;rev&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v2.3.0&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;check-yaml&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;end-of-file-fixer&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;trailing-whitespace&lt;/span&gt;
+&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;https://github.com/psf/black&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;rev&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;21.12b0&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;black&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;注意点：rev: 不再支持commit hash id， 只支持tag&lt;/p&gt;
+
+    &lt;p&gt;具体参考：https://pre-commit.com/#plugins&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;创建一个自己的hook&lt;/p&gt;
+
+    &lt;p&gt;一个hook必须要包含a .pre-commit-hooks.yaml 文件，这个文件是告诉pre-commit，这个hook库里包含的hook id等信息…&lt;/p&gt;
+
+    &lt;p&gt;大概张这个样子…&lt;/p&gt;
+
+    &lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt;   &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;trailing-whitespace&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Trim Trailing Whitespace&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;This hook trims trailing whitespace.&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;trailing-whitespace-fixer&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;python&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;types&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;​		hooks 仓库，支持很多种语言，每种语言包含的文件也不太一样，比如script （shell脚本）必须entry参		数给一个相对路径的shell脚本；比如python，必须要执行pip install .（及包括setup.py或者		pyproject.toml）以及entry一般在setup.py 里的console_scripts或者scripts配置的。&lt;/p&gt;
+
+&lt;p&gt;​	&lt;a href=&quot;https://pre-commit.com/#script&quot;&gt;了解更多&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;objective-c-lint&quot;&gt;Objective-C Lint&lt;/h3&gt;
+
+&lt;p&gt;上面提到现存在两种lint，&lt;a href=&quot;https://oclint.org/&quot;&gt;oc-lint&lt;/a&gt;/ infer。&lt;/p&gt;
+
+&lt;h4 id=&quot;oc-lint&quot;&gt;&lt;a href=&quot;https://oclint.org/&quot;&gt;oc-lint&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;安装： &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew tap oclint/formulae&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;​			&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;	 brew install oclint&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;​			&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*// 安装xcpretty* gem install xcpretty&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;先简单介绍一下OC lint：OC lint 是通过编译之后的产物 compile_commands.json 去分析的，所以必要的是我们执行oc-lint必须要build。然后在完成之后会以自动打开一个html分析结果。&lt;/p&gt;
+
+&lt;p&gt;我们先说说他的缺点：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;必须要编译，首先这是一个漫长的过程，而且对于我们一个不支持模拟器的app（害！因为内部直播的framework没把x86打进去）这是比较致命的可以说&lt;/li&gt;
+  &lt;li&gt;他不支持增量查，这样会带出来很多历史遗留问题，对于集成来说，又成了一个比较窘困的问题（你想想，以前多少可能有问题的代码，这集成都得改，不得改个三天三夜的😁）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;接下来我们说说他的优点：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. oc-lint 不仅查了不规范的代码，而且查了可能会导致问题的坏味道代码
+1. oc-lint 对于代码严重程度做了等级分化，并且以html的方式打开，更加的直观
+1. oc-lint支持自定义规则，和修改规则
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;当然，对于1.2的缺点，已经有了一些方案解决，&lt;a href=&quot;https://github.com/shulong-apple/fast-oclint&quot;&gt;了解更多&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;后面会尝试集成到pre-commit hook, 敬请期待…&lt;/p&gt;
+
+&lt;h4 id=&quot;infer&quot;&gt;&lt;a href=&quot;https://infer.liaohuqiu.net/docs/getting-started.html&quot;&gt;infer&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;安装: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew install infer&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;​			可以选择下载安装包安装，&lt;a href=&quot;https://infer.liaohuqiu.net/docs/getting-started.html&quot;&gt;下载地址&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Infer 是facebook提供的一个lint 库&lt;/p&gt;
+
+&lt;p&gt;缺点：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	1. 貌似infer 也需要编译工程
+	1. 不支持自定义规则
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;优点：&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;1. 支持多种检测，包括空指针、内存泄漏等等的检测
+1. 支持增量检测
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;具体我也没有太多研究，需要深入研究的，&lt;a href=&quot;https://fbinfer.com/docs/analyzing-apps-or-projects&quot;&gt;请参考&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;objective-clint-自制hook-&quot;&gt;&lt;a href=&quot;https://github.com/HaoXianSen/Objective-CLint&quot;&gt;Objective-CLint 自制hook &lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;这个库是我基于SpaceCommand三方库，做的pre-commit hook，简单的介绍一下：&lt;/p&gt;
+
+&lt;p&gt;SpaceCommand是基于clang-format 制作的代码规范工具，而且写了一些自定义规则，用来检测clang-format忽略或者有歧义的部分。它支持了检测不规范代码，并给出终端提示；而且提供了一键格式化所有有问题的代码。&lt;/p&gt;
+
+&lt;p&gt;那么Objective-CLint 在它的基础上，1. 我显示了将它配置成一个可以pre-commit集成的hook，2. 增加了可视化diff 到html，自动打开 3. 去掉了一键格式化 5. 修改自定义规则，使得适用更加广泛。&lt;/p&gt;
+
+&lt;p&gt;具体内容介绍，请移步到&lt;a href=&quot;https://haoxiansen.github.io/2022/09/14/Objective_CLint.html&quot;&gt;个人博客Objective-CLint&lt;/a&gt; 或者移步到&lt;a href=&quot;https://github.com/HaoXianSen/Objective-CLint&quot;&gt;github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;到此，我们对于OC代码已经有了好几种方案，我选择了容易集成且轻量级的自制hook。&lt;/p&gt;
+
+&lt;h3 id=&quot;swift-lint&quot;&gt;Swift Lint&lt;/h3&gt;
+
+&lt;h4 id=&quot;swiftlint&quot;&gt;&lt;a href=&quot;https://github.com/realm/SwiftLint&quot;&gt;swiftLint&lt;/a&gt;&lt;/h4&gt;
+
+&lt;p&gt;​	Swift 代码毫无疑问，我们就可以使用SwiftLint去集成。swiftLint 已经为我们提供了pre-commit hook，我	们可以直接使用，当然也可以fork，修改规则使用&lt;/p&gt;
+
+&lt;p&gt;​	具体请查看github：https://github.com/realm/SwiftLint&lt;/p&gt;
+
+&lt;h3 id=&quot;集成&quot;&gt;集成&lt;/h3&gt;
+
+&lt;p&gt;到此为止，我们所有的lint 工具 以及hook 工具已经齐全，即 pre-commit + Objective-CLint + SwiftLint!&lt;/p&gt;
+
+&lt;p&gt;Ok, 当然我们还有一些工作量需要做，为了团队更好的集成，我们添加检测安装脚本位于pod pre_install, 目的在于自动检测是否安装了pre-commit，以及自动安装pre-commit。&lt;/p&gt;
+
+&lt;p&gt;下面是检测脚本：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;正在检查安装必要工具...&quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 检测是否安装了homebrew&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; brew &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;✅homebrew 已经安装&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else 
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;正在安装brew...&quot;&lt;/span&gt;
+    /bin/bash &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-fsSL&lt;/span&gt; https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+   &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'✅安装完成homebrew 🍺🍺🍺 /n'&lt;/span&gt;
+   
+&lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 检测是否安装了pre-commit&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;command&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt; pre-commit&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;✅pre-commit 已经安装&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;正在安装pre-commit...&quot;&lt;/span&gt;
+    brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;pre-commit
+    &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'✅安装完成pre-commit 🍺🍺🍺/n'&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;fi
+
+
+if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;.pre-commit-config.yaml&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+    &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\0&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;33[31m❎文件 &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.pre-commit-config.yaml&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; 不存在， 请添加.pre-commit-config.yaml&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\0&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;33[0m&quot;&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;exit &lt;/span&gt;1
+&lt;span class=&quot;k&quot;&gt;fi
+
+&lt;/span&gt;pre-commit &lt;span class=&quot;nb&quot;&gt;install
+echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\0&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;33[36m ...................所有工具都安装成功😁😁😁 &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\0&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;33[0m&quot;&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ok, 我们把它集成到pod中，当然没有使用pod管理的，直接执行这个脚本即可。把下面的脚本嵌入到podfile中&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;pre_install&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;installer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;sb&quot;&gt;`sh check_tools.sh`&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;Pod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;UI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;添加.pre-commit-config.yaml&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;fail_fast&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;false&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;repos&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;https://github.com/HaoXianSen/Objective-CLint.git&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;rev&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;v0.0.4&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;objc-lint&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;objc-format&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;format-objc-hook&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;script&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;require_serial&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;verbose&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;https://github.com/realm/SwiftLint&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;rev&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;0.49.1&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;swiftlint&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;OK，这样我们整个集成就完成了。&lt;/p&gt;
+
+&lt;p&gt;当然swiftLint的配置不一定是适用于我们的，比如我们想report为html、或者添加一些自定义的规则等等，就需要我们fork一份swiftLint，做一些自己的适配。上面的swiftLint就使用自己的repo以及自己tag就好了。&lt;/p&gt;
+
+&lt;h3 id=&quot;总结&quot;&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;到此为止，我们可以说整iOS 混合发开的代码规范lint就集成完事了。&lt;/p&gt;
+
+&lt;p&gt;当然我们还有优化的部分，首先自己的lint 只是规范检测，不想OCLint 那样面积大，并且输出也不是很哇塞。后续我们可以继续使用fast-oclint的方案，既能使用OCLint的强大，又能不用编译还支持增量编译。&lt;/p&gt;
+
+&lt;p&gt;​&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><summary type="html">前提 code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。 所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！ Lint 时机 我们熟知的Objective-C lint，有OClint、Infer; swift 有swiftLint，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？ 放到build时期？ 这种方案被我们pass掉了，首先放到build时期会增加我们的build时间，第二事实上我们需要嵌入脚本到项目里，可能会影响到打包。 放到git push 之后gitlab pipeline时期？ 这种方案不出意外也被pass了，首先如果知道pipeline job的人都知道，我们需要配置runner, 本身来说配置加集成，可能就不是一个容易的事情，而且对于我来说我觉得这个事情，太晚了，lint 有问题，还等再次push…. 放到pre commit时期？ Ok, 对于比较合适的事情，我觉得就是在precommit时期，因为基于git 管理，我们代码每次改动之后都需要commit，那么commit事情去做lint这件事情，是非常合适的，如果存在问题，那么就修改之后，再次commit。时间上，时机上我觉得都很合适 ok， 对于 lint 放到哪个时机的问题，我们已经确定–pre commit时期 pre-commit git 其实为我们提供了很多种的hook方式，随便打开一个.git文件夹就可以看到一堆的hooks example文件，如下： OK，所以其实我们想要hook，就变得非常容易，只要我们修改pre-commit为可执行文件，并在里边按照example嵌入执行代码即可。 这一步，早就有人帮我们做了，那就是pre-commit 他不仅简单了我们的操作，并且起到了脚本lint代码分离的效果，他通过.pre-commit-config.yaml 文件中的配置，在执行git commit时候执行pre-commit 脚本，再而执行到安装的pre-commit代码里，进行clone .pre-commit-config.yaml里配置的repo，以及分析，执行对应的hook代码。 接下来简单的介绍一下pre-commit 相关的东西： 安装 Mac 推荐使用：brew install pre-commit 其他安装：pip install pre-commit conda install -c conda-forge pre-commit 配置 安装完pre-commit之后，在.git 同级目录，添加.pre-commit-config.yaml 文件，则可支持pre-commit .pre-commit-config.yaml的相关配置： repos: - repo: https://github.com/pre-commit/pre-commit-hooks rev: v2.3.0 hooks: - id: check-yaml - id: end-of-file-fixer - id: trailing-whitespace - repo: https://github.com/psf/black rev: 21.12b0 hooks: - id: black 注意点：rev: 不再支持commit hash id， 只支持tag 具体参考：https://pre-commit.com/#plugins 创建一个自己的hook 一个hook必须要包含a .pre-commit-hooks.yaml 文件，这个文件是告诉pre-commit，这个hook库里包含的hook id等信息… 大概张这个样子… - id: trailing-whitespace name: Trim Trailing Whitespace description: This hook trims trailing whitespace. entry: trailing-whitespace-fixer language: python types: [text] ​ hooks 仓库，支持很多种语言，每种语言包含的文件也不太一样，比如script （shell脚本）必须entry参 数给一个相对路径的shell脚本；比如python，必须要执行pip install .（及包括setup.py或者 pyproject.toml）以及entry一般在setup.py 里的console_scripts或者scripts配置的。 ​ 了解更多 Objective-C Lint 上面提到现存在两种lint，oc-lint/ infer。 oc-lint 安装： brew tap oclint/formulae ​ brew install oclint ​ *// 安装xcpretty* gem install xcpretty 先简单介绍一下OC lint：OC lint 是通过编译之后的产物 compile_commands.json 去分析的，所以必要的是我们执行oc-lint必须要build。然后在完成之后会以自动打开一个html分析结果。 我们先说说他的缺点： 必须要编译，首先这是一个漫长的过程，而且对于我们一个不支持模拟器的app（害！因为内部直播的framework没把x86打进去）这是比较致命的可以说 他不支持增量查，这样会带出来很多历史遗留问题，对于集成来说，又成了一个比较窘困的问题（你想想，以前多少可能有问题的代码，这集成都得改，不得改个三天三夜的😁） 接下来我们说说他的优点： 1. oc-lint 不仅查了不规范的代码，而且查了可能会导致问题的坏味道代码 1. oc-lint 对于代码严重程度做了等级分化，并且以html的方式打开，更加的直观 1. oc-lint支持自定义规则，和修改规则 当然，对于1.2的缺点，已经有了一些方案解决，了解更多 后面会尝试集成到pre-commit hook, 敬请期待… infer 安装: brew install infer ​ 可以选择下载安装包安装，下载地址 Infer 是facebook提供的一个lint 库 缺点： 1. 貌似infer 也需要编译工程 1. 不支持自定义规则 优点： 1. 支持多种检测，包括空指针、内存泄漏等等的检测 1. 支持增量检测 具体我也没有太多研究，需要深入研究的，请参考 Objective-CLint 自制hook 这个库是我基于SpaceCommand三方库，做的pre-commit hook，简单的介绍一下： SpaceCommand是基于clang-format 制作的代码规范工具，而且写了一些自定义规则，用来检测clang-format忽略或者有歧义的部分。它支持了检测不规范代码，并给出终端提示；而且提供了一键格式化所有有问题的代码。 那么Objective-CLint 在它的基础上，1. 我显示了将它配置成一个可以pre-commit集成的hook，2. 增加了可视化diff 到html，自动打开 3. 去掉了一键格式化 5. 修改自定义规则，使得适用更加广泛。 具体内容介绍，请移步到个人博客Objective-CLint 或者移步到github 到此，我们对于OC代码已经有了好几种方案，我选择了容易集成且轻量级的自制hook。 Swift Lint swiftLint ​ Swift 代码毫无疑问，我们就可以使用SwiftLint去集成。swiftLint 已经为我们提供了pre-commit hook，我 们可以直接使用，当然也可以fork，修改规则使用 ​ 具体请查看github：https://github.com/realm/SwiftLint 集成 到此为止，我们所有的lint 工具 以及hook 工具已经齐全，即 pre-commit + Objective-CLint + SwiftLint! Ok, 当然我们还有一些工作量需要做，为了团队更好的集成，我们添加检测安装脚本位于pod pre_install, 目的在于自动检测是否安装了pre-commit，以及自动安装pre-commit。 下面是检测脚本： #!/bin/bash echo &quot;正在检查安装必要工具...&quot; # 检测是否安装了homebrew if [ &quot;$(command -v brew -v)&quot; ]; then echo &quot;✅homebrew 已经安装&quot; else echo &quot;正在安装brew...&quot; /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot; echo '✅安装完成homebrew 🍺🍺🍺 /n' fi # 检测是否安装了pre-commit if [ &quot;$(command -v pre-commit)&quot; ]; then echo &quot;✅pre-commit 已经安装&quot; else echo &quot;正在安装pre-commit...&quot; brew install pre-commit echo '✅安装完成pre-commit 🍺🍺🍺/n' fi if [ ! -f &quot;.pre-commit-config.yaml&quot; ]; then echo &quot;\033[31m❎文件 \&quot;.pre-commit-config.yaml\&quot; 不存在， 请添加.pre-commit-config.yaml\033[0m&quot; exit 1 fi pre-commit install echo &quot;\033[36m ...................所有工具都安装成功😁😁😁 \033[0m&quot; Ok, 我们把它集成到pod中，当然没有使用pod管理的，直接执行这个脚本即可。把下面的脚本嵌入到podfile中 pre_install do |installer| flag = `sh check_tools.sh` Pod::UI.puts flag end 添加.pre-commit-config.yaml fail_fast: false repos: - repo: https://github.com/HaoXianSen/Objective-CLint.git rev: v0.0.4 hooks: - id: objc-lint name: objc-format entry: format-objc-hook language: script require_serial: true verbose: true - repo: https://github.com/realm/SwiftLint rev: 0.49.1 hooks: - id: swiftlint OK，这样我们整个集成就完成了。 当然swiftLint的配置不一定是适用于我们的，比如我们想report为html、或者添加一些自定义的规则等等，就需要我们fork一份swiftLint，做一些自己的适配。上面的swiftLint就使用自己的repo以及自己tag就好了。 总结 到此为止，我们可以说整iOS 混合发开的代码规范lint就集成完事了。 当然我们还有优化的部分，首先自己的lint 只是规范检测，不想OCLint 那样面积大，并且输出也不是很哇塞。后续我们可以继续使用fast-oclint的方案，既能使用OCLint的强大，又能不用编译还支持增量编译。 ​</summary></entry><entry><title type="html">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</title><link href="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html" rel="alternate" type="text/html" title="我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字" /><published>2022-08-26T00:00:00+08:00</published><updated>2022-08-26T00:00:00+08:00</updated><id>http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6,%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81</id><content type="html" xml:base="http://localhost:4000/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">&lt;h2 id=&quot;前提&quot;&gt;前提&lt;/h2&gt;
 
 &lt;p&gt;为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如&lt;/p&gt;
 
