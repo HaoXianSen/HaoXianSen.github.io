@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>Home - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>iOS自旋锁与互斥锁 - harry’s blog</title>
 
-<meta name="description" content="harry's technology blog 
-">
-<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="iOS中自旋锁和互斥锁起因属性修饰符atomic，是否是绝对线程安全的？当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）后边我们再看atomic到底是否安全的问题定义锁：在计算机...">
+<link rel="canonical" href="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -260,7 +259,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -452,214 +451,103 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 " href="/">harry’s blog</a></div><button class="button button--secondary button--circle search-button js-search-toggle">
           <div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div>
           </button></div><nav class="navigation">
-        <ul><li class="navigation__item navigation__item--active"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
+        <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="harry"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><h2 itemprop="headline" class="item__header">iOS自旋锁与互斥锁</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">iOS中自旋锁和互斥锁
-
-
-
-起因
-
-属性修饰符atomic，是否是绝对线程安全的？
-
-当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）
-
-后边我们再看atomic到底是否安全的问题
-
-定义
-
-锁：在计算机科学中，锁是在执行多线程时用于强行限制资源访问的同步机制，即用于在并发控制中保证对互斥要求的满足。(维基百科中的定义)
-
-自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。
-
-互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。
-
-其实从定义中我们也能很明...</div><p><a href="/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>iOS自旋锁与互斥锁</h1></header></div><meta itemprop="headline" content="iOS自旋锁与互斥锁"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=iOS">iOS</a>
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 04, 2023</span>
             </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-04T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/09/14/Objective_CLint.html"><h2 itemprop="headline" class="item__header">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">Objective-CLint
-创建一个轻量级的、支持pre-commit的Objective-C 的静态检查
+    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-感谢
-感谢 spacecommander作者提供的Objective-C lint的思路以及open source
-本文大部分是基于 spacecommander累加的一些新功能。再次感谢开源作者，非常棒👍🏻
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="ios中自旋锁和互斥锁">iOS中自旋锁和互斥锁</h4>
 
-架构/构思
-1.前因
-因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用pre-commit那么
-就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。
+<hr />
 
-OK，解决方法之一就是我们之间使用Clang-f...</div><p><a href="/2022/09/14/Objective_CLint.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=pre-commit">pre-commit</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=hooks">hooks</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Sep 14, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="109">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-09-14T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS,pre-commit,hooks"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">关于iOS 代码质量把控研究</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前提
+<h5 id="起因">起因</h5>
 
-code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。
+<p>属性修饰符atomic，是否是绝对线程安全的？</p>
 
-所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！
+<p>当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）</p>
 
-Lint 时机
+<p>后边我们再看atomic到底是否安全的问题</p>
 
-我们熟知的Objective-C lint，有OClint、Infer; swift 有swiftLint，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？...</div><p><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 29, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html"><h2 itemprop="headline" class="item__header">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前提
+<h5 id="定义">定义</h5>
 
-为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如
+<p>锁：在<a href="https://zh.wikipedia.org/wiki/计算机科学">计算机科学</a>中，<strong>锁</strong>是在执行<a href="https://zh.wikipedia.org/wiki/多线程">多线程</a>时用于强行限制资源访问的<a href="https://zh.wikipedia.org/wiki/同步">同步</a>机制，即用于在<a href="https://zh.wikipedia.org/wiki/并发控制">并发控制</a>中保证对<a href="https://zh.wikipedia.org/wiki/互斥">互斥</a>要求的满足。(维基百科中的定义)</p>
 
-title: position、anchorPoint、frame理解
+<p>自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。</p>
 
-tags: iOS
+<p>互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。</p>
 
-key: 107
+<p>其实从定义中我们也能很明确的看到了他们的优缺点：自旋锁一直处于忙等的状态，会持续消耗cpu，而互斥锁则不会，但是互斥锁会频繁的切换线程的状态，比较效率上会比自旋锁低很多。</p>
 
-# article_header:
+<h5 id="ios-中的锁">iOS 中的锁</h5>
 
-# type: cover
+<ol>
+  <li>NSLock 非递归互斥锁。是对于pthread_mutex_t的封装。遵循了NSLocking协议。-lock与unlock必须在同一线程调用，否则会产生问题。</li>
+  <li>NSCondition， 与NSLock类似都是对于pthread_mutex_t的封装，区别在于，他还对于pthread_cond_t的封装，所以NSLock只能等待锁资源释放，然后唤起等待的线程，而NSCondition则可以由我们主动唤起线程</li>
+  <li>NSConditionLock, 条件互斥锁，也就是说，除了正常的锁资源释放我们获得锁之外，我们还需要满足设置的另外一个条件，才能获得锁。释放锁也是如此。</li>
+  <li>NSRecursiveLock, 递归锁，也是一个互斥锁。与其他锁不同的是，递归锁可以其他锁如果同一个线程获得锁并且没有释放，这个线程再次获取锁就会造成死锁，互斥锁则可以运行同一个线程获得了锁之后依然可以再次获得锁。</li>
+  <li>@synchronize，对象锁，也是一个递归互斥锁。</li>
+  <li>Dispatch_semaphore,  信号量，更高级的互斥锁，初始值可以控制并发访问的最大量</li>
+  <li>OSSpinLock, iOS 10 废弃的自旋锁，原因是10之后增加了许多的线程默认优先级，自旋锁可能会造成线程优先级反转，导致死锁</li>
+  <li>os_unfair_lock, 用来取代OSSpinLock的互斥锁</li>
+  <li>pthread_mutex, 底层pthread互斥锁</li>
+</ol>
 
-# image:
+<h5 id="性能">性能</h5>
 
-# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-...</div><p><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=MAC">MAC</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Plugin">Plugin</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 26, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="108">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-26T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS,MAC,Plugin"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/05/01/00_position_anchorPoint_frame.html"><h2 itemprop="headline" class="item__header">position、anchorPoint、frame理解</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
+<p>从<a href="https://blog.ibireme.com/author/ibireme/">ibireme</a>的博客中图来看性能对比大概是这样的：</p>
 
-​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。
+<p><img src="https://blog.ibireme.com/wp-content/uploads/2016/01/lock_benchmark.png" alt="lock_benchmark" /></p>
 
-进入正文
+<p>当然作者只是单线程的一个时间消耗数据。不能反应多线程的实际性能，只能作为一个定性分析。</p>
 
-frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-01-04T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-bounds：表示了一个view的本地坐标系下，参照物是自身，...</div><p><a href="/2022/05/01/00_position_anchorPoint_frame.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/08/01_flutter_and_ios_matter.html"><h2 itemprop="headline" class="item__header">解决原生横滑scrollView和Flutter 纵滑CustomScroll的冲突</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
+<!-- end custom article footer snippet --><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2022/09/14/Objective_CLint.html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</a></div></div></div>
 
+</div>
 
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
 
-最近项目中在横向滑动的PageViewController（WMPageController）里嵌入了Flutter 的 CustomScrollView，原本会觉得一切ok，却出现了一个致命的问题：安卓嵌入之后滑动流程稳定，没有任何问题，iOS 嵌入之后出现Flutter 页面滑动卡顿、不流畅，体现在触发flutter 列表滑动的同时，会触发原生横滑，且必须垂直滑动（无一点左右的滑动偏移）才会稳定触发Flutter 列表的滑动，否则容易触发左右横滑，所以我们习惯了单手用手机的人，根本无法顺畅滑动。如下面的gif（其实我已经很努力的在上下滑了，很明显上下滑动的距离大于水平滑动的距离，用户的用意也应该是要上下滑动，但是却触发了横滑）：
-
-
-
-解决方式
-
-
-
-首先触摸flutt...</div><p><a href="/2020/06/08/01_flutter_and_ios_matter.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 08, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="101">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-08T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter,iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/07/00_flutter-hot-reload.html"><h2 itemprop="headline" class="item__header">热重载原理研究和探索</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">热重载原理研究和探索
-
-1. 前言
-
-
-
-Flutter 亚秒级别的热重载是开发者的神兵利器，它能够提供我们快速修改UI、增加功能、修复bug，不需要重新启动应用，就可以看到改动效果。那么Flutter是如何做到这样的功能的呢？下面我们一起探究一下其中的原理。
-
-2. 首先需要知道JIT 和AOT
-
-
-
-JIT
-
-JIT（Just In Time），指的是运行时编译，Flutter 在debug模式下采用这种方式，在运行时动态下发和执行代码，启动速度快，但是由于在运行时编译，性能会受影响。
-
-
-
-AOT
-
-AOT（Ahead Of Time），指的是在运行之前进行编译，Flutter 在Release模式下采用，可以为特定的平台生成稳定的二进制代码、执行性能好、运行速度快，但是每次都需...</div><p><a href="/2020/06/07/00_flutter-hot-reload.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 07, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="100">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-07T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/05/01/02_flutter_text_has_underline.html"><h2 itemprop="headline" class="item__header">Flutter Text 文字下有黄色下划线</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">导致原因
-
-导致这种情况发生的原因是因为，Text widget 隶属于Material 风格下的组件，如果根节点不是Material 相关组件，则会使用默认带黄色下划线的格式。如果根节点是Material 容器组件，则会采用其Material风格的样式（即不带有下换线）。
-
-解决方式
-
-1. 采用根节点为脚手架Scaffold组件
-Scaffold(body: content,);
-
-2.  采用根节点为Material 组件
-Material(child: content);
-
-3. 逐个修改Text 组件的style 下的decoration为TextDecoration.none
-child: Text(
-                      "专栏的文章",
-     ...</div><p><a href="/2020/05/01/02_flutter_text_has_underline.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="102">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
-      </article></div>
-</div><div class="layout--home"></div>
-<script>/*(function () {
-
-})();*/
-</script>
-
-
-</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
 
 <!-- end custom main bottom snippet --></div>
             </div></div></div><div class="page__footer d-print-none">
@@ -1222,6 +1110,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script><script type="text/x-mathjax-config">
 	var _config = { tex2jax: {
 		inlineMath: [['$','$'], ['\\(','\\)']]

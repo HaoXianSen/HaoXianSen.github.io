@@ -1,5 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-01-04T20:12:09+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
-</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</title><link href="http://localhost:4000/2022/09/14/Objective_CLint.html" rel="alternate" type="text/html" title="Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）" /><published>2022-09-14T00:00:00+08:00</published><updated>2022-09-14T00:00:00+08:00</updated><id>http://localhost:4000/2022/09/14/Objective_CLint</id><content type="html" xml:base="http://localhost:4000/2022/09/14/Objective_CLint.html">&lt;h1 id=&quot;objective-clint&quot;&gt;Objective-CLint&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-01-04T20:17:17+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">iOS自旋锁与互斥锁</title><link href="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html" rel="alternate" type="text/html" title="iOS自旋锁与互斥锁" /><published>2023-01-04T00:00:00+08:00</published><updated>2023-01-04T00:00:00+08:00</updated><id>http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81</id><content type="html" xml:base="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">&lt;h4 id=&quot;ios中自旋锁和互斥锁&quot;&gt;iOS中自旋锁和互斥锁&lt;/h4&gt;
+
+&lt;hr /&gt;
+
+&lt;h5 id=&quot;起因&quot;&gt;起因&lt;/h5&gt;
+
+&lt;p&gt;属性修饰符atomic，是否是绝对线程安全的？&lt;/p&gt;
+
+&lt;p&gt;当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）&lt;/p&gt;
+
+&lt;p&gt;后边我们再看atomic到底是否安全的问题&lt;/p&gt;
+
+&lt;h5 id=&quot;定义&quot;&gt;定义&lt;/h5&gt;
+
+&lt;p&gt;锁：在&lt;a href=&quot;https://zh.wikipedia.org/wiki/计算机科学&quot;&gt;计算机科学&lt;/a&gt;中，&lt;strong&gt;锁&lt;/strong&gt;是在执行&lt;a href=&quot;https://zh.wikipedia.org/wiki/多线程&quot;&gt;多线程&lt;/a&gt;时用于强行限制资源访问的&lt;a href=&quot;https://zh.wikipedia.org/wiki/同步&quot;&gt;同步&lt;/a&gt;机制，即用于在&lt;a href=&quot;https://zh.wikipedia.org/wiki/并发控制&quot;&gt;并发控制&lt;/a&gt;中保证对&lt;a href=&quot;https://zh.wikipedia.org/wiki/互斥&quot;&gt;互斥&lt;/a&gt;要求的满足。(维基百科中的定义)&lt;/p&gt;
+
+&lt;p&gt;自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。&lt;/p&gt;
+
+&lt;p&gt;互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。&lt;/p&gt;
+
+&lt;p&gt;其实从定义中我们也能很明确的看到了他们的优缺点：自旋锁一直处于忙等的状态，会持续消耗cpu，而互斥锁则不会，但是互斥锁会频繁的切换线程的状态，比较效率上会比自旋锁低很多。&lt;/p&gt;
+
+&lt;h5 id=&quot;ios-中的锁&quot;&gt;iOS 中的锁&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;NSLock 非递归互斥锁。是对于pthread_mutex_t的封装。遵循了NSLocking协议。-lock与unlock必须在同一线程调用，否则会产生问题。&lt;/li&gt;
+  &lt;li&gt;NSCondition， 与NSLock类似都是对于pthread_mutex_t的封装，区别在于，他还对于pthread_cond_t的封装，所以NSLock只能等待锁资源释放，然后唤起等待的线程，而NSCondition则可以由我们主动唤起线程&lt;/li&gt;
+  &lt;li&gt;NSConditionLock, 条件互斥锁，也就是说，除了正常的锁资源释放我们获得锁之外，我们还需要满足设置的另外一个条件，才能获得锁。释放锁也是如此。&lt;/li&gt;
+  &lt;li&gt;NSRecursiveLock, 递归锁，也是一个互斥锁。与其他锁不同的是，递归锁可以其他锁如果同一个线程获得锁并且没有释放，这个线程再次获取锁就会造成死锁，互斥锁则可以运行同一个线程获得了锁之后依然可以再次获得锁。&lt;/li&gt;
+  &lt;li&gt;@synchronize，对象锁，也是一个递归互斥锁。&lt;/li&gt;
+  &lt;li&gt;Dispatch_semaphore,  信号量，更高级的互斥锁，初始值可以控制并发访问的最大量&lt;/li&gt;
+  &lt;li&gt;OSSpinLock, iOS 10 废弃的自旋锁，原因是10之后增加了许多的线程默认优先级，自旋锁可能会造成线程优先级反转，导致死锁&lt;/li&gt;
+  &lt;li&gt;os_unfair_lock, 用来取代OSSpinLock的互斥锁&lt;/li&gt;
+  &lt;li&gt;pthread_mutex, 底层pthread互斥锁&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;性能&quot;&gt;性能&lt;/h5&gt;
+
+&lt;p&gt;从&lt;a href=&quot;https://blog.ibireme.com/author/ibireme/&quot;&gt;ibireme&lt;/a&gt;的博客中图来看性能对比大概是这样的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://blog.ibireme.com/wp-content/uploads/2016/01/lock_benchmark.png&quot; alt=&quot;lock_benchmark&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;当然作者只是单线程的一个时间消耗数据。不能反应多线程的实际性能，只能作为一个定性分析。&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><summary type="html">iOS中自旋锁和互斥锁 起因 属性修饰符atomic，是否是绝对线程安全的？ 当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的） 后边我们再看atomic到底是否安全的问题 定义 锁：在计算机科学中，锁是在执行多线程时用于强行限制资源访问的同步机制，即用于在并发控制中保证对互斥要求的满足。(维基百科中的定义) 自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。 互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。 其实从定义中我们也能很明确的看到了他们的优缺点：自旋锁一直处于忙等的状态，会持续消耗cpu，而互斥锁则不会，但是互斥锁会频繁的切换线程的状态，比较效率上会比自旋锁低很多。 iOS 中的锁 NSLock 非递归互斥锁。是对于pthread_mutex_t的封装。遵循了NSLocking协议。-lock与unlock必须在同一线程调用，否则会产生问题。 NSCondition， 与NSLock类似都是对于pthread_mutex_t的封装，区别在于，他还对于pthread_cond_t的封装，所以NSLock只能等待锁资源释放，然后唤起等待的线程，而NSCondition则可以由我们主动唤起线程 NSConditionLock, 条件互斥锁，也就是说，除了正常的锁资源释放我们获得锁之外，我们还需要满足设置的另外一个条件，才能获得锁。释放锁也是如此。 NSRecursiveLock, 递归锁，也是一个互斥锁。与其他锁不同的是，递归锁可以其他锁如果同一个线程获得锁并且没有释放，这个线程再次获取锁就会造成死锁，互斥锁则可以运行同一个线程获得了锁之后依然可以再次获得锁。 @synchronize，对象锁，也是一个递归互斥锁。 Dispatch_semaphore, 信号量，更高级的互斥锁，初始值可以控制并发访问的最大量 OSSpinLock, iOS 10 废弃的自旋锁，原因是10之后增加了许多的线程默认优先级，自旋锁可能会造成线程优先级反转，导致死锁 os_unfair_lock, 用来取代OSSpinLock的互斥锁 pthread_mutex, 底层pthread互斥锁 性能 从ibireme的博客中图来看性能对比大概是这样的： 当然作者只是单线程的一个时间消耗数据。不能反应多线程的实际性能，只能作为一个定性分析。</summary></entry><entry><title type="html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</title><link href="http://localhost:4000/2022/09/14/Objective_CLint.html" rel="alternate" type="text/html" title="Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）" /><published>2022-09-14T00:00:00+08:00</published><updated>2022-09-14T00:00:00+08:00</updated><id>http://localhost:4000/2022/09/14/Objective_CLint</id><content type="html" xml:base="http://localhost:4000/2022/09/14/Objective_CLint.html">&lt;h1 id=&quot;objective-clint&quot;&gt;Objective-CLint&lt;/h1&gt;
 &lt;p&gt;创建一个轻量级的、支持pre-commit的Objective-C 的静态检查&lt;/p&gt;
 
 &lt;h3 id=&quot;感谢&quot;&gt;感谢&lt;/h3&gt;
