@@ -1,5 +1,225 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-01-04T20:17:17+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
-</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">iOS自旋锁与互斥锁</title><link href="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html" rel="alternate" type="text/html" title="iOS自旋锁与互斥锁" /><published>2023-01-04T00:00:00+08:00</published><updated>2023-01-04T00:00:00+08:00</updated><id>http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81</id><content type="html" xml:base="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">&lt;h4 id=&quot;ios中自旋锁和互斥锁&quot;&gt;iOS中自旋锁和互斥锁&lt;/h4&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-01-05T19:17:05+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">swift 编写第一个CLI程序</title><link href="http://localhost:4000/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html" rel="alternate" type="text/html" title="swift 编写第一个CLI程序" /><published>2023-01-05T00:00:00+08:00</published><updated>2023-01-05T00:00:00+08:00</updated><id>http://localhost:4000/2023/01/05/01_Swift%20%E6%9E%84%E5%BB%BACLI</id><content type="html" xml:base="http://localhost:4000/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html">&lt;h4 id=&quot;用swift-编写第一个clicommand-line-tool程序&quot;&gt;用swift 编写第一个CLI(command line tool)程序&lt;/h4&gt;
+
+&lt;hr /&gt;
+
+&lt;h4 id=&quot;起因&quot;&gt;起因&lt;/h4&gt;
+
+&lt;p&gt;因为在研究swiftLint的时候，发现了都认识的swift，但却无法理解到底实现的是什么？&lt;/p&gt;
+
+&lt;p&gt;于是去了解一个apple的开源库&lt;a href=&quot;https://github.com/apple/swift-argument-parser&quot;&gt;swift-argument-parser&lt;/a&gt; , 知道了，哦这个是用来解析命令行参数的&lt;/p&gt;
+
+&lt;p&gt;swiftLint里的Package.swift文件又是啥呀？&lt;/p&gt;
+
+&lt;p&gt;一堆的疑问，一头的雾水，开始扎入到探究的深坑中…&lt;/p&gt;
+
+&lt;p&gt;经过一两天的研究，翻看apple的官方文档、开源库&lt;a href=&quot;https://github.com/apple/swift-argument-parser&quot;&gt;swift-argument-parser&lt;/a&gt; 的使用、别人的博客，最后进入了另一个天地。&lt;/p&gt;
+
+&lt;h4 id=&quot;依次来说&quot;&gt;依次来说&lt;/h4&gt;
+
+&lt;h5 id=&quot;首先说一说我们看到packageswift文件&quot;&gt;首先说一说，我们看到Package.swift文件&lt;/h5&gt;
+
+&lt;p&gt;其实这是苹果新出的一种代码管理方案，叫做Swift Package Manager， 简称为SPM， 我们之前应该对Cocoapods、Carthage都比较了解，其实其实也比较类似，SPM也是用来做三方库的依赖的。 对应到我们Cocoapods 这个Package.swift文件就相当于.podfile。&lt;/p&gt;
+
+&lt;p&gt;那么我们怎么创建呢？&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;我们可以通过命令行的方式创建：swift package init [–type executable]&lt;/li&gt;
+  &lt;li&gt;我们可以通过打开xcode创建，&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182358image-20230105181140374.png&quot; alt=&quot;image-20230105181140374&quot; style=&quot;zoom:33%;&quot; /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这样我们就可以创建出来这样一个工程，如下图：&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182408image-20230105181534945.png&quot; alt=&quot;image-20230105181534945&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;用xcode 打开Package.swift 即可打开工程。&lt;/p&gt;
+
+&lt;p&gt;然后我们配置Package.swift :&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;PackageDescription&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Counter&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;dependencies&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Dependencies declare other packages that this package depends on.&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// .package(url: /* package url */, from: &quot;1.0.0&quot;),&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;https://github.com/apple/swift-argument-parser.git&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;targets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Targets are the basic building blocks of a package. A target can define a module or a test suite.&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Targets can depend on other targets in this package, and on products in packages this package depends on.&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;executableTarget&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Counter&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;nv&quot;&gt;dependencies&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;product&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;ArgumentParser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;swift-argument-parser&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;具体的参数解释，我们可以通过看Package结构体了解。我们配置很简单，包含了包名、依赖、可执行目标。&lt;/p&gt;
+
+&lt;h5 id=&quot;紧接着我们说说命令行能干什么&quot;&gt;紧接着我们说说命令行能干什么&lt;/h5&gt;
+
+&lt;p&gt;比如我们用的git命令、pod 命令其实都是命令行程序嘞。只是他们可能不是用swift实现的而已，比如我们熟知的cocapods就是用ruby实现。那么相必这么举例我们就知道命令行能干什么？可干的事情可太多了，当然最早说的swiftLint也是一个命令行程序。&lt;/p&gt;
+
+&lt;h5 id=&quot;接下来我们根据swift-argument-parser-官方示例写一个小小的cli&quot;&gt;接下来我们根据swift-argument-parser 官方示例，写一个小小的CLI&lt;/h5&gt;
+
+&lt;p&gt;写一个经典的，读取a文件的内容并统计文件中单词的数量，输出到b文件。&lt;/p&gt;
+
+&lt;p&gt;如果不用开源库&lt;a href=&quot;https://github.com/apple/swift-argument-parser&quot;&gt;swift-argument-parser&lt;/a&gt; ，我们需要一个main.swift 作为程序的入口:&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// main.swift&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;counter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Counter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;counter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;An error occurred&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;因为原生的参数解析比较麻烦，我们就写一个比较简单输出吧，&lt;/p&gt;
+
+&lt;p&gt;这个时候我们需要写一个Counter：&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Counter.swift&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Foundation&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Counter&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    
+    &lt;span class=&quot;nf&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;CommandLine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arguments&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后我们再当前跟目录下，执行命令:&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt; swift build&lt;/code&gt; ,  然后我们执行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt; swift run Counter&lt;/code&gt;, 就可以看见终端的输出了  &lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105184936image-20230105184936299.png&quot; alt=&quot;image-20230105184936299&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这样我们算是一个简单的CLI就开发完了。&lt;/p&gt;
+
+&lt;p&gt;ok，我们再使用&lt;a href=&quot;https://github.com/apple/swift-argument-parser&quot;&gt;swift-argument-parser&lt;/a&gt; 去实现，我们最初的统计&lt;/p&gt;
+
+&lt;p&gt;使用ArgumentParser, 我们就不需要在给main.swift入口，只需要命名类或者结构体，继承ParsableCommand 或者AsyncParsableCommand，然后标识为@main即可。&lt;/p&gt;
+
+&lt;p&gt;ArgumentParser 有三种类型标识： @Argument 标识必须的参数，带有顺序的, 不可指定名字 @Option 是无序的，可以指定名字。以及是否简写等， @Flag 通常是一个bool指，一个标识。下面分别举例这三种对应到命令行&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// 1 @Argument&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Argument&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Argument&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 这种情况对应到命令行我们就需要 Counter test1.txt test2.txt ，以属性的顺序给定参数。并且不需要指定&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 2. @Option&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 这种情况对应到命令行我们就需要 Counter --input-file test1.txt --output-file test2.txt ，当然顺序可以随意，只要指定即可。当然我们也可以@Option(name: help:)等初始化方法指定提示语、简写等等&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 2. @Flag&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;@Flag&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;verbose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Bool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 这种情况对应到命令行我们就需要 Counter --verbose --input-file test1.txt --output-file test2.txt。&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;OK，大概swift-argument-parser就介绍这么多，具体的可以查看&lt;a href=&quot;https://github.com/apple/swift-argument-parser&quot;&gt;github&lt;/a&gt;, 或者&lt;a href=&quot;https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted/&quot;&gt;官网&lt;/a&gt;参考用法。&lt;/p&gt;
+
+&lt;p&gt;接下来是我们统计的命令行实现(当然我上面的官网里就完整的代码)：&lt;/p&gt;
+
+&lt;div class=&quot;language-swift highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ArgumentParser&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Foundation&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;@main&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Counter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ParsableCommand&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;short&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;customLong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;input&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)],&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;A file to read&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+    
+    &lt;span class=&quot;kd&quot;&gt;@Option&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;short&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;customLong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;output&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)],&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;A file to save word counts to&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+    
+    
+    &lt;span class=&quot;kd&quot;&gt;@Flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shortAndLong&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;help&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Print status updates while counting&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;verbose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Bool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;mutating&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;
+                Counting words in '&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;' &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;
+                and write result into '&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'
+                &quot;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;contentsOfFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;RuntimeError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Can't read &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inputFile&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; contents&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;components&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;separatedBy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;whitespacesAndNewlines&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;trimmingCharacters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;CharacterSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alphanumerics&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inverted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;lowercased&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compactMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isEmpty&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;counts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Dictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;grouping&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapValues&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;sorted&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;verbose&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;found &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;counts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt; words&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;counts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;joined&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;separator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;guard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;toFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;atomically&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;utf8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;RuntimeError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Can't write to &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;outputFile&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;RuntimeError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;CustomStringConvertible&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;
+    
+    &lt;span class=&quot;nf&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;description&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;description&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;在我们理解了ArgumentParser之后和了解了命令行开发之后，在看这些swift的代码就比较简单了。写起来也很简单了。&lt;/p&gt;
+
+&lt;p&gt;我们测试一下：&lt;/p&gt;
+
+&lt;p&gt;新建test1.txt、test2.txt, 在test1.txt里加入&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190718image-20230105190717915.png&quot; alt=&quot;image-20230105190717915&quot; style=&quot;zoom:50%;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后，执行 swift run Counter -i test1.txt -o test2.txt -v, 查看输出&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190934image-20230105190933826.png&quot; alt=&quot;image-20230105190933826&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们查看test2.txt文件&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105191015image-20230105191015159.png&quot; alt=&quot;image-20230105191015159&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;确实也写进去了。&lt;/p&gt;
+
+&lt;p&gt;但是我们还没完事，我们现在只能在当前根目录下，执行，还需要加swift run。这显然很麻烦，也不合规。&lt;/p&gt;
+
+&lt;p&gt;那么就需要我们打一个release的二进制文件，移到/urs/local/bin下。&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; .build/debug
+&lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; Counter /usr/local/bin/counter
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这样，不管在哪，我们都可以直接执行counter命令啦！&lt;/p&gt;
+
+&lt;h4 id=&quot;结束语&quot;&gt;结束语&lt;/h4&gt;
+
+&lt;p&gt;往往有些事情非我们了解的范围内的时候，我们内心是有些陌生、一头雾水、抗拒的，但是只要你沉下心来，去以一颗学习的心，去了解，去学习，那么就可以突破你的舒适圈，你的极限。&lt;/p&gt;
+
+&lt;p&gt;搞懂这些之后，回头在看swiftLint代码，也变得容易多了，后续，我会继续学习swiftLint的相关实现。&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="swift" /><category term="CLI" /><summary type="html">用swift 编写第一个CLI(command line tool)程序 起因 因为在研究swiftLint的时候，发现了都认识的swift，但却无法理解到底实现的是什么？ 于是去了解一个apple的开源库swift-argument-parser , 知道了，哦这个是用来解析命令行参数的 swiftLint里的Package.swift文件又是啥呀？ 一堆的疑问，一头的雾水，开始扎入到探究的深坑中… 经过一两天的研究，翻看apple的官方文档、开源库swift-argument-parser 的使用、别人的博客，最后进入了另一个天地。 依次来说 首先说一说，我们看到Package.swift文件 其实这是苹果新出的一种代码管理方案，叫做Swift Package Manager， 简称为SPM， 我们之前应该对Cocoapods、Carthage都比较了解，其实其实也比较类似，SPM也是用来做三方库的依赖的。 对应到我们Cocoapods 这个Package.swift文件就相当于.podfile。 那么我们怎么创建呢？ 我们可以通过命令行的方式创建：swift package init [–type executable] 我们可以通过打开xcode创建， 这样我们就可以创建出来这样一个工程，如下图： 用xcode 打开Package.swift 即可打开工程。 然后我们配置Package.swift : import PackageDescription let package = Package( name: &quot;Counter&quot;, dependencies: [ // Dependencies declare other packages that this package depends on. // .package(url: /* package url */, from: &quot;1.0.0&quot;), .package(url: &quot;https://github.com/apple/swift-argument-parser.git&quot;, from: &quot;1.0.0&quot;) ], targets: [ // Targets are the basic building blocks of a package. A target can define a module or a test suite. // Targets can depend on other targets in this package, and on products in packages this package depends on. .executableTarget( name: &quot;Counter&quot;, dependencies: [.product(name: &quot;ArgumentParser&quot;, package: &quot;swift-argument-parser&quot;)]), ] ) 具体的参数解释，我们可以通过看Package结构体了解。我们配置很简单，包含了包名、依赖、可执行目标。 紧接着我们说说命令行能干什么 比如我们用的git命令、pod 命令其实都是命令行程序嘞。只是他们可能不是用swift实现的而已，比如我们熟知的cocapods就是用ruby实现。那么相必这么举例我们就知道命令行能干什么？可干的事情可太多了，当然最早说的swiftLint也是一个命令行程序。 接下来我们根据swift-argument-parser 官方示例，写一个小小的CLI 写一个经典的，读取a文件的内容并统计文件中单词的数量，输出到b文件。 如果不用开源库swift-argument-parser ，我们需要一个main.swift 作为程序的入口: // main.swift let counter = Counter() do { try counter.run() } catch { print(&quot;An error occurred&quot;) } 因为原生的参数解析比较麻烦，我们就写一个比较简单输出吧， 这个时候我们需要写一个Counter： // Counter.swift import Foundation public struct Counter { private var arguments: [String] init(arguments: [String] = CommandLine.arguments) { self.arguments = arguments } public func run() throws { print(&quot;test&quot;) } } 然后我们再当前跟目录下，执行命令: swift build , 然后我们执行 swift run Counter, 就可以看见终端的输出了 这样我们算是一个简单的CLI就开发完了。 ok，我们再使用swift-argument-parser 去实现，我们最初的统计 使用ArgumentParser, 我们就不需要在给main.swift入口，只需要命名类或者结构体，继承ParsableCommand 或者AsyncParsableCommand，然后标识为@main即可。 ArgumentParser 有三种类型标识： @Argument 标识必须的参数，带有顺序的, 不可指定名字 @Option 是无序的，可以指定名字。以及是否简写等， @Flag 通常是一个bool指，一个标识。下面分别举例这三种对应到命令行 // 1 @Argument @Argument var inputFile: String @Argument var outputFile: String // 这种情况对应到命令行我们就需要 Counter test1.txt test2.txt ，以属性的顺序给定参数。并且不需要指定 // 2. @Option @Option var inputFile: String @Option var outputFile: String // 这种情况对应到命令行我们就需要 Counter --input-file test1.txt --output-file test2.txt ，当然顺序可以随意，只要指定即可。当然我们也可以@Option(name: help:)等初始化方法指定提示语、简写等等 // 2. @Flag @Option var inputFile: String @Option var outputFile: String @Flag var verbose: Bool = false // 这种情况对应到命令行我们就需要 Counter --verbose --input-file test1.txt --output-file test2.txt。 OK，大概swift-argument-parser就介绍这么多，具体的可以查看github, 或者官网参考用法。 接下来是我们统计的命令行实现(当然我上面的官网里就完整的代码)： import ArgumentParser import Foundation @main struct Counter: ParsableCommand { @Option(name: [.short, .customLong(&quot;input&quot;)], help: &quot;A file to read&quot;) var inputFile: String @Option(name: [.short, .customLong(&quot;output&quot;)], help: &quot;A file to save word counts to&quot;) var outputFile:String @Flag(name: .shortAndLong, help: &quot;Print status updates while counting&quot;) var verbose: Bool = false mutating func run() throws { if verbose { print(&quot;&quot;&quot; Counting words in '\(inputFile)' \ and write result into '\(outputFile)' &quot;&quot;&quot;) } guard let input = try? String(contentsOfFile: inputFile) else { throw RuntimeError(&quot;Can't read \(inputFile) contents&quot;) } let words = input.components(separatedBy: .whitespacesAndNewlines) .map { word in word.trimmingCharacters(in: CharacterSet.alphanumerics.inverted).lowercased() } .compactMap { word in word.isEmpty ? nil : word } let counts = Dictionary(grouping: words, by: { $0 }) .mapValues { $0.count } .sorted(by: { $0.value &amp;gt; $1.value }) if verbose { print(&quot;found \(counts.count) words&quot;) } let output: String = counts.map { word, count in &quot;\(word): \(count)&quot; }.joined(separator: &quot;\n&quot;) guard let _ = try? output.write(toFile: outputFile, atomically: true, encoding: .utf8) else { throw RuntimeError(&quot;Can't write to \(outputFile)&quot;) } } } struct RuntimeError: Error, CustomStringConvertible { var description: String init(_ description: String) { self.description = description } } 在我们理解了ArgumentParser之后和了解了命令行开发之后，在看这些swift的代码就比较简单了。写起来也很简单了。 我们测试一下： 新建test1.txt、test2.txt, 在test1.txt里加入 然后，执行 swift run Counter -i test1.txt -o test2.txt -v, 查看输出 我们查看test2.txt文件 确实也写进去了。 但是我们还没完事，我们现在只能在当前根目录下，执行，还需要加swift run。这显然很麻烦，也不合规。 那么就需要我们打一个release的二进制文件，移到/urs/local/bin下。 cd .build/debug cp -f Counter /usr/local/bin/counter 这样，不管在哪，我们都可以直接执行counter命令啦！ 结束语 往往有些事情非我们了解的范围内的时候，我们内心是有些陌生、一头雾水、抗拒的，但是只要你沉下心来，去以一颗学习的心，去了解，去学习，那么就可以突破你的舒适圈，你的极限。 搞懂这些之后，回头在看swiftLint代码，也变得容易多了，后续，我会继续学习swiftLint的相关实现。</summary></entry><entry><title type="html">iOS自旋锁与互斥锁</title><link href="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html" rel="alternate" type="text/html" title="iOS自旋锁与互斥锁" /><published>2023-01-04T00:00:00+08:00</published><updated>2023-01-04T00:00:00+08:00</updated><id>http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81</id><content type="html" xml:base="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">&lt;h4 id=&quot;ios中自旋锁和互斥锁&quot;&gt;iOS中自旋锁和互斥锁&lt;/h4&gt;
 
 &lt;hr /&gt;
 
