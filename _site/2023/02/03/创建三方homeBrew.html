@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>iOS自旋锁与互斥锁 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>如何创建一个三方home brew tap - harry’s blog</title>
 
-<meta name="description" content="iOS中自旋锁和互斥锁起因属性修饰符atomic，是否是绝对线程安全的？当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）后边我们再看atomic到底是否安全的问题定义锁：在计算机...">
-<link rel="canonical" href="http://localhost:4000/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="前情提要为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增...">
+<link rel="canonical" href="http://localhost:4000/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,64 +454,126 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/56/35/2d27f423708985c2ccafffe891d4c4ff.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>iOS自旋锁与互斥锁</h1></header></div><meta itemprop="headline" content="iOS自旋锁与互斥锁"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>如何创建一个三方home brew tap</h1></header></div><meta itemprop="headline" content="如何创建一个三方home brew tap"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 04, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-04T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=homeBrew">homeBrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
+    <meta itemprop="keywords" content="homeBrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="ios中自旋锁和互斥锁">iOS中自旋锁和互斥锁</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
 
-<hr />
+<p>为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。</p>
 
-<h5 id="起因">起因</h5>
+<h4 id="1-创建三方tap仓库">1. 创建三方Tap仓库</h4>
 
-<p>属性修饰符atomic，是否是绝对线程安全的？</p>
+<p>​	如何创建三方tap库？</p>
 
-<p>当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）</p>
+ 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字以 <strong>homebrew-</strong>   开头的。然后将建好的tap仓库git clone到本地；
+ 	2. 在仓库里添加Formula目录，这个目录是放我们三方软件安装脚本的，具体的脚本我会在3点里细说。
 
-<p>后边我们再看atomic到底是否安全的问题</p>
+<p>​		如下：https://github.com/xxxx/homebrew-private</p>
 
-<h5 id="定义">定义</h5>
+<p>​	这样我们的准备工作就完成了。ok，那怎么添加到brew呢？</p>
 
-<p>锁：在<a href="https://zh.wikipedia.org/wiki/计算机科学">计算机科学</a>中，<strong>锁</strong>是在执行<a href="https://zh.wikipedia.org/wiki/多线程">多线程</a>时用于强行限制资源访问的<a href="https://zh.wikipedia.org/wiki/同步">同步</a>机制，即用于在<a href="https://zh.wikipedia.org/wiki/并发控制">并发控制</a>中保证对<a href="https://zh.wikipedia.org/wiki/互斥">互斥</a>要求的满足。(维基百科中的定义)</p>
+<h4 id="2-开发brew-三方库lib">2. 开发brew 三方库lib</h4>
 
-<p>自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。</p>
+<p>比如我们用shell 开发了一个命令行工具exampleLint， 我们把他放到了github里，地址为https://github.com/xxx/xxx/exampleLint.</p>
 
-<p>互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。</p>
+<p>这样来说我们的三方lib就准备完成了…</p>
 
-<p>其实从定义中我们也能很明确的看到了他们的优缺点：自旋锁一直处于忙等的状态，会持续消耗cpu，而互斥锁则不会，但是互斥锁会频繁的切换线程的状态，比较效率上会比自旋锁低很多。</p>
+<p>当然你可以选择任何语言去写，shell、swift、ruby、python等等</p>
 
-<h5 id="ios-中的锁">iOS 中的锁</h5>
+<h4 id="3-编写formula-ruby脚本文件">3. 编写Formula ruby脚本文件</h4>
 
-<ol>
-  <li>NSLock 非递归互斥锁。是对于pthread_mutex_t的封装。遵循了NSLocking协议。-lock与unlock必须在同一线程调用，否则会产生问题。</li>
-  <li>NSCondition， 与NSLock类似都是对于pthread_mutex_t的封装，区别在于，他还对于pthread_cond_t的封装，所以NSLock只能等待锁资源释放，然后唤起等待的线程，而NSCondition则可以由我们主动唤起线程</li>
-  <li>NSConditionLock, 条件互斥锁，也就是说，除了正常的锁资源释放我们获得锁之外，我们还需要满足设置的另外一个条件，才能获得锁。释放锁也是如此。</li>
-  <li>NSRecursiveLock, 递归锁，也是一个互斥锁。与其他锁不同的是，递归锁可以其他锁如果同一个线程获得锁并且没有释放，这个线程再次获取锁就会造成死锁，互斥锁则可以运行同一个线程获得了锁之后依然可以再次获得锁。</li>
-  <li>@synchronize，对象锁，也是一个递归互斥锁。</li>
-  <li>Dispatch_semaphore,  信号量，更高级的互斥锁，初始值可以控制并发访问的最大量</li>
-  <li>OSSpinLock, iOS 10 废弃的自旋锁，原因是10之后增加了许多的线程默认优先级，自旋锁可能会造成线程优先级反转，导致死锁</li>
-  <li>os_unfair_lock, 用来取代OSSpinLock的互斥锁</li>
-  <li>pthread_mutex, 底层pthread互斥锁</li>
-</ol>
+<p>来到了比较重要的环节，home brew 当然需要我们提供给它一个脚本，告诉他这个lib的一些信息啊，download地址等等，这个文件就是放在Formula目录下，是一个ruby脚本文件。</p>
 
-<h5 id="性能">性能</h5>
+<p>1、将2步骤中的lib可执行文件，打包成tar包</p>
 
-<p>从<a href="https://blog.ibireme.com/author/ibireme/">ibireme</a>的博客中图来看性能对比大概是这样的：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将release文件打包成xxx.tar.gz</span>
+<span class="nb">tar</span> <span class="nt">-czf</span> xxx.tar.gz release
+</code></pre></div></div>
 
-<p><img src="https://blog.ibireme.com/wp-content/uploads/2016/01/lock_benchmark.png" alt="lock_benchmark" /></p>
+<p>如果是shell开发，我们可以直接用github生成的.tar.gz文件</p>
 
-<p>当然作者只是单线程的一个时间消耗数据。不能反应多线程的实际性能，只能作为一个定性分析。</p>
+<p>2、生成SHA256</p>
 
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-01-04T00:00:00+08:00"><!-- start custom article footer snippet -->
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shasum <span class="nt">-a</span> 256 xxx.tar.gz | <span class="nb">awk</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> xxx-sha256.txt
+</code></pre></div></div>
+
+<p>3、如果自己生成的tar包，则需要上传到github的release中，上传完会得到下载链接。</p>
+
+<p>4、生成formula安装脚本</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">create</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">xxx</span><span class="o">/</span><span class="n">exampleLint</span><span class="p">.</span><span class="nf">tar</span><span class="p">.</span><span class="nf">gz</span>
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ExampleLint</span> <span class="o">&lt;</span> <span class="no">Formula</span>
+  <span class="n">desc</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
+  <span class="n">homepage</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
+  <span class="n">url</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint/releases/download/1.0.0/exampleLint-mac.tar.gz"</span>
+  <span class="n">sha256</span> <span class="s2">"bde3c29d31576ad833d3e22c5ed2889589917a367b749977a7703e018fc99a43"</span>
+  <span class="n">version</span> <span class="s2">"1.0.0"</span>
+  <span class="k">def</span> <span class="nf">install</span>
+    <span class="n">bin</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"exampleLint"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>将对应的信息添加补充到上边脚本里。</p>
+
+<p>ExampleLint 继承于Formula类。具体文档查看https://docs.brew.sh/Formula-Cookbook</p>
+
+<h4 id="4-小试牛刀">4. 小试牛刀</h4>
+
+<p>安装我们自己的工具包：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="kp">private</span> <span class="err">或者</span> <span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="n">homebrew</span><span class="o">-</span><span class="kp">private</span>
+<span class="c1"># 我们可以带前缀homebrew-也可以不带，xxxx是github中最后地址的前一段，一般是自己github名</span>
+</code></pre></div></div>
+
+<p>这样我们就可以将我们三方tap加入到brew中了，可到具体位置查看：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nt">--repository</span> 可查看brew 安装位置，查看/Library/Taps/
+</code></pre></div></div>
+
+<p>接下来就可以安装我们自己的软件了, 如下方式：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>exampleLint
+</code></pre></div></div>
+
+<p>就可以安装我们的软件。</p>
+
+<h4 id="5-更新与版本">5. 更新与版本</h4>
+
+<p>我们难免会遇到lib版本需要更新。如何更新版本？</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap &lt;user/repo&gt; &lt;URL&gt;
+brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt; 
+</code></pre></div></div>
+
+<p>与安装brew 三方库一样，只要我们执行这个命令，github三方仓库就会更新到最细。</p>
+
+<h4 id="6-移除tap">6. 移除tap</h4>
+
+<p>移除使用以下命令</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew untap user/repo
+</code></pre></div></div>
+
+<h4 id="参考文献">参考文献</h4>
+
+<p>1、 <a href="https://docs.brew.sh/">homebrew 官网</a></p>
+
+<p>2、https://www.jianshu.com/p/df351f34c160</p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-02-03T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -519,7 +581,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2022/09/14/Objective_CLint.html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</a></div><div class="next"><span>NEXT</span><a href="/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html">swift 编写第一个CLI程序</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">swift 编写第一个CLI程序</a></div><div class="next"><span>NEXT</span><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">基于homebrew 的code lint 集成</a></div></div></div>
 
 </div>
 

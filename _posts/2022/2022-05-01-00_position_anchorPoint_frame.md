@@ -1,17 +1,12 @@
 ---
 title: position、anchorPoint、frame理解
-
 tags: iOS
-
 key: 107
-
-# article_header:
-
-# type: cover
-
-# image:
-
-# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png
+published: true
+article_header: 
+  type: cover
+  image:
+    src: https://img.win3000.com/m00/1d/19/a75b5f0fdd91629239b2782e5d3e8ddd.jpg
 ---
 
 #### 前情提要

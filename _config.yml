@@ -55,7 +55,7 @@ paths:
   root    : # title link url, "/" (default)
   home    : # home layout url, "/" (default)
   archive : # "/archive.html" (default)
-  rss     : # "/feed.xml" (default)
+  rss     : "/feed.xml"
 
 
 ## => Post
@@ -189,7 +189,7 @@ defaults:
       aside:
         toc: true
       show_edit_on_github: false
-      show_subscribe: false
+      show_subscribe: true
       pageview: true
 
 # sidebar:

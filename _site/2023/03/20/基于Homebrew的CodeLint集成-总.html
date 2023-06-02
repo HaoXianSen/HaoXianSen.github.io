@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>关于iOS 代码质量把控研究 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>基于homebrew 的code lint 集成 - harry’s blog</title>
 
-<meta name="description" content="前提code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的...">
-<link rel="canonical" href="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="基于homebrew 的code lint 集成(总)前情之前文章中我们已经讲到了采用pre-commit 集成工具去集成code lint 工具（Objective-CLint、swiftlint），文章地址，这种方式当然很方便，但是也很难扩展。比如swiftLint 我们就没有很好的办法让其以html或者其他...">
+<link rel="canonical" href="http://localhost:4000/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,273 +454,385 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/1d/19/a75b5f0fdd91629239b2782e5d3e8ddd.jpg"></img><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/2d/73/e36fcc83fcdbc010e70eee813a13d17c.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>关于iOS 代码质量把控研究</h1></header></div><meta itemprop="headline" content="关于iOS 代码质量把控研究"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>基于homebrew 的code lint 集成</h1></header></div><meta itemprop="headline" content="基于homebrew 的code lint 集成"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 29, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=swift">swift</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=CLI">CLI</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=objective-c">objective-c</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=homebrew">homebrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 20, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="122">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-03-20T00:00:00+08:00">
+    <meta itemprop="keywords" content="swift,CLI,objective-c,homebrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="前提">前提</h3>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="基于homebrew-的code-lint-集成总">基于homebrew 的code lint 集成(总)</h3>
 
-<p>code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。</p>
+<h4 id="前情">前情</h4>
 
-<p>所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！</p>
+<p>之前文章中我们已经讲到了采用pre-commit 集成工具去集成code lint 工具（<a href="https://haoxiansen.github.io/2022/09/14/Objective_CLint.html">Objective-CLint</a>、swiftlint），<a href="https://haoxiansen.github.io/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">文章地址</a>，这种方式当然很方便，但是也很难扩展。比如swiftLint 我们就没有很好的办法让其以html或者其他的方式打开，只能显示到控制台，再比如我们后续想要整合oc和swift lint的结果。也没有好的办法实现。那么我们就要另辟西路。</p>
 
-<h3 id="lint-时机">Lint 时机</h3>
+<p>当然我们还是采用pre-commit 的时期，只是我们不在采用pre-commit工具集成，我们自己写pre-commit脚本、自己做工具的安装等等时期。</p>
 
-<p>我们熟知的Objective-C lint，有<a href="https://docs.oclint.org/en/stable/index.html#usage">OClint</a>、<a href="https://fbinfer.com/">Infer</a>; swift 有<a href="https://github.com/realm/SwiftLint">swiftLint</a>，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？</p>
+<p>这样我们的可扩展行很强，我们想干什么都可以，只要我们能想的到的…</p>
 
-<ol>
-  <li>
-    <p>放到build时期？</p>
+<h4 id="开发架构">开发/架构</h4>
 
-    <p>这种方案被我们pass掉了，首先放到build时期会增加我们的build时间，第二事实上我们需要嵌入脚本到项目里，可能会影响到打包。</p>
-  </li>
-  <li>
-    <p>放到git push 之后gitlab pipeline时期？</p>
+<h5 id="开发前景">开发前景</h5>
 
-    <p>这种方案不出意外也被pass了，首先如果知道pipeline job的人都知道，我们需要配置runner, 本身来说配置加集成，可能就不是一个容易的事情，而且对于我来说我觉得这个事情，太晚了，lint 有问题，还等再次push….</p>
-  </li>
-  <li>
-    <p>放到pre commit时期？</p>
-
-    <p>Ok, 对于比较合适的事情，我觉得就是在precommit时期，因为基于git 管理，我们代码每次改动之后都需要commit，那么commit事情去做lint这件事情，是非常合适的，如果存在问题，那么就修改之后，再次commit。时间上，时机上我觉得都很合适</p>
-
-    <p>ok， 对于 lint 放到哪个时机的问题，我们已经确定–pre commit时期</p>
-  </li>
-</ol>
-
-<h3 id="pre-commit"><a href="https://pre-commit.com/#install">pre-commit</a></h3>
-
-<p>git 其实为我们提供了很多种的hook方式，随便打开一个.git文件夹就可以看到一堆的hooks example文件，如下：</p>
-
-<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220915152238image-20220915152237340.png" alt="image-20220915152237340" /></p>
-
-<p>OK，所以其实我们想要hook，就变得非常容易，只要我们修改pre-commit为可执行文件，并在里边按照example嵌入执行代码即可。</p>
-
-<p>这一步，早就有人帮我们做了，那就是<a href="https://pre-commit.com/#install">pre-commit</a> 他不仅简单了我们的操作，并且起到了脚本lint代码分离的效果，他通过.pre-commit-config.yaml 文件中的配置，在执行git commit时候执行<a href="https://pre-commit.com/#install">pre-commit</a> 脚本，再而执行到安装的pre-commit代码里，进行clone .pre-commit-config.yaml里配置的repo，以及分析，执行对应的hook代码。</p>
-
-<p>接下来简单的介绍一下<a href="https://pre-commit.com/#install">pre-commit</a> 相关的东西：</p>
+<p>首先我们需要开发一个类似于pre-commit工具的安装CLI。作为我们自己的pre-commit工具，它主要包含三个功能:</p>
 
 <ol>
-  <li>
-    <p>安装</p>
-
-    <p>Mac 推荐使用：<code class="language-plaintext highlighter-rouge">brew install pre-commit</code></p>
-
-    <p>其他安装：<code class="language-plaintext highlighter-rouge">pip install pre-commit</code></p>
-
-    <p><code class="language-plaintext highlighter-rouge">conda install -c conda-forge pre-commit</code></p>
-  </li>
-  <li>
-    <p>配置</p>
-
-    <p>安装完pre-commit之后，在.git 同级目录，添加.pre-commit-config.yaml 文件，则可支持pre-commit</p>
-
-    <p>.pre-commit-config.yaml的相关配置：</p>
-
-    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">repos</span><span class="pi">:</span>
-<span class="pi">-</span>   <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/pre-commit/pre-commit-hooks</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">v2.3.0</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">check-yaml</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">end-of-file-fixer</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">trailing-whitespace</span>
-<span class="pi">-</span>   <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/psf/black</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">21.12b0</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">black</span>
-</code></pre></div>    </div>
-
-    <p>注意点：rev: 不再支持commit hash id， 只支持tag</p>
-
-    <p>具体参考：https://pre-commit.com/#plugins</p>
-  </li>
-  <li>
-    <p>创建一个自己的hook</p>
-
-    <p>一个hook必须要包含a .pre-commit-hooks.yaml 文件，这个文件是告诉pre-commit，这个hook库里包含的hook id等信息…</p>
-
-    <p>大概张这个样子…</p>
-
-    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">trailing-whitespace</span>
-    <span class="na">name</span><span class="pi">:</span> <span class="s">Trim Trailing Whitespace</span>
-    <span class="na">description</span><span class="pi">:</span> <span class="s">This hook trims trailing whitespace.</span>
-    <span class="na">entry</span><span class="pi">:</span> <span class="s">trailing-whitespace-fixer</span>
-    <span class="na">language</span><span class="pi">:</span> <span class="s">python</span>
-    <span class="na">types</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">text</span><span class="pi">]</span>
-</code></pre></div>    </div>
-  </li>
+  <li>pre-commit 脚本文件的移动；</li>
+  <li>Objective-CLint 、swiftLint 配置文件的下载+移动；</li>
+  <li>Objective-CLint、swiftLint 的安装。</li>
 </ol>
 
-<p>​		hooks 仓库，支持很多种语言，每种语言包含的文件也不太一样，比如script （shell脚本）必须entry参		数给一个相对路径的shell脚本；比如python，必须要执行pip install .（及包括setup.py或者		pyproject.toml）以及entry一般在setup.py 里的console_scripts或者scripts配置的。</p>
+<h6 id="疑问为什么我们不用现成的pre-commit工具">疑问？为什么我们不用现成的<a href="https://pre-commit.com/">pre-commit</a>工具</h6>
 
-<p>​	<a href="https://pre-commit.com/#script">了解更多</a></p>
+<p>为什么我们不用现成的pre-commit工具，直接配置.pre-commit-config.yaml yaml文件直接使用呢？</p>
 
-<h3 id="objective-c-lint">Objective-C Lint</h3>
+<p>不得不承认，pre-commit确实很好的支持了hooks，并且做到了整合所有hooks的工具。但是pre-commit仍然无法满足我们的一些需求。比如我们想要oclint之后能打开一个错误写法与正确写法相比较的html，swiftlint 能够打开一个lint之后错误、警告的html。这个时候如果原本的hooks并没有支持，他只是支持输出html，那么pre-commit将会限制我们的可定制化。也就是说，pre-commit确实好用，但是如果要实现一些可定制化的要求，它必须是hooks库本身就支持的，否则将无法完成可定制化或者需要一些非常规手段实现。</p>
 
-<p>上面提到现存在两种lint，<a href="https://oclint.org/">oc-lint</a>/ infer。</p>
+<h5 id="整体架构">整体架构</h5>
 
-<h4 id="oc-lint"><a href="https://oclint.org/">oc-lint</a></h4>
+<h6 id="整体架构图">整体架构图：</h6>
 
-<p>安装： <code class="language-plaintext highlighter-rouge">brew tap oclint/formulae</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230327114421image-20230327114420359.png" alt="image-20230327114420359" /></p>
 
-<p>​			<code class="language-plaintext highlighter-rouge">	 brew install oclint</code></p>
+<p>整体我们采用homebrew 作为基础。在homebrew 的基础上我们创建自己的三方tap，作为存储自研库GZLintMaker、Objective-CLint 存储空间，也方便后续的使用、安装。swiftLint 已经支持homebrew的安装，所以我们不需要管。如果不知道homebrew 如何创建三方tap，请参考我前边的文章<a href="https://haoxiansen.github.io/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">这里</a></p>
 
-<p>​			<code class="language-plaintext highlighter-rouge">*// 安装xcpretty* gem install xcpretty</code></p>
+<h6 id="gzlintmaker-自制cli傻瓜式安装使用">GZLintMaker 自制CLI（傻瓜式安装、使用）</h6>
 
-<p>先简单介绍一下OC lint：OC lint 是通过编译之后的产物 compile_commands.json 去分析的，所以必要的是我们执行oc-lint必须要build。然后在完成之后会以自动打开一个html分析结果。</p>
+<p>​	想要学习怎么用swift写CLI工具的，请参考<a href="https://haoxiansen.github.io/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html">这里</a></p>
 
-<p>我们先说说他的缺点：</p>
+<p>​	GZLintMaker 功能结构</p>
 
-<ol>
-  <li>必须要编译，首先这是一个漫长的过程，而且对于我们一个不支持模拟器的app（害！因为内部直播的framework没把x86打进去）这是比较致命的可以说</li>
-  <li>他不支持增量查，这样会带出来很多历史遗留问题，对于集成来说，又成了一个比较窘困的问题（你想想，以前多少可能有问题的代码，这集成都得改，不得改个三天三夜的😁）</li>
-</ol>
+<p>​	<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230526110210image-20230526110209988.png" alt="image-20230526110209988" style="zoom:40%;" /></p>
 
-<p>接下来我们说说他的优点：</p>
+<p>GZLintMaker 是基于swift 写的一个CLI（Command-line interface， 命令行工具）。作为一个iOSer， 能够使用swift 去写CLI 工具其实也是一键很幸福的事情（题外话）。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. oc-lint 不仅查了不规范的代码，而且查了可能会导致问题的坏味道代码
-1. oc-lint 对于代码严重程度做了等级分化，并且以html的方式打开，更加的直观
-1. oc-lint支持自定义规则，和修改规则
-</code></pre></div></div>
+<h6 id="gzlintmaker-功能命令介绍">GZLintMaker 功能命令介绍</h6>
 
-<p>当然，对于1.2的缺点，已经有了一些方案解决，<a href="https://github.com/shulong-apple/fast-oclint">了解更多</a></p>
+<p>GZLintMaker 主要包含紫色三部分功能， –install –clean –uninstall，我们先分别介绍一下这几个功能：</p>
 
-<p>后面会尝试集成到pre-commit hook, 敬请期待…</p>
+<ul>
+  <li>
+    <p><strong>–install</strong></p>
 
-<h4 id="infer"><a href="https://infer.liaohuqiu.net/docs/getting-started.html">infer</a></h4>
+    <p>作为install 的flag命令。主要内容就是安装codeLint的所有内容。</p>
 
-<p>安装: <code class="language-plaintext highlighter-rouge">brew install infer</code></p>
+    <ul>
+      <li>
+        <p>移动配置文件、hook 脚本文件</p>
 
-<p>​			可以选择下载安装包安装，<a href="https://infer.liaohuqiu.net/docs/getting-started.html">下载地址</a></p>
+        <p>首先它会去默认的存放配置文件、执行脚本的git仓库，去clone 仓库内容。clone 完成			之后，我们把仓库里的.clang-formate . swiftlint移动到工程目录下（根目录）；将.pre-commit 脚本文件移动到.git/hooks/目录下，当然我们要确保这是一个基于git的仓库。最后我们删除远程存放这些文件的目录。</p>
 
-<p>Infer 是facebook提供的一个lint 库</p>
+        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230526111628image-20230526111628810.png" alt="image-20230526111628810" style="zoom:50%;" /></p>
+      </li>
+      <li>
+        <p>lint 工具检查</p>
 
-<p>缺点：</p>
+        <p>检查项有：</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	1. 貌似infer 也需要编译工程
-	1. 不支持自定义规则
-</code></pre></div></div>
+        <ul>
+          <li>homebrew，没有则安装</li>
+          <li>homebrew tap （https://github.com/haoxiansen/homebrew-private）安装/更新</li>
+          <li>Objective-CLint 安装/更新</li>
+          <li>swiftLint 安装/更新</li>
+          <li>coreutils 安装(用来脚本时长统计)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>–clean</strong></p>
 
-<p>优点：</p>
+    <p>清理当前工作空间</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 支持多种检测，包括空指针、内存泄漏等等的检测
-1. 支持增量检测
-</code></pre></div></div>
+    <ul>
+      <li>清理配置文件.clang-formate .swiftlint</li>
+    </ul>
+  </li>
+  <li>清理脚本文件 pre-commit
+    <ul>
+      <li>清理配置文件存放的git 仓库目录（如果有的话）</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>–uninstall</strong></p>
 
-<p>具体我也没有太多研究，需要深入研究的，<a href="https://fbinfer.com/docs/analyzing-apps-or-projects">请参考</a></p>
+    <p>卸载Lint工具</p>
 
-<h4 id="objective-clint-自制hook-"><a href="https://github.com/HaoXianSen/Objective-CLint">Objective-CLint 自制hook </a></h4>
+    <ul>
+      <li>ObjectiveC-lint</li>
+      <li>swiftLint</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>–project-path</strong></p>
 
-<p>这个库是我基于SpaceCommand三方库，做的pre-commit hook，简单的介绍一下：</p>
+    <p>安装工作目录， 如果未指定默认为当前目录为工作目录</p>
 
-<p>SpaceCommand是基于clang-format 制作的代码规范工具，而且写了一些自定义规则，用来检测clang-format忽略或者有歧义的部分。它支持了检测不规范代码，并给出终端提示；而且提供了一键格式化所有有问题的代码。</p>
+    <ul>
+      <li>可以和所有一级命令配合使用，作为指定工作目录</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>–configure-git-path</strong></p>
 
-<p>那么Objective-CLint 在它的基础上，1. 我显示了将它配置成一个可以pre-commit集成的hook，2. 增加了可视化diff 到html，自动打开 3. 去掉了一键格式化 5. 修改自定义规则，使得适用更加广泛。</p>
+    <ul>
+      <li>配置文件、脚本的git仓库</li>
+      <li>需要指定自己的git 仓库作为自适应配置。仓库必须包括.clang-format .swiftlint 配置文件以及pre-commit脚本文件</li>
+      <li>如果没有指定，默认使用我们的git仓库的配置作为配置</li>
+      <li>为什么要采用单独的一个库作为配置文件、脚本文件的存储呢？主要是在于更新快，如果我们的pre-commit脚本、或者配置文件有更新，只要执行lintMaker –install 就可以更新</li>
+    </ul>
+  </li>
+</ul>
 
-<p>具体内容介绍，请移步到<a href="https://haoxiansen.github.io/2022/09/14/Objective_CLint.html">个人博客Objective-CLint</a> 或者移步到<a href="https://github.com/HaoXianSen/Objective-CLint">github</a></p>
+<h6 id="pre-commit-脚本介绍">pre-commit 脚本介绍</h6>
 
-<p>到此，我们对于OC代码已经有了好几种方案，我选择了容易集成且轻量级的自制hook。</p>
+<p>pre-commit 主要做了以下几件事情：</p>
 
-<h3 id="swift-lint">Swift Lint</h3>
+<ul>
+  <li>lint 工具的执行
+    <ul>
+      <li>使用git diff –cached –named-only 删选出.h .hh .m .mm作为OC 文件，然后判断是否需要lint或者执行ObjectiveC-Lint的命令 <code class="language-plaintext highlighter-rouge">format-objc-hook --reporter "open_html" --output "${objc_lint_html_dir}" --quiet</code></li>
+      <li>同样使用git diff –cached –named-only 删选出.swift 文件作为swift 文件，然后判断是否需要lint或者执行swiftlint 命令<code class="language-plaintext highlighter-rouge">swiftlint lint --quiet --reporter html --output "${swift_lint_html_dir}" "${lint_swift_files[*]}"</code></li>
+    </ul>
+  </li>
+  <li>lint 工具执行时间的统计
+    <ul>
+      <li>因为MacOs 自带date 命令行工具只能支持秒级别的时间，无法满足我们更精细的时间统计要求，所以我们也是在Lint工具安装的时候特意带着coreutils库。这个库支持了更精细的gdate命令</li>
+      <li>使用gdate分别在脚本开始和结束统计纳秒时间，然后进行相减 &amp; 转化为秒数展示</li>
+    </ul>
+  </li>
+  <li>lint 工具输出的可视化（打开html）
+    <ul>
+      <li>ObjectiveC-Lint 因为是自己的库，什么命令都好支持，所以支持了指定输出文件</li>
+      <li>swiftlint 本身支持了多种输出方式，并且可指定输出文件</li>
+      <li>这样我们在判断执行结果后，判断是否需要提示 &amp; 打开html</li>
+    </ul>
+  </li>
+</ul>
 
-<h4 id="swiftlint"><a href="https://github.com/realm/SwiftLint">swiftLint</a></h4>
+<p>下面是pre-commit的整体脚本文件：</p>
 
-<p>​	Swift 代码毫无疑问，我们就可以使用SwiftLint去集成。swiftLint 已经为我们提供了pre-commit hook，我	们可以直接使用，当然也可以fork，修改规则使用</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin/env bash</span>
+<span class="c"># File generated by harry</span>
 
-<p>​	具体请查看github：https://github.com/realm/SwiftLint</p>
+<span class="nv">HERE</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cd</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">pwd</span><span class="si">)</span><span class="s2">"</span>
+<span class="nv">WHITE</span><span class="o">=</span><span class="s2">"37"</span>
+<span class="nv">RED</span><span class="o">=</span><span class="s2">"31"</span>
+<span class="nv">GRAY</span><span class="o">=</span><span class="s2">"90"</span>
+<span class="nv">RED_BACKGROUND</span><span class="o">=</span><span class="s2">"41m"</span>
+<span class="nv">GREEN_BACKGROUND</span><span class="o">=</span><span class="s2">"42m"</span>
+<span class="nv">SYAN_BACKGROUND</span><span class="o">=</span><span class="s2">"46m"</span>
+<span class="nv">CACHE</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">HERE</span><span class="k">}</span><span class="s2">/.cache/"</span>
 
-<h3 id="集成">集成</h3>
 
-<p>到此为止，我们所有的lint 工具 以及hook 工具已经齐全，即 pre-commit + Objective-CLint + SwiftLint!</p>
+<span class="k">function </span>swift_files_to_format<span class="o">()</span> <span class="o">{</span>
+	<span class="nv">files</span><span class="o">=</span><span class="si">$(</span>git diff <span class="nt">--cached</span> <span class="nt">--name-only</span> | <span class="nb">grep</span> <span class="nt">-e</span> <span class="s1">'\.swift$'</span><span class="si">)</span>
+	<span class="nb">echo</span> <span class="s2">"</span><span class="nv">$files</span><span class="s2">"</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="s1">'Pods/'</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="s1">'Carthage/'</span> <span class="o">&gt;</span>&amp;1
+<span class="o">}</span>
 
-<p>Ok, 当然我们还有一些工作量需要做，为了团队更好的集成，我们添加检测安装脚本位于pod pre_install, 目的在于自动检测是否安装了pre-commit，以及自动安装pre-commit。</p>
+<span class="k">function </span>objc_files_to_format<span class="o">()</span> <span class="o">{</span>
+	<span class="nv">files</span><span class="o">=</span><span class="si">$(</span>git diff <span class="nt">--cached</span> <span class="nt">--name-only</span> | <span class="nb">grep</span> <span class="nt">-e</span> <span class="s1">'\.h$'</span> <span class="nt">-e</span> <span class="s1">'\.hh$'</span> <span class="nt">-e</span> <span class="s1">'\.m$'</span> <span class="nt">-e</span> <span class="s1">'\.mm$'</span><span class="si">)</span>
+	<span class="nb">echo</span> <span class="s2">"</span><span class="nv">$files</span><span class="s2">"</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="s1">'Pods/'</span> | <span class="nb">grep</span> <span class="nt">-v</span> <span class="s1">'Carthage/'</span> <span class="o">&gt;</span>&amp;1
+<span class="o">}</span>
 
-<p>下面是检测脚本：</p>
+<span class="c"># params prefix, string, color, background_color, suffix</span>
+<span class="k">function </span>log_color<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span><span class="nv">prefix</span><span class="o">=</span><span class="nv">$1</span>
+    <span class="nb">local </span><span class="nv">status</span><span class="o">=</span><span class="nv">$2</span>
+    <span class="nb">local </span><span class="nv">status_color</span><span class="o">=</span><span class="nv">$3</span>
+    <span class="nb">local </span><span class="nv">status_background_color</span><span class="o">=</span><span class="nv">$4</span>
+    <span class="nb">local </span><span class="nv">is_r</span><span class="o">=</span><span class="nv">$5</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_background_color</span><span class="k">}</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        if</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$is_r</span><span class="s2">"</span> <span class="o">==</span> 1 <span class="o">))</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">printf</span> <span class="s2">"%s</span><span class="se">\0</span><span class="s2">33[%sm%s</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\r</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">prefix</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status</span><span class="k">}</span><span class="s2">"</span>
+        <span class="k">else 
+            </span><span class="nb">printf</span> <span class="s2">"%s</span><span class="se">\0</span><span class="s2">33[%sm%s</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">prefix</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status</span><span class="k">}</span><span class="s2">"</span>
+        <span class="k">fi
+        
+    else
+        if</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$is_r</span><span class="s2">"</span> <span class="o">==</span> 1 <span class="o">))</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">printf</span> <span class="s2">"%s</span><span class="se">\0</span><span class="s2">33[%s;%s%s</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\r</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">prefix</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_background_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status</span><span class="k">}</span><span class="s2">"</span>
+        <span class="k">else 
+            </span><span class="nb">printf</span> <span class="s2">"%s</span><span class="se">\0</span><span class="s2">33[%s;%s%s</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">prefix</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status_background_color</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">status</span><span class="k">}</span><span class="s2">"</span>
+        <span class="k">fi
+    fi</span>
+<span class="o">}</span>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># log lint tool [prefix]......[sufix][color][backgroundColor][status][is_r]</span>
+<span class="k">function </span>log_color_dot<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">terminal_width</span><span class="o">=</span><span class="si">$(</span>tput cols<span class="si">)</span>
+    <span class="nb">local </span><span class="nv">prefix</span><span class="o">=</span><span class="nv">$1</span>
+    <span class="nb">local </span><span class="nv">suffix</span><span class="o">=</span><span class="nv">$2</span>
+    <span class="nb">local </span><span class="nv">status</span><span class="o">=</span><span class="nv">$3</span>
+    <span class="nb">local </span><span class="nv">status_color</span><span class="o">=</span><span class="nv">$4</span>
+    <span class="nb">local </span><span class="nv">status_background_color</span><span class="o">=</span><span class="nv">$5</span>
+    <span class="nb">local </span><span class="nv">is_r</span><span class="o">=</span><span class="nv">$6</span>
+    <span class="nv">prefix_length</span><span class="o">=</span><span class="k">${#</span><span class="nv">prefix</span><span class="k">}</span>
+    <span class="nv">suffix_length</span><span class="o">=</span><span class="k">${#</span><span class="nv">suffix</span><span class="k">}</span>
+    <span class="nv">status_length</span><span class="o">=</span><span class="k">${#</span><span class="nv">status</span><span class="k">}</span>
+    <span class="nv">dot_length</span><span class="o">=</span><span class="s2">"</span><span class="nv">$terminal_width</span><span class="s2"> - </span><span class="nv">$prefix_length</span><span class="s2"> - </span><span class="nv">$suffix_length</span><span class="s2"> - </span><span class="nv">$status_length</span><span class="s2"> - 10"</span>
+    <span class="nv">dot_string</span><span class="o">=</span><span class="s2">""</span>
+    <span class="k">for</span><span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span>i&lt;<span class="s2">"</span><span class="nv">$dot_length</span><span class="s2">"</span><span class="p">;</span>i++<span class="o">))</span><span class="p">;</span> <span class="k">do
+        </span><span class="nv">dot_string</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">dot_string</span><span class="k">}</span><span class="s2">""."</span>
+    <span class="k">done
 
-<span class="nb">echo</span> <span class="s2">"正在检查安装必要工具..."</span>
-<span class="c"># 检测是否安装了homebrew</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> brew <span class="nt">-v</span><span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"✅homebrew 已经安装"</span>
+    </span>log_color <span class="s2">"</span><span class="k">${</span><span class="nv">prefix</span><span class="k">}${</span><span class="nv">dot_string</span><span class="k">}${</span><span class="nv">suffix</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$status</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$status_color</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$status_background_color</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$is_r</span><span class="s2">"</span>
+<span class="o">}</span>
+
+<span class="k">function </span>print_exec_time<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">start_time</span><span class="o">=</span><span class="nv">$1</span>
+    <span class="nv">end_time</span><span class="o">=</span><span class="nv">$2</span>
+    <span class="c"># use bc command</span>
+    <span class="nv">elapsed_time</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">end_time</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">start_time</span><span class="k">}</span><span class="s2">"</span> | bc<span class="si">)</span>
+    <span class="c"># convert um to s</span>
+    <span class="nv">seconds_time</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"scale=2; </span><span class="k">${</span><span class="nv">elapsed_time</span><span class="k">}</span><span class="s2"> / 1000000000.0"</span> | bc<span class="si">)</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$seconds_time</span><span class="s2">"</span>
+<span class="o">}</span>
+
+<span class="c"># objc files lint</span>
+<span class="k">function </span>lint_objc<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">return_code</span><span class="o">=</span>0
+    <span class="nv">start_time</span><span class="o">=</span><span class="si">$(</span>gdate +%s%N<span class="si">)</span>
+    <span class="nv">external_log</span><span class="o">=</span><span class="s2">""</span>
+    <span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> format-objc-hook<span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">prefix</span><span class="o">=</span><span class="s2">"[format-objc]"</span>
+        log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Linting"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">GREEN_BACKGROUND</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"1"</span>
+        <span class="nv">lint_objc_files</span><span class="o">=</span><span class="si">$(</span>objc_files_to_format<span class="si">)</span>
+        <span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">lint_objc_files</span><span class="p">[*]</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span>log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">"(no files to check)"</span> <span class="s2">"Skiped"</span> <span class="s2">"</span><span class="nv">$WHITE</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$SYAN_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+        <span class="k">else
+            </span><span class="nv">objc_lint_html_dir</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CACHE</span><span class="k">}</span><span class="s2">"</span>objclint.html
+            format-objc-hook <span class="nt">--reporter</span> <span class="s2">"open_html"</span> <span class="nt">--output</span> <span class="s2">"</span><span class="k">${</span><span class="nv">objc_lint_html_dir</span><span class="k">}</span><span class="s2">"</span> <span class="nt">--quiet</span>
+            <span class="nv">lint_result</span><span class="o">=</span><span class="nv">$?</span>
+            <span class="k">if</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$lint_result</span><span class="s2">"</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+                </span>log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Success"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$GREEN_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+            <span class="k">else 
+                </span><span class="nv">return_code</span><span class="o">=</span>1
+                log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Failed"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$RED_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+                <span class="nv">external_log</span><span class="o">=</span><span class="s2">"❌ 已自动打开html，请修复html中的lint问题，之后再次commit...😭😭😭"</span>
+            <span class="k">fi
+        fi
+    else 
+        </span><span class="nv">return_code</span><span class="o">=</span>1
+    <span class="k">fi
+    </span><span class="nv">end_time</span><span class="o">=</span><span class="si">$(</span>gdate +%s%N<span class="si">)</span> 
+    <span class="nv">duration_seconds</span><span class="o">=</span><span class="si">$(</span>print_exec_time <span class="s2">"</span><span class="nv">$start_time</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$end_time</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nv">format_seconds</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%.2f"</span> <span class="s2">"</span><span class="nv">$duration_seconds</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nb">printf</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[%dm- duration: %ss</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">GRAY</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">format_seconds</span><span class="k">}</span><span class="s2">"</span>
+
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">external_log</span><span class="k">}</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>log_color <span class="s2">"❌ 已自动打开html，请修复html中lint问题，之后再次commit...😭😭😭"</span> <span class="s2">""</span> <span class="s2">"</span><span class="k">${</span><span class="nv">RED</span><span class="k">}</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"0"</span>
+    <span class="k">fi
+    return</span> <span class="s2">"</span><span class="k">${</span><span class="nv">return_code</span><span class="k">}</span><span class="s2">"</span>
+<span class="o">}</span>
+
+<span class="c"># swift files lint</span>
+<span class="k">function </span>swift_lint<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">return_code</span><span class="o">=</span>0
+    <span class="nv">start_time</span><span class="o">=</span><span class="si">$(</span>gdate +%s%N<span class="si">)</span>
+    <span class="nv">external_log</span><span class="o">=</span><span class="s2">""</span>
+    
+    <span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> swiftlint<span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">prefix</span><span class="o">=</span><span class="s2">"[swiftlint]"</span>
+        log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Linting"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">GREEN_BACKGROUND</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"1"</span>
+        <span class="nv">lint_swift_files</span><span class="o">=</span><span class="si">$(</span>swift_files_to_format<span class="si">)</span>
+        <span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">lint_swift_files</span><span class="p">[*]</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span>log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">"(no files to check)"</span> <span class="s2">"Skiped"</span> <span class="s2">"</span><span class="nv">$WHITE</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$GREEN_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+        <span class="k">else
+            </span><span class="nv">swift_lint_html_dir</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">CACHE</span><span class="k">}</span><span class="s2">"</span>swiftlint.html
+            swiftlint lint <span class="nt">--quiet</span> <span class="nt">--reporter</span> html <span class="nt">--output</span> <span class="s2">"</span><span class="k">${</span><span class="nv">swift_lint_html_dir</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">lint_swift_files</span><span class="p">[*]</span><span class="k">}</span><span class="s2">"</span>
+            <span class="nv">lint_result</span><span class="o">=</span><span class="nv">$?</span>
+            <span class="k">if</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$lint_result</span><span class="s2">"</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+                </span>log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Success"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$GREEN_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+            <span class="k">else 
+                </span><span class="nv">return_code</span><span class="o">=</span>1
+                open <span class="s2">"</span><span class="k">${</span><span class="nv">swift_lint_html_dir</span><span class="k">}</span><span class="s2">"</span>
+                log_color_dot <span class="s2">"</span><span class="nv">$prefix</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"Failed"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">WHITE</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$RED_BACKGROUND</span><span class="s2">"</span> <span class="s2">"0"</span>
+                <span class="nv">external_log</span><span class="o">=</span><span class="s2">"❌ 已自动打开html，请修复html中的lint问题，之后再次commit...😭😭😭"</span>
+            <span class="k">fi
+        fi
+    else 
+        </span><span class="nv">return_code</span><span class="o">=</span>1
+    <span class="k">fi
+    </span><span class="nv">end_time</span><span class="o">=</span><span class="si">$(</span>gdate +%s%N<span class="si">)</span> 
+    <span class="nv">duration_seconds</span><span class="o">=</span><span class="si">$(</span>print_exec_time <span class="s2">"</span><span class="nv">$start_time</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$end_time</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nv">format_seconds</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%.2f"</span> <span class="s2">"</span><span class="nv">$duration_seconds</span><span class="s2">"</span><span class="si">)</span>
+    <span class="nb">printf</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[%dm- duration: %ss</span><span class="se">\0</span><span class="s2">33[0m</span><span class="se">\n</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">GRAY</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">format_seconds</span><span class="k">}</span><span class="s2">"</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">external_log</span><span class="k">}</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>log_color <span class="s2">"❌ 已自动打开html，请修复html中lint问题，之后再次commit...😭😭😭"</span> <span class="s2">""</span> <span class="s2">"</span><span class="k">${</span><span class="nv">RED</span><span class="k">}</span><span class="s2">"</span> <span class="s2">""</span> <span class="s2">"0"</span>
+    <span class="k">fi
+    return</span> <span class="s2">"</span><span class="k">${</span><span class="nv">return_code</span><span class="k">}</span><span class="s2">"</span>
+<span class="o">}</span>
+
+<span class="k">if</span> <span class="o">!</span> <span class="o">[</span> <span class="nt">-d</span> <span class="s2">"</span><span class="k">${</span><span class="nv">CACHE</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">mkdir</span> <span class="s2">"</span><span class="k">${</span><span class="nv">CACHE</span><span class="k">}</span><span class="s2">"</span>
+<span class="k">fi
+
+</span>lint_objc
+<span class="nv">objc_code</span><span class="o">=</span><span class="nv">$?</span>
+<span class="nb">echo</span> <span class="s2">""</span> <span class="o">&amp;&amp;</span> swift_lint
+<span class="nv">swift_code</span><span class="o">=</span><span class="nv">$?</span>
+<span class="nb">echo</span> <span class="s2">""</span> 
+<span class="k">if</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$objc_code</span><span class="s2">"</span> <span class="o">==</span> 0 <span class="o">))</span> <span class="o">&amp;&amp;</span> <span class="o">((</span> <span class="s2">"</span><span class="nv">$swift_code</span><span class="s2">"</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">exit </span>0
 <span class="k">else 
-    </span><span class="nb">echo</span> <span class="s2">"正在安装brew..."</span>
-    /bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="si">)</span><span class="s2">"</span>
-   <span class="nb">echo</span> <span class="s1">'✅安装完成homebrew 🍺🍺🍺 /n'</span>
-   
+    </span><span class="nb">exit </span>1
 <span class="k">fi</span>
 
-<span class="c"># 检测是否安装了pre-commit</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> pre-commit<span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"✅pre-commit 已经安装"</span>
-<span class="k">else
-    </span><span class="nb">echo</span> <span class="s2">"正在安装pre-commit..."</span>
-    brew <span class="nb">install </span>pre-commit
-    <span class="nb">echo</span> <span class="s1">'✅安装完成pre-commit 🍺🍺🍺/n'</span>
-<span class="k">fi
-
-
-if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">".pre-commit-config.yaml"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[31m❎文件 </span><span class="se">\"</span><span class="s2">.pre-commit-config.yaml</span><span class="se">\"</span><span class="s2"> 不存在， 请添加.pre-commit-config.yaml</span><span class="se">\0</span><span class="s2">33[0m"</span>
-    <span class="nb">exit </span>1
-<span class="k">fi
-
-</span>pre-commit <span class="nb">install
-echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[36m ...................所有工具都安装成功😁😁😁 </span><span class="se">\0</span><span class="s2">33[0m"</span>
-
 </code></pre></div></div>
 
-<p>Ok, 我们把它集成到pod中，当然没有使用pod管理的，直接执行这个脚本即可。把下面的脚本嵌入到podfile中</p>
+<h6 id="objectivec-lint">ObjectiveC-Lint</h6>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pre_install</span> <span class="k">do</span> <span class="o">|</span><span class="n">installer</span><span class="o">|</span>
-    <span class="n">flag</span> <span class="o">=</span>  <span class="sb">`sh check_tools.sh`</span>
-    <span class="no">Pod</span><span class="o">::</span><span class="no">UI</span><span class="p">.</span><span class="nf">puts</span> <span class="n">flag</span>
-<span class="k">end</span>
-</code></pre></div></div>
+<p>ObjectiveC-Lint 有专刊介绍，感兴趣的话可以去<a href="https://haoxiansen.github.io/2022/09/14/Objective_CLint.html">瞅瞅!</a></p>
 
-<p>添加.pre-commit-config.yaml</p>
+<h6 id="swiftlint">SwiftLint</h6>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">fail_fast</span><span class="pi">:</span> <span class="no">false</span>
-<span class="na">repos</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/HaoXianSen/Objective-CLint.git</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">v0.0.4</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-      <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">objc-lint</span>
-        <span class="na">name</span><span class="pi">:</span> <span class="s">objc-format</span>
-        <span class="na">entry</span><span class="pi">:</span> <span class="s">format-objc-hook</span>
-        <span class="na">language</span><span class="pi">:</span> <span class="s">script</span>
-        <span class="na">require_serial</span><span class="pi">:</span> <span class="no">true</span>
-        <span class="na">verbose</span><span class="pi">:</span> <span class="no">true</span>
+<p>SwiftLint 就没有什么可说的了，强大&amp;实用&amp;支持各种方式接入~，感兴趣的可以去<a href="https://github.com/realm/SwiftLint">github</a>!</p>
 
-  <span class="pi">-</span> <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/realm/SwiftLint</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">0.49.1</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">swiftlint</span>
+<h4 id="使用">使用</h4>
 
-</code></pre></div></div>
+<ul>
+  <li>直接采用Unix可执行文件</li>
+  <li>HomeBrew方式</li>
+</ul>
 
-<p>OK，这样我们整个集成就完成了。</p>
+<h4 id="效果展示">效果展示</h4>
 
-<p>当然swiftLint的配置不一定是适用于我们的，比如我们想report为html、或者添加一些自定义的规则等等，就需要我们fork一份swiftLint，做一些自己的适配。上面的swiftLint就使用自己的repo以及自己tag就好了。</p>
+<ul>
+  <li>无可检查文件
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+  <li></li>
+</ul>
 
-<h3 id="总结">总结</h3>
+<h4 id="总结">总结</h4>
 
-<p>到此为止，我们可以说整iOS 混合发开的代码规范lint就集成完事了。</p>
+<ul>
+  <li>整个code lint tool的集成断断续续花费了半年多的时间，整体上还是比较满意的</li>
+  <li>code lint 的接入，能够使得我们的代码更加的规范化，减少人工review的成本；</li>
+  <li>code lint的接入从某种程度上会降低我们的开发效率，因为要lint时间 + 改正时间，但是带来的好处远远大于一点点的效率降低，等到规则规范都提升之后，我们的效率自然会再次提起来</li>
+  <li>目前我们对ObjectiveC-Lint 做了进一步优化，支持了更多的</li>
+</ul>
 
-<p>当然我们还有优化的部分，首先自己的lint 只是规范检测，不想OCLint 那样面积大，并且输出也不是很哇塞。后续我们可以继续使用fast-oclint的方案，既能使用OCLint的强大，又能不用编译还支持增量编译。</p>
-
-<p>​</p>
-
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2022-08-29T00:00:00+08:00"><!-- start custom article footer snippet -->
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-03-20T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -728,7 +840,7 @@ echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</a></div><div class="next"><span>NEXT</span><a href="/2022/09/14/Objective_CLint.html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">如何创建一个三方home brew tap</a></div><div class="next"><span>NEXT</span><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html">shell 杂记(不断更新...)</a></div></div></div>
 
 </div>
 

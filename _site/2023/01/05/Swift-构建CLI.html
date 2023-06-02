@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>关于iOS 代码质量把控研究 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>swift 编写第一个CLI程序 - harry’s blog</title>
 
-<meta name="description" content="前提code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的...">
-<link rel="canonical" href="http://localhost:4000/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="用swift 编写第一个CLI(command line tool)程序起因因为在研究swiftLint的时候，发现了熟悉的swift code，但却无法理解到底实现了什么？发现swiftlint 都是基于开源库swift-argument-parser 做的，于是乎去了解apple的开源库swift-argum...">
+<link rel="canonical" href="http://localhost:4000/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -460,267 +460,264 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>关于iOS 代码质量把控研究</h1></header></div><meta itemprop="headline" content="关于iOS 代码质量把控研究"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>swift 编写第一个CLI程序</h1></header></div><meta itemprop="headline" content="swift 编写第一个CLI程序"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 29, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=swift">swift</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=CLI">CLI</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 05, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="111">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-05T00:00:00+08:00">
+    <meta itemprop="keywords" content="swift,CLI"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="前提">前提</h3>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="用swift-编写第一个clicommand-line-tool程序">用swift 编写第一个CLI(command line tool)程序</h4>
 
-<p>code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。</p>
+<hr />
 
-<p>所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！</p>
+<h4 id="起因">起因</h4>
 
-<h3 id="lint-时机">Lint 时机</h3>
+<p>因为在研究swiftLint的时候，发现了熟悉的swift code，但却无法理解到底实现了什么？</p>
 
-<p>我们熟知的Objective-C lint，有<a href="https://docs.oclint.org/en/stable/index.html#usage">OClint</a>、<a href="https://fbinfer.com/">Infer</a>; swift 有<a href="https://github.com/realm/SwiftLint">swiftLint</a>，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？</p>
+<p>发现swiftlint 都是基于开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 做的，于是乎去了解apple的开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> ,  然后才知道了，这里面还大有玄机嘞！</p>
 
-<ol>
-  <li>
-    <p>放到build时期？</p>
+<p><a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 这个是用来解析命令行参数的苹果开源库，应用这个库能很方便的进行命令行参数解析。</p>
 
-    <p>这种方案被我们pass掉了，首先放到build时期会增加我们的build时间，第二事实上我们需要嵌入脚本到项目里，可能会影响到打包。</p>
-  </li>
-  <li>
-    <p>放到git push 之后gitlab pipeline时期？</p>
+<p>后来非常好奇，那么swiftLint工程里的Package.swift文件又是啥呀？</p>
 
-    <p>这种方案不出意外也被pass了，首先如果知道pipeline job的人都知道，我们需要配置runner, 本身来说配置加集成，可能就不是一个容易的事情，而且对于我来说我觉得这个事情，太晚了，lint 有问题，还等再次push….</p>
-  </li>
-  <li>
-    <p>放到pre commit时期？</p>
+<p>一练的疑问，一头的雾水，于是乎扎入到探究的深坑中…</p>
 
-    <p>Ok, 对于比较合适的事情，我觉得就是在precommit时期，因为基于git 管理，我们代码每次改动之后都需要commit，那么commit事情去做lint这件事情，是非常合适的，如果存在问题，那么就修改之后，再次commit。时间上，时机上我觉得都很合适</p>
+<p>经过一两天的研究，翻看apple的官方文档、开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 的使用、别人的博客，最后进入了另一个天地。 下面我将逐个解开里边的谜题（当然我是第一次知道，因为之前没接触过…，不要笑话哦😄）</p>
 
-    <p>ok， 对于 lint 放到哪个时机的问题，我们已经确定–pre commit时期</p>
-  </li>
-</ol>
+<h4 id="依次来说">依次来说</h4>
 
-<h3 id="pre-commit"><a href="https://pre-commit.com/#install">pre-commit</a></h3>
+<h5 id="首先说一说我们看到packageswift文件">首先说一说，我们看到Package.swift文件</h5>
 
-<p>git 其实为我们提供了很多种的hook方式，随便打开一个.git文件夹就可以看到一堆的hooks example文件，如下：</p>
+<p>其实这是苹果新出的一种代码管理方案，叫做Swift Package Manager， 简称为SPM， 我们之前应该对Cocoapods、Carthage（专门用于swift工程无嵌入式工程管理）都比较了解，但是其实也比较类似，SPM也是用来管理三方库的依赖的。 对应到我们Cocoapods 这个Package.swift文件就相当于.podfile。</p>
 
-<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20220915152238image-20220915152237340.png" alt="image-20220915152237340" /></p>
+<p>那么我们怎么创建呢？</p>
 
-<p>OK，所以其实我们想要hook，就变得非常容易，只要我们修改pre-commit为可执行文件，并在里边按照example嵌入执行代码即可。</p>
+<p>​	两种方式可以创建：</p>
 
-<p>这一步，早就有人帮我们做了，那就是<a href="https://pre-commit.com/#install">pre-commit</a> 他不仅简单了我们的操作，并且起到了脚本lint代码分离的效果，他通过.pre-commit-config.yaml 文件中的配置，在执行git commit时候执行<a href="https://pre-commit.com/#install">pre-commit</a> 脚本，再而执行到安装的pre-commit代码里，进行clone .pre-commit-config.yaml里配置的repo，以及分析，执行对应的hook代码。</p>
-
-<p>接下来简单的介绍一下<a href="https://pre-commit.com/#install">pre-commit</a> 相关的东西：</p>
+<p>​	1. 我们可以通过命令行的方式创建：swift package init [–type executable]</p>
 
 <ol>
-  <li>
-    <p>安装</p>
-
-    <p>Mac 推荐使用：<code class="language-plaintext highlighter-rouge">brew install pre-commit</code></p>
-
-    <p>其他安装：<code class="language-plaintext highlighter-rouge">pip install pre-commit</code></p>
-
-    <p><code class="language-plaintext highlighter-rouge">conda install -c conda-forge pre-commit</code></p>
-  </li>
-  <li>
-    <p>配置</p>
-
-    <p>安装完pre-commit之后，在.git 同级目录，添加.pre-commit-config.yaml 文件，则可支持pre-commit</p>
-
-    <p>.pre-commit-config.yaml的相关配置：</p>
-
-    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">repos</span><span class="pi">:</span>
-<span class="pi">-</span>   <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/pre-commit/pre-commit-hooks</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">v2.3.0</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">check-yaml</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">end-of-file-fixer</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">trailing-whitespace</span>
-<span class="pi">-</span>   <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/psf/black</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">21.12b0</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">black</span>
-</code></pre></div>    </div>
-
-    <p>注意点：rev: 不再支持commit hash id， 只支持tag</p>
-
-    <p>具体参考：https://pre-commit.com/#plugins</p>
-  </li>
-  <li>
-    <p>创建一个自己的hook</p>
-
-    <p>一个hook必须要包含a .pre-commit-hooks.yaml 文件，这个文件是告诉pre-commit，这个hook库里包含的hook id等信息…</p>
-
-    <p>大概张这个样子…</p>
-
-    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span>   <span class="na">id</span><span class="pi">:</span> <span class="s">trailing-whitespace</span>
-    <span class="na">name</span><span class="pi">:</span> <span class="s">Trim Trailing Whitespace</span>
-    <span class="na">description</span><span class="pi">:</span> <span class="s">This hook trims trailing whitespace.</span>
-    <span class="na">entry</span><span class="pi">:</span> <span class="s">trailing-whitespace-fixer</span>
-    <span class="na">language</span><span class="pi">:</span> <span class="s">python</span>
-    <span class="na">types</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">text</span><span class="pi">]</span>
-</code></pre></div>    </div>
-  </li>
+  <li>我们可以通过打开xcode创建，<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182358image-20230105181140374.png" alt="image-20230105181140374" style="zoom:33%;" /></li>
 </ol>
 
-<p>​		hooks 仓库，支持很多种语言，每种语言包含的文件也不太一样，比如script （shell脚本）必须entry参		数给一个相对路径的shell脚本；比如python，必须要执行pip install .（及包括setup.py或者		pyproject.toml）以及entry一般在setup.py 里的console_scripts或者scripts配置的。</p>
+<p>这样我们就可以创建出来这样一个工程，如下图：<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182408image-20230105181534945.png" alt="image-20230105181534945" /></p>
 
-<p>​	<a href="https://pre-commit.com/#script">了解更多</a></p>
+<p>用xcode 打开Package.swift 即可打开工程。</p>
 
-<h3 id="objective-c-lint">Objective-C Lint</h3>
+<p>然后我们需要配置Package.swift :</p>
 
-<p>上面提到现存在两种lint，<a href="https://oclint.org/">oc-lint</a>/ infer。</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">PackageDescription</span>
 
-<h4 id="oc-lint"><a href="https://oclint.org/">oc-lint</a></h4>
-
-<p>安装： <code class="language-plaintext highlighter-rouge">brew tap oclint/formulae</code></p>
-
-<p>​			<code class="language-plaintext highlighter-rouge">	 brew install oclint</code></p>
-
-<p>​			<code class="language-plaintext highlighter-rouge">*// 安装xcpretty* gem install xcpretty</code></p>
-
-<p>先简单介绍一下OC lint：OC lint 是通过编译之后的产物 compile_commands.json 去分析的，所以必要的是我们执行oc-lint必须要build。然后在完成之后会以自动打开一个html分析结果。</p>
-
-<p>我们先说说他的缺点：</p>
-
-<ol>
-  <li>必须要编译，首先这是一个漫长的过程，而且对于我们一个不支持模拟器的app（害！因为内部直播的framework没把x86打进去）这是比较致命的可以说</li>
-  <li>他不支持增量查，这样会带出来很多历史遗留问题，对于集成来说，又成了一个比较窘困的问题（你想想，以前多少可能有问题的代码，这集成都得改，不得改个三天三夜的😁）</li>
-</ol>
-
-<p>接下来我们说说他的优点：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. oc-lint 不仅查了不规范的代码，而且查了可能会导致问题的坏味道代码
-1. oc-lint 对于代码严重程度做了等级分化，并且以html的方式打开，更加的直观
-1. oc-lint支持自定义规则，和修改规则
+<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
+    <span class="nv">name</span><span class="p">:</span> <span class="s">"Counter"</span><span class="p">,</span>
+    <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1">// Dependencies declare other packages that this package depends on.</span>
+        <span class="c1">// .package(url: /* package url */, from: "1.0.0"),</span>
+        <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/apple/swift-argument-parser.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1">// Targets are the basic building blocks of a package. A target can define a module or a test suite.</span>
+        <span class="c1">// Targets can depend on other targets in this package, and on products in packages this package depends on.</span>
+        <span class="o">.</span><span class="nf">executableTarget</span><span class="p">(</span>
+            <span class="nv">name</span><span class="p">:</span> <span class="s">"Counter"</span><span class="p">,</span>
+            <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ArgumentParser"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"swift-argument-parser"</span><span class="p">)]),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </code></pre></div></div>
 
-<p>当然，对于1.2的缺点，已经有了一些方案解决，<a href="https://github.com/shulong-apple/fast-oclint">了解更多</a></p>
+<p>如果需要了解所有的参数解释，我们可以通过看xcode Package这个结构体了解。那其实上我们简单的配置包名、包名、依赖、可执行目标已然足够。 这样我们的一个swift package 就配置完成了，当配置完成后，xcode会自动检测包名、可执行名字 和 类名是否对应，以及检测依赖并且下载安装。</p>
 
-<p>后面会尝试集成到pre-commit hook, 敬请期待…</p>
+<h5 id="紧接着我们说说命令行能干什么">紧接着我们说说命令行能干什么</h5>
 
-<h4 id="infer"><a href="https://infer.liaohuqiu.net/docs/getting-started.html">infer</a></h4>
+<p>比如我们用的git命令、pod 命令其实都是命令行程序。只是他们可能不是用swift实现的而已，比如我们熟知的cocapods就是用ruby实现。那么相必这么举例我们就知道命令行能干什么？可干的事情可太多了，当然最早说的swiftLint也是一个命令行程序。</p>
 
-<p>安装: <code class="language-plaintext highlighter-rouge">brew install infer</code></p>
+<h5 id="接下来我们根据swift-argument-parser-官方示例写一个小小的cli">接下来我们根据swift-argument-parser 官方示例，写一个小小的CLI</h5>
 
-<p>​			可以选择下载安装包安装，<a href="https://infer.liaohuqiu.net/docs/getting-started.html">下载地址</a></p>
+<p>写一个经典的，读取a文件的内容并统计文件中单词的数量，输出到b文件。</p>
 
-<p>Infer 是facebook提供的一个lint 库</p>
+<p>如果不用开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> ，我们需要一个main.swift 作为程序的入口:</p>
 
-<p>缺点：</p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// main.swift</span>
+<span class="k">let</span> <span class="nv">counter</span> <span class="o">=</span> <span class="kt">Counter</span><span class="p">()</span>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	1. 貌似infer 也需要编译工程
-	1. 不支持自定义规则
+<span class="k">do</span> <span class="p">{</span>
+   <span class="k">try</span> <span class="n">counter</span><span class="o">.</span><span class="nf">run</span><span class="p">()</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"An error occurred"</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>优点：</p>
+<p>因为原生的参数解析比较麻烦，我们就写一个比较简单输出吧，</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 支持多种检测，包括空指针、内存泄漏等等的检测
-1. 支持增量检测
+<p>这个时候我们需要写一个Counter：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Counter.swift</span>
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Counter</span> <span class="p">{</span>
+    <span class="kd">private</span> <span class="k">var</span> <span class="nv">arguments</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="nv">arguments</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="o">=</span> <span class="kt">CommandLine</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">arguments</span> <span class="o">=</span> <span class="n">arguments</span>
+    <span class="p">}</span>
+    
+    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="k">throws</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"test"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>具体我也没有太多研究，需要深入研究的，<a href="https://fbinfer.com/docs/analyzing-apps-or-projects">请参考</a></p>
+<p>然后我们再当前跟目录下，执行命令:<code class="language-plaintext highlighter-rouge"> swift build</code> ,  然后我们执行<code class="language-plaintext highlighter-rouge"> swift run Counter</code>, 就可以看见终端的输出了  <img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105184936image-20230105184936299.png" alt="image-20230105184936299" /></p>
 
-<h4 id="objective-clint-自制hook-"><a href="https://github.com/HaoXianSen/Objective-CLint">Objective-CLint 自制hook </a></h4>
+<p>这样我们算是一个简单的CLI就开发完了。</p>
 
-<p>这个库是我基于SpaceCommand三方库，做的pre-commit hook，简单的介绍一下：</p>
+<p>ok，我们再使用<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 去实现，我们最初的统计</p>
 
-<p>SpaceCommand是基于clang-format 制作的代码规范工具，而且写了一些自定义规则，用来检测clang-format忽略或者有歧义的部分。它支持了检测不规范代码，并给出终端提示；而且提供了一键格式化所有有问题的代码。</p>
+<p>使用ArgumentParser, 我们就不需要在给main.swift入口，只需要命名类或者结构体，继承ParsableCommand 或者AsyncParsableCommand，然后标识为@main即可。</p>
 
-<p>那么Objective-CLint 在它的基础上，1. 我显示了将它配置成一个可以pre-commit集成的hook，2. 增加了可视化diff 到html，自动打开 3. 去掉了一键格式化 5. 修改自定义规则，使得适用更加广泛。</p>
+<p>ArgumentParser 有三种类型标识： @Argument 标识必须的参数，带有顺序的, 不可指定名字 @Option 是无序的，可以指定名字。以及是否简写等， @Flag 通常是一个bool指，一个标识。下面分别举例这三种对应到命令行</p>
 
-<p>具体内容介绍，请移步到<a href="https://haoxiansen.github.io/2022/09/14/Objective_CLint.html">个人博客Objective-CLint</a> 或者移步到<a href="https://github.com/HaoXianSen/Objective-CLint">github</a></p>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1 @Argument</span>
+<span class="kd">@Argument</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="kd">@Argument</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="c1">// 这种情况对应到命令行我们就需要 Counter test1.txt test2.txt ，以属性的顺序给定参数。并且不需要指定</span>
 
-<p>到此，我们对于OC代码已经有了好几种方案，我选择了容易集成且轻量级的自制hook。</p>
+<span class="c1">// 2. @Option</span>
+<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="c1">// 这种情况对应到命令行我们就需要 Counter --input-file test1.txt --output-file test2.txt ，当然顺序可以随意，只要指定即可。当然我们也可以@Option(name: help:)等初始化方法指定提示语、简写等等</span>
 
-<h3 id="swift-lint">Swift Lint</h3>
-
-<h4 id="swiftlint"><a href="https://github.com/realm/SwiftLint">swiftLint</a></h4>
-
-<p>​	Swift 代码毫无疑问，我们就可以使用SwiftLint去集成。swiftLint 已经为我们提供了pre-commit hook，我	们可以直接使用，当然也可以fork，修改规则使用</p>
-
-<p>​	具体请查看github：https://github.com/realm/SwiftLint</p>
-
-<h3 id="集成">集成</h3>
-
-<p>到此为止，我们所有的lint 工具 以及hook 工具已经齐全，即 pre-commit + Objective-CLint + SwiftLint!</p>
-
-<p>Ok, 当然我们还有一些工作量需要做，为了团队更好的集成，我们添加检测安装脚本位于pod pre_install, 目的在于自动检测是否安装了pre-commit，以及自动安装pre-commit。</p>
-
-<p>下面是检测脚本：</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
-
-<span class="nb">echo</span> <span class="s2">"正在检查安装必要工具..."</span>
-<span class="c"># 检测是否安装了homebrew</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> brew <span class="nt">-v</span><span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"✅homebrew 已经安装"</span>
-<span class="k">else 
-    </span><span class="nb">echo</span> <span class="s2">"正在安装brew..."</span>
-    /bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="si">)</span><span class="s2">"</span>
-   <span class="nb">echo</span> <span class="s1">'✅安装完成homebrew 🍺🍺🍺 /n'</span>
-   
-<span class="k">fi</span>
-
-<span class="c"># 检测是否安装了pre-commit</span>
-<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">command</span> <span class="nt">-v</span> pre-commit<span class="si">)</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"✅pre-commit 已经安装"</span>
-<span class="k">else
-    </span><span class="nb">echo</span> <span class="s2">"正在安装pre-commit..."</span>
-    brew <span class="nb">install </span>pre-commit
-    <span class="nb">echo</span> <span class="s1">'✅安装完成pre-commit 🍺🍺🍺/n'</span>
-<span class="k">fi
-
-
-if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">".pre-commit-config.yaml"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nb">echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[31m❎文件 </span><span class="se">\"</span><span class="s2">.pre-commit-config.yaml</span><span class="se">\"</span><span class="s2"> 不存在， 请添加.pre-commit-config.yaml</span><span class="se">\0</span><span class="s2">33[0m"</span>
-    <span class="nb">exit </span>1
-<span class="k">fi
-
-</span>pre-commit <span class="nb">install
-echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[36m ...................所有工具都安装成功😁😁😁 </span><span class="se">\0</span><span class="s2">33[0m"</span>
+<span class="c1">// 2. @Flag</span>
+<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
+<span class="kd">@Flag</span> <span class="k">var</span> <span class="nv">verbose</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="c1">// 这种情况对应到命令行我们就需要 Counter --verbose --input-file test1.txt --output-file test2.txt。</span>
 
 </code></pre></div></div>
 
-<p>Ok, 我们把它集成到pod中，当然没有使用pod管理的，直接执行这个脚本即可。把下面的脚本嵌入到podfile中</p>
+<p>OK，大概swift-argument-parser就介绍这么多，具体的可以查看<a href="https://github.com/apple/swift-argument-parser">github</a>, 或者<a href="https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted/">官网</a>参考用法。</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pre_install</span> <span class="k">do</span> <span class="o">|</span><span class="n">installer</span><span class="o">|</span>
-    <span class="n">flag</span> <span class="o">=</span>  <span class="sb">`sh check_tools.sh`</span>
-    <span class="no">Pod</span><span class="o">::</span><span class="no">UI</span><span class="p">.</span><span class="nf">puts</span> <span class="n">flag</span>
-<span class="k">end</span>
+<p>接下来是我们统计的命令行实现：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">ArgumentParser</span>
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">@main</span>
+<span class="kd">struct</span> <span class="kt">Counter</span><span class="p">:</span> <span class="kt">ParsableCommand</span> <span class="p">{</span>
+    <span class="kd">@Option</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="o">.</span><span class="nf">customLong</span><span class="p">(</span><span class="s">"input"</span><span class="p">)],</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"A file to read"</span><span class="p">)</span>
+    <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
+    
+    <span class="kd">@Option</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="o">.</span><span class="nf">customLong</span><span class="p">(</span><span class="s">"output"</span><span class="p">)],</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"A file to save word counts to"</span><span class="p">)</span>
+    <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span><span class="kt">String</span>
+    
+    
+    <span class="kd">@Flag</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="o">.</span><span class="n">shortAndLong</span><span class="p">,</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"Print status updates while counting"</span><span class="p">)</span> <span class="k">var</span> <span class="nv">verbose</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span>
+    
+    <span class="k">mutating</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="k">throws</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"""
+                Counting words in '</span><span class="se">\(</span><span class="n">inputFile</span><span class="se">)</span><span class="s">' </span><span class="err">\</span><span class="s">
+                and write result into '</span><span class="se">\(</span><span class="n">outputFile</span><span class="se">)</span><span class="s">'
+                """</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="k">try</span><span class="p">?</span> <span class="kt">String</span><span class="p">(</span><span class="nv">contentsOfFile</span><span class="p">:</span> <span class="n">inputFile</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="kt">RuntimeError</span><span class="p">(</span><span class="s">"Can't read </span><span class="se">\(</span><span class="n">inputFile</span><span class="se">)</span><span class="s"> contents"</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">words</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="nf">components</span><span class="p">(</span><span class="nv">separatedBy</span><span class="p">:</span> <span class="o">.</span><span class="n">whitespacesAndNewlines</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">word</span> <span class="k">in</span>
+                <span class="n">word</span><span class="o">.</span><span class="nf">trimmingCharacters</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="kt">CharacterSet</span><span class="o">.</span><span class="n">alphanumerics</span><span class="o">.</span><span class="n">inverted</span><span class="p">)</span><span class="o">.</span><span class="nf">lowercased</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="n">word</span> <span class="k">in</span>
+                <span class="n">word</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="nv">nil</span> <span class="p">:</span> <span class="n">word</span>
+            <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">counts</span> <span class="o">=</span> <span class="kt">Dictionary</span><span class="p">(</span><span class="nv">grouping</span><span class="p">:</span> <span class="n">words</span><span class="p">,</span> <span class="nv">by</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">})</span>
+            <span class="o">.</span><span class="n">mapValues</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">count</span> <span class="p">}</span>
+            <span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">})</span>
+        
+        <span class="k">if</span> <span class="n">verbose</span> <span class="p">{</span>
+            <span class="nf">print</span><span class="p">(</span><span class="s">"found </span><span class="se">\(</span><span class="n">counts</span><span class="o">.</span><span class="n">count</span><span class="se">)</span><span class="s"> words"</span><span class="p">)</span>
+        <span class="p">}</span>
+        
+        <span class="k">let</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="k">in</span>
+            <span class="s">"</span><span class="se">\(</span><span class="n">word</span><span class="se">)</span><span class="s">: </span><span class="se">\(</span><span class="n">count</span><span class="se">)</span><span class="s">"</span>
+        <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">_</span> <span class="o">=</span> <span class="k">try</span><span class="p">?</span> <span class="n">output</span><span class="o">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">toFile</span><span class="p">:</span> <span class="n">outputFile</span><span class="p">,</span> <span class="nv">atomically</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">encoding</span><span class="p">:</span> <span class="o">.</span><span class="n">utf8</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="kt">RuntimeError</span><span class="p">(</span><span class="s">"Can't write to </span><span class="se">\(</span><span class="n">outputFile</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">struct</span> <span class="kt">RuntimeError</span><span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">CustomStringConvertible</span> <span class="p">{</span>
+    <span class="k">var</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span>
+    
+    <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+    <span class="p">}</span>
+    
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>添加.pre-commit-config.yaml</p>
+<p>在我们理解了ArgumentParser之后和了解了命令行开发之后，在看这些swift的代码就比较简单了。写起来也很简单了。</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">fail_fast</span><span class="pi">:</span> <span class="no">false</span>
-<span class="na">repos</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/HaoXianSen/Objective-CLint.git</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">v0.0.4</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-      <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">objc-lint</span>
-        <span class="na">name</span><span class="pi">:</span> <span class="s">objc-format</span>
-        <span class="na">entry</span><span class="pi">:</span> <span class="s">format-objc-hook</span>
-        <span class="na">language</span><span class="pi">:</span> <span class="s">script</span>
-        <span class="na">require_serial</span><span class="pi">:</span> <span class="no">true</span>
-        <span class="na">verbose</span><span class="pi">:</span> <span class="no">true</span>
+<p>我们测试一下：</p>
 
-  <span class="pi">-</span> <span class="na">repo</span><span class="pi">:</span> <span class="s">https://github.com/realm/SwiftLint</span>
-    <span class="na">rev</span><span class="pi">:</span> <span class="s">0.49.1</span>
-    <span class="na">hooks</span><span class="pi">:</span>
-    <span class="pi">-</span> <span class="na">id</span><span class="pi">:</span> <span class="s">swiftlint</span>
+<p>新建test1.txt、test2.txt, 在test1.txt里加入<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190718image-20230105190717915.png" alt="image-20230105190717915" style="zoom:50%;" /></p>
 
+<p>然后，执行 swift run Counter -i test1.txt -o test2.txt -v, 查看输出</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190934image-20230105190933826.png" alt="image-20230105190933826" /></p>
+
+<p>我们查看test2.txt文件</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105191015image-20230105191015159.png" alt="image-20230105191015159" /></p>
+
+<p>确实也写进去了。</p>
+
+<p>我们的命令现在只能在当前工程目录下，并且通过swift run命令执行，如何使得命令在任何目录终端都可以执行？</p>
+
+<p>我们需要打一个release的可执行包，手动移到/urs/local/bin下。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># tong</span>
+swift build <span class="nt">--configuration</span> release <span class="nt">--product</span> Counter
+<span class="nb">cd</span> .build/release/Counter
+<span class="nb">cp</span> <span class="nt">-f</span> Counter /usr/local/bin/counter
 </code></pre></div></div>
 
-<p>OK，这样我们整个集成就完成了。</p>
+<p>这样，不管在哪，我们都可以直接执行counter命令啦！</p>
 
-<p>当然swiftLint的配置不一定是适用于我们的，比如我们想report为html、或者添加一些自定义的规则等等，就需要我们fork一份swiftLint，做一些自己的适配。上面的swiftLint就使用自己的repo以及自己tag就好了。</p>
+<p>当然如果我们需要将我们CLI进行推广使用，肯定不能像以上那样进行，这样我们可以进行以下的方式进行安装：</p>
 
-<h3 id="总结">总结</h3>
+<p>1、写一个自动安装脚本，下载已经打好的可执行文件，然后将可执行文件移动到/usr/local/bin/目录下</p>
 
-<p>到此为止，我们可以说整iOS 混合发开的代码规范lint就集成完事了。</p>
+<p>2、我们可以制作home brew 通过home brew 自动完成安装。感兴趣的可以参考我的另一篇文章：<a href="https://haoxiansen.github.io/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">创建三方home brew</a></p>
 
-<p>当然我们还有优化的部分，首先自己的lint 只是规范检测，不想OCLint 那样面积大，并且输出也不是很哇塞。后续我们可以继续使用fast-oclint的方案，既能使用OCLint的强大，又能不用编译还支持增量编译。</p>
+<h4 id="结束语鸡汤来一碗">结束语（鸡汤来一碗~）</h4>
 
-<p>​</p>
+<p>往往有些事情超出了我们了解的范围之后，我们内心是有些陌生、一头雾水、抗拒的，但是只要你沉下心来，去以一颗学习的心，去了解，去学习，那么就打开一个新世界。</p>
 
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2022-08-29T00:00:00+08:00"><!-- start custom article footer snippet -->
+<p>弄清楚以上这些之后，回头在看swiftLint代码，也变得容易多了。好了，接着学习swiftlint实现去了~</p>
+
+<h4 id="参考">参考</h4>
+
+<p>https://blog.csdn.net/Desgard_Duan/article/details/111878243</p>
+
+<p>https://www.avanderlee.com/swift/command-line-tool-package-manager/</p>
+
+<p>https://developer.apple.com/documentation/packagedescription</p>
+
+<p>https://github.com/apple/swift-argument-parser</p>
+
+<p>https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted/</p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-01-05T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -728,7 +725,7 @@ echo</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</a></div><div class="next"><span>NEXT</span><a href="/2022/09/14/Objective_CLint.html">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/04/iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">iOS自旋锁与互斥锁</a></div><div class="next"><span>NEXT</span><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">如何创建一个三方home brew tap</a></div></div></div>
 
 </div>
 

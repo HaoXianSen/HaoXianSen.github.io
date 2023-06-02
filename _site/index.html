@@ -462,28 +462,120 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="harry"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html"><h2 itemprop="headline" class="item__header">swift 编写第一个CLI程序</h2></a></header>
+          <header><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">home brew 的研究</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
+
+虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。
+
+因此，需要对home brew 做一个深入的研究。
+
+正文
+
+home brew 简介
+
+如果你是一名MacOs的使用者，那么我相信你肯定知道 home brew，也可能已经对于home brew 普通的一些命令非常熟悉了。那么home brew是什么？
+
+引用brew 官方文档的一句介绍的话：The Missing Package Manager for macOS (or Linux)， Homebrew Cask installs macOS apps, fonts and plugins ...</div><p><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=homeBrew">homeBrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 31, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-05-31T00:00:00+08:00">
+    <meta itemprop="keywords" content="homeBrew"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html"><h2 itemprop="headline" class="item__header">shell 杂记(不断更新...)</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">终端输出奇技淫巧
+
+1. \u{1B}[1A\u{1B}[K
+
+这是一种 ANSI 转义序列，通常用于控制终端的光标位置和清除屏幕上的文本。”\u{1B}[1A” 表示将光标向上移动一行，”\u{1B}[K” 表示清除当前光标位置后面的文本。组合在一起，这个序列的意思是将光标移动到当前行的开头并清除该行的文本。
+
+Pod cache
+
+http://blog.fpliu.com/it/os/macOS/software/CocoaPods/pod-cache
+
+shell 杂记
+
+1. shell 语句中的while 循环语句
+
+while test 条件
+do 
+# 循环体代码
+done
+
+while test $count -gt 0; do
+echo ""
+done
+
+while...</div><p><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=shell">shell</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Apr 07, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-04-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="shell"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html"><h2 itemprop="headline" class="item__header">基于homebrew 的code lint 集成</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">基于homebrew 的code lint 集成(总)
+
+前情
+
+之前文章中我们已经讲到了采用pre-commit 集成工具去集成code lint 工具（Objective-CLint、swiftlint），文章地址，这种方式当然很方便，但是也很难扩展。比如swiftLint 我们就没有很好的办法让其以html或者其他的方式打开，只能显示到控制台，再比如我们后续想要整合oc和swift lint的结果。也没有好的办法实现。那么我们就要另辟西路。
+
+当然我们还是采用pre-commit 的时期，只是我们不在采用pre-commit工具集成，我们自己写pre-commit脚本、自己做工具的安装等等时期。
+
+这样我们的可扩展行很强，我们想干什么都可以，只要我们能想的到的…
+
+开发/架构
+
+...</div><p><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=swift">swift</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=CLI">CLI</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=objective-c">objective-c</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=homebrew">homebrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 20, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="122">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-03-20T00:00:00+08:00">
+    <meta itemprop="keywords" content="swift,CLI,objective-c,homebrew"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><h2 itemprop="headline" class="item__header">如何创建一个三方home brew tap</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
+
+为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。
+
+1. 创建三方Tap仓库
+
+​	如何创建三方tap库？
+
+ 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字...</div><p><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=homeBrew">homeBrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
+    <meta itemprop="keywords" content="homeBrew"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html"><h2 itemprop="headline" class="item__header">swift 编写第一个CLI程序</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">用swift 编写第一个CLI(command line tool)程序
 
 
 
 起因
 
-因为在研究swiftLint的时候，发现了都认识的swift，但却无法理解到底实现的是什么？
+因为在研究swiftLint的时候，发现了熟悉的swift code，但却无法理解到底实现了什么？
 
-于是去了解一个apple的开源库swift-argument-parser , 知道了，哦这个是用来解析命令行参数的
+发现swiftlint 都是基于开源库swift-argument-parser 做的，于是乎去了解apple的开源库swift-argument-parser ,  然后才知道了，这里面还大有玄机嘞！
 
-swiftLint里的Package.swift文件又是啥呀？
+swift-argument-parser 这个是用来解析命令行参数的苹果开源库，应用这个库能很方便的进行命令行参数解析。
 
-一堆的疑问，一头的雾水，开始扎入到探究的深坑中…
+后来非常好奇，那么swiftLint工程里的Package.swift文件又是啥呀？
 
-经过一两天的研究，翻看apple的官方文档、开源库swift-argument-parser 的使用、别人的博客，最后进入了另一个天地。
+一练的疑问，一头的雾水，于是乎扎入到探究的深坑中…
 
-依次来说
-
-首先说一说，我们看到Package.swift文件
-
-其实这是苹果新出的一种代码管理方案，叫做Swift Package...</div><p><a href="/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+经过一两天的研究，翻看appl...</div><p><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=swift">swift</a>
             </li><li>
@@ -493,7 +585,7 @@ swiftLint里的Package.swift文件又是啥呀？
             </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="111">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-05T00:00:00+08:00">
     <meta itemprop="keywords" content="swift,CLI"></div>
       </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><h2 itemprop="headline" class="item__header">iOS自旋锁与互斥锁</h2></a></header>
+          <header><a href="/2023/01/04/iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><h2 itemprop="headline" class="item__header">iOS自旋锁与互斥锁</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">iOS中自旋锁和互斥锁
 
 
@@ -514,7 +606,7 @@ swiftLint里的Package.swift文件又是啥呀？
 
 互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。
 
-其实从定义中我们也能很明...</div><p><a href="/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+其实从定义中我们也能很明...</div><p><a href="/2023/01/04/iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=iOS">iOS</a>
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 04, 2023</span>

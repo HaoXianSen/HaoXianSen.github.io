@@ -1158,7 +1158,7 @@ a > .item__header.disabled, a > .item__header:disabled, a.item__header.disabled,
 @media (max-width: 499px) { .article__header--overlay .overlay__excerpt { font-size: 1.35rem; } }
 .article__header--overlay .article__header { margin-top: 0; }
 
-.article__header--cover { width: 100%; }
+.article__header--cover { width: 70%; margin: auto; display: block; }
 
 .article__content { line-height: 1.8; word-wrap: break-word; }
 @media print { .article__content { line-height: 1.6; } }

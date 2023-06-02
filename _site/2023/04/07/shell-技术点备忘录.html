@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>swift 编写第一个CLI程序 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>shell 杂记(不断更新...) - harry’s blog</title>
 
-<meta name="description" content="用swift 编写第一个CLI(command line tool)程序起因因为在研究swiftLint的时候，发现了都认识的swift，但却无法理解到底实现的是什么？于是去了解一个apple的开源库swift-argument-parser , 知道了，哦这个是用来解析命令行参数的swiftLint里的Pack...">
-<link rel="canonical" href="http://localhost:4000/2023/01/05/01_Swift-%E6%9E%84%E5%BB%BACLI.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="终端输出奇技淫巧1. \u{1B}[1A\u{1B}[K这是一种 ANSI 转义序列，通常用于控制终端的光标位置和清除屏幕上的文本。”\u{1B}[1A” 表示将光标向上移动一行，”\u{1B}[K” 表示清除当前光标位置后面的文本。组合在一起，这个序列的意思是将光标移动到当前行的开头并清除该行的文本。Pod c...">
+<link rel="canonical" href="http://localhost:4000/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,257 +454,209 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.syt5.com/2021/0813/20210813050817316.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>swift 编写第一个CLI程序</h1></header></div><meta itemprop="headline" content="swift 编写第一个CLI程序"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>shell 杂记(不断更新...)</h1></header></div><meta itemprop="headline" content="shell 杂记(不断更新...)"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=swift">swift</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=CLI">CLI</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 05, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="111">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-05T00:00:00+08:00">
-    <meta itemprop="keywords" content="swift,CLI"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=shell">shell</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Apr 07, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-04-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="shell"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="用swift-编写第一个clicommand-line-tool程序">用swift 编写第一个CLI(command line tool)程序</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="终端输出奇技淫巧">终端输出奇技淫巧</h4>
 
-<hr />
+<h6 id="1-u1b1au1bk">1. \u{1B}[1A\u{1B}[K</h6>
 
-<h4 id="起因">起因</h4>
+<p>这是一种 ANSI 转义序列，通常用于控制终端的光标位置和清除屏幕上的文本。”\u{1B}[1A” 表示将光标向上移动一行，”\u{1B}[K” 表示清除当前光标位置后面的文本。组合在一起，这个序列的意思是将光标移动到当前行的开头并清除该行的文本。</p>
 
-<p>因为在研究swiftLint的时候，发现了都认识的swift，但却无法理解到底实现的是什么？</p>
+<p>Pod cache</p>
 
-<p>于是去了解一个apple的开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> , 知道了，哦这个是用来解析命令行参数的</p>
+<p>http://blog.fpliu.com/it/os/macOS/software/CocoaPods/pod-cache</p>
 
-<p>swiftLint里的Package.swift文件又是啥呀？</p>
+<h1 id="shell-杂记">shell 杂记</h1>
 
-<p>一堆的疑问，一头的雾水，开始扎入到探究的深坑中…</p>
+<h4 id="1-shell-语句中的while-循环语句">1. shell 语句中的while 循环语句</h4>
 
-<p>经过一两天的研究，翻看apple的官方文档、开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 的使用、别人的博客，最后进入了另一个天地。</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while </span><span class="nb">test </span>条件
+<span class="k">do</span> 
+<span class="c"># 循环体代码</span>
+<span class="k">done
 
-<h4 id="依次来说">依次来说</h4>
+while </span><span class="nb">test</span> <span class="nv">$count</span> <span class="nt">-gt</span> 0<span class="p">;</span> <span class="k">do
+</span><span class="nb">echo</span> <span class="s2">""</span>
+<span class="k">done
 
-<h5 id="首先说一说我们看到packageswift文件">首先说一说，我们看到Package.swift文件</h5>
-
-<p>其实这是苹果新出的一种代码管理方案，叫做Swift Package Manager， 简称为SPM， 我们之前应该对Cocoapods、Carthage都比较了解，其实其实也比较类似，SPM也是用来做三方库的依赖的。 对应到我们Cocoapods 这个Package.swift文件就相当于.podfile。</p>
-
-<p>那么我们怎么创建呢？</p>
-
-<ol>
-  <li>我们可以通过命令行的方式创建：swift package init [–type executable]</li>
-  <li>我们可以通过打开xcode创建，<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182358image-20230105181140374.png" alt="image-20230105181140374" style="zoom:33%;" /></li>
-</ol>
-
-<p>这样我们就可以创建出来这样一个工程，如下图：<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105182408image-20230105181534945.png" alt="image-20230105181534945" /></p>
-
-<p>用xcode 打开Package.swift 即可打开工程。</p>
-
-<p>然后我们配置Package.swift :</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">PackageDescription</span>
-
-<span class="k">let</span> <span class="nv">package</span> <span class="o">=</span> <span class="kt">Package</span><span class="p">(</span>
-    <span class="nv">name</span><span class="p">:</span> <span class="s">"Counter"</span><span class="p">,</span>
-    <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
-        <span class="c1">// Dependencies declare other packages that this package depends on.</span>
-        <span class="c1">// .package(url: /* package url */, from: "1.0.0"),</span>
-        <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/apple/swift-argument-parser.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">)</span>
-    <span class="p">],</span>
-    <span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
-        <span class="c1">// Targets are the basic building blocks of a package. A target can define a module or a test suite.</span>
-        <span class="c1">// Targets can depend on other targets in this package, and on products in packages this package depends on.</span>
-        <span class="o">.</span><span class="nf">executableTarget</span><span class="p">(</span>
-            <span class="nv">name</span><span class="p">:</span> <span class="s">"Counter"</span><span class="p">,</span>
-            <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="nf">product</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"ArgumentParser"</span><span class="p">,</span> <span class="nv">package</span><span class="p">:</span> <span class="s">"swift-argument-parser"</span><span class="p">)]),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+while</span> <span class="o">[</span> <span class="nv">$count</span> <span class="nt">-gt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">do
+</span><span class="nb">echo</span> <span class="s2">""</span>
+<span class="k">done</span>
 </code></pre></div></div>
 
-<p>具体的参数解释，我们可以通过看Package结构体了解。我们配置很简单，包含了包名、依赖、可执行目标。</p>
+<h4 id="2-shell-语法中的shift语句">2. shell 语法中的shift语句</h4>
 
-<h5 id="紧接着我们说说命令行能干什么">紧接着我们说说命令行能干什么</h5>
+<p>​	用于移动参数的位置，它将命令行参数往左移动一个位置，即第二个参数移动到第一个位置，以此类推</p>
 
-<p>比如我们用的git命令、pod 命令其实都是命令行程序嘞。只是他们可能不是用swift实现的而已，比如我们熟知的cocapods就是用ruby实现。那么相必这么举例我们就知道命令行能干什么？可干的事情可太多了，当然最早说的swiftLint也是一个命令行程序。</p>
+<p>​	语法为<code class="language-plaintext highlighter-rouge"> shift [n]</code>, 可选的参数<code class="language-plaintext highlighter-rouge">n</code>指定移动参数的数量。如果未指定<code class="language-plaintext highlighter-rouge">n</code>，则默认为1，即只移动一个参数。</p>
 
-<h5 id="接下来我们根据swift-argument-parser-官方示例写一个小小的cli">接下来我们根据swift-argument-parser 官方示例，写一个小小的CLI</h5>
+<h4 id="3-shell-中方法的定义与调用">3. shell 中方法的定义与调用</h4>
 
-<p>写一个经典的，读取a文件的内容并统计文件中单词的数量，输出到b文件。</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 定义</span>
+function_name<span class="o">()</span> <span class="o">{</span>
+    <span class="c"># method body</span>
+<span class="o">}</span>
 
-<p>如果不用开源库<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> ，我们需要一个main.swift 作为程序的入口:</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// main.swift</span>
-<span class="k">let</span> <span class="nv">counter</span> <span class="o">=</span> <span class="kt">Counter</span><span class="p">()</span>
-
-<span class="k">do</span> <span class="p">{</span>
-   <span class="k">try</span> <span class="n">counter</span><span class="o">.</span><span class="nf">run</span><span class="p">()</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"An error occurred"</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>因为原生的参数解析比较麻烦，我们就写一个比较简单输出吧，</p>
-
-<p>这个时候我们需要写一个Counter：</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Counter.swift</span>
-<span class="kd">import</span> <span class="kt">Foundation</span>
-
-<span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Counter</span> <span class="p">{</span>
-    <span class="kd">private</span> <span class="k">var</span> <span class="nv">arguments</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="nv">arguments</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span> <span class="o">=</span> <span class="kt">CommandLine</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">arguments</span> <span class="o">=</span> <span class="n">arguments</span>
-    <span class="p">}</span>
-    
-    <span class="kd">public</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="k">throws</span> <span class="p">{</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"test"</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>然后我们再当前跟目录下，执行命令:<code class="language-plaintext highlighter-rouge"> swift build</code> ,  然后我们执行<code class="language-plaintext highlighter-rouge"> swift run Counter</code>, 就可以看见终端的输出了  <img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105184936image-20230105184936299.png" alt="image-20230105184936299" /></p>
-
-<p>这样我们算是一个简单的CLI就开发完了。</p>
-
-<p>ok，我们再使用<a href="https://github.com/apple/swift-argument-parser">swift-argument-parser</a> 去实现，我们最初的统计</p>
-
-<p>使用ArgumentParser, 我们就不需要在给main.swift入口，只需要命名类或者结构体，继承ParsableCommand 或者AsyncParsableCommand，然后标识为@main即可。</p>
-
-<p>ArgumentParser 有三种类型标识： @Argument 标识必须的参数，带有顺序的, 不可指定名字 @Option 是无序的，可以指定名字。以及是否简写等， @Flag 通常是一个bool指，一个标识。下面分别举例这三种对应到命令行</p>
-
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 1 @Argument</span>
-<span class="kd">@Argument</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="kd">@Argument</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="c1">// 这种情况对应到命令行我们就需要 Counter test1.txt test2.txt ，以属性的顺序给定参数。并且不需要指定</span>
-
-<span class="c1">// 2. @Option</span>
-<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="c1">// 这种情况对应到命令行我们就需要 Counter --input-file test1.txt --output-file test2.txt ，当然顺序可以随意，只要指定即可。当然我们也可以@Option(name: help:)等初始化方法指定提示语、简写等等</span>
-
-<span class="c1">// 2. @Flag</span>
-<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="kd">@Option</span> <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span> <span class="kt">String</span>
-<span class="kd">@Flag</span> <span class="k">var</span> <span class="nv">verbose</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span>
-<span class="c1">// 这种情况对应到命令行我们就需要 Counter --verbose --input-file test1.txt --output-file test2.txt。</span>
+<span class="c"># 调用</span>
+function_name parameter1 parameter2
 
 </code></pre></div></div>
 
-<p>OK，大概swift-argument-parser就介绍这么多，具体的可以查看<a href="https://github.com/apple/swift-argument-parser">github</a>, 或者<a href="https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted/">官网</a>参考用法。</p>
+<h4 id="4-shell-特殊变量">4. shell 特殊变量</h4>
 
-<p>接下来是我们统计的命令行实现(当然我上面的官网里就完整的代码)：</p>
+<p>在shell编程中，<code class="language-plaintext highlighter-rouge">$0</code>和<code class="language-plaintext highlighter-rouge">$1</code>是特殊变量，用于引用脚本名称和脚本的第一个参数。它们是内置的变量，可以在shell脚本中直接使用。</p>
 
-<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">import</span> <span class="kt">ArgumentParser</span>
-<span class="kd">import</span> <span class="kt">Foundation</span>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">$0</code>：代表当前脚本的名称，即执行脚本时输入的文件名或路径。例如，如果脚本名为<code class="language-plaintext highlighter-rouge">myscript.sh</code>，则<code class="language-plaintext highlighter-rouge">$0</code>将为<code class="language-plaintext highlighter-rouge">myscript.sh</code>。</li>
+  <li><code class="language-plaintext highlighter-rouge">$1</code>：代表脚本的第一个参数，即在执行脚本时传递给它的第一个参数。例如，如果执行<code class="language-plaintext highlighter-rouge">myscript.sh</code>时传递了一个参数<code class="language-plaintext highlighter-rouge">hello</code>，则<code class="language-plaintext highlighter-rouge">$1</code>将为<code class="language-plaintext highlighter-rouge">hello</code></li>
+</ul>
 
-<span class="kd">@main</span>
-<span class="kd">struct</span> <span class="kt">Counter</span><span class="p">:</span> <span class="kt">ParsableCommand</span> <span class="p">{</span>
-    <span class="kd">@Option</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="o">.</span><span class="nf">customLong</span><span class="p">(</span><span class="s">"input"</span><span class="p">)],</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"A file to read"</span><span class="p">)</span>
-    <span class="k">var</span> <span class="nv">inputFile</span><span class="p">:</span> <span class="kt">String</span>
-    
-    <span class="kd">@Option</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="n">short</span><span class="p">,</span> <span class="o">.</span><span class="nf">customLong</span><span class="p">(</span><span class="s">"output"</span><span class="p">)],</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"A file to save word counts to"</span><span class="p">)</span>
-    <span class="k">var</span> <span class="nv">outputFile</span><span class="p">:</span><span class="kt">String</span>
-    
-    
-    <span class="kd">@Flag</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="o">.</span><span class="n">shortAndLong</span><span class="p">,</span> <span class="nv">help</span><span class="p">:</span> <span class="s">"Print status updates while counting"</span><span class="p">)</span> <span class="k">var</span> <span class="nv">verbose</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span>
-    
-    <span class="k">mutating</span> <span class="kd">func</span> <span class="nf">run</span><span class="p">()</span> <span class="k">throws</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="n">verbose</span> <span class="p">{</span>
-            <span class="nf">print</span><span class="p">(</span><span class="s">"""
-                Counting words in '</span><span class="se">\(</span><span class="n">inputFile</span><span class="se">)</span><span class="s">' </span><span class="err">\</span><span class="s">
-                and write result into '</span><span class="se">\(</span><span class="n">outputFile</span><span class="se">)</span><span class="s">'
-                """</span><span class="p">)</span>
-        <span class="p">}</span>
-        
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">input</span> <span class="o">=</span> <span class="k">try</span><span class="p">?</span> <span class="kt">String</span><span class="p">(</span><span class="nv">contentsOfFile</span><span class="p">:</span> <span class="n">inputFile</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">throw</span> <span class="kt">RuntimeError</span><span class="p">(</span><span class="s">"Can't read </span><span class="se">\(</span><span class="n">inputFile</span><span class="se">)</span><span class="s"> contents"</span><span class="p">)</span>
-        <span class="p">}</span>
-        
-        <span class="k">let</span> <span class="nv">words</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="nf">components</span><span class="p">(</span><span class="nv">separatedBy</span><span class="p">:</span> <span class="o">.</span><span class="n">whitespacesAndNewlines</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">word</span> <span class="k">in</span>
-                <span class="n">word</span><span class="o">.</span><span class="nf">trimmingCharacters</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="kt">CharacterSet</span><span class="o">.</span><span class="n">alphanumerics</span><span class="o">.</span><span class="n">inverted</span><span class="p">)</span><span class="o">.</span><span class="nf">lowercased</span><span class="p">()</span>
-            <span class="p">}</span>
-            <span class="o">.</span><span class="n">compactMap</span> <span class="p">{</span> <span class="n">word</span> <span class="k">in</span>
-                <span class="n">word</span><span class="o">.</span><span class="n">isEmpty</span> <span class="p">?</span> <span class="nv">nil</span> <span class="p">:</span> <span class="n">word</span>
-            <span class="p">}</span>
-        
-        <span class="k">let</span> <span class="nv">counts</span> <span class="o">=</span> <span class="kt">Dictionary</span><span class="p">(</span><span class="nv">grouping</span><span class="p">:</span> <span class="n">words</span><span class="p">,</span> <span class="nv">by</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span> <span class="p">})</span>
-            <span class="o">.</span><span class="n">mapValues</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">count</span> <span class="p">}</span>
-            <span class="o">.</span><span class="nf">sorted</span><span class="p">(</span><span class="nv">by</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$0</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="nv">$1</span><span class="o">.</span><span class="n">value</span> <span class="p">})</span>
-        
-        <span class="k">if</span> <span class="n">verbose</span> <span class="p">{</span>
-            <span class="nf">print</span><span class="p">(</span><span class="s">"found </span><span class="se">\(</span><span class="n">counts</span><span class="o">.</span><span class="n">count</span><span class="se">)</span><span class="s"> words"</span><span class="p">)</span>
-        <span class="p">}</span>
-        
-        <span class="k">let</span> <span class="nv">output</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="k">in</span>
-            <span class="s">"</span><span class="se">\(</span><span class="n">word</span><span class="se">)</span><span class="s">: </span><span class="se">\(</span><span class="n">count</span><span class="se">)</span><span class="s">"</span>
-        <span class="p">}</span><span class="o">.</span><span class="nf">joined</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
-        
-        <span class="k">guard</span> <span class="k">let</span> <span class="nv">_</span> <span class="o">=</span> <span class="k">try</span><span class="p">?</span> <span class="n">output</span><span class="o">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">toFile</span><span class="p">:</span> <span class="n">outputFile</span><span class="p">,</span> <span class="nv">atomically</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">encoding</span><span class="p">:</span> <span class="o">.</span><span class="n">utf8</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="k">throw</span> <span class="kt">RuntimeError</span><span class="p">(</span><span class="s">"Can't write to </span><span class="se">\(</span><span class="n">outputFile</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<h4 id="5-dirname-shell命令">5. dirname shell命令</h4>
 
-<span class="kd">struct</span> <span class="kt">RuntimeError</span><span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">CustomStringConvertible</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span>
-    
-    <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
-    <span class="p">}</span>
-    
-<span class="p">}</span>
+<p><code class="language-plaintext highlighter-rouge">dirname</code> 是一个常用的 Unix/Linux shell 命令，用于获取文件或目录路径的父目录。<code class="language-plaintext highlighter-rouge">dirname</code> 命令接受一个文件或目录路径作为参数，并返回该路径的父目录</p>
+
+<h4 id="-获取符号链接的真实地址">. 获取符号链接的真实地址</h4>
+
+<p>在 shell 脚本中，您可以使用以下方法获取当前执行符号链接（link）脚本的真实路径</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bashCopy code
+<span class="c">#!/bin/bash</span>
+
+<span class="c"># 获取当前执行符号链接脚本的真实路径</span>
+<span class="nv">real_script_path</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span> <span class="nb">cd</span> <span class="s2">"</span><span class="si">$(</span> <span class="nb">dirname</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">readlink</span> <span class="nt">-f</span> <span class="s2">"</span><span class="k">${</span><span class="nv">BASH_SOURCE</span><span class="p">[0]</span><span class="k">}</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span> <span class="si">)</span><span class="s2">"</span> &amp;&gt; /dev/null <span class="o">&amp;&amp;</span> <span class="nb">pwd</span> <span class="si">)</span><span class="s2">"</span>
+
+<span class="nb">echo</span> <span class="s2">"当前执行符号链接脚本的真实路径: </span><span class="nv">$real_script_path</span><span class="s2">"</span>
 </code></pre></div></div>
 
-<p>在我们理解了ArgumentParser之后和了解了命令行开发之后，在看这些swift的代码就比较简单了。写起来也很简单了。</p>
+<p>这段代码首先使用 <code class="language-plaintext highlighter-rouge">${BASH_SOURCE[0]}</code> 获取脚本的相对路径，然后使用 <code class="language-plaintext highlighter-rouge">readlink -f</code> 获取符号链接脚本的真实路径。接下来，使用 <code class="language-plaintext highlighter-rouge">dirname</code> 获取脚本所在的目录。最后，使用 <code class="language-plaintext highlighter-rouge">cd</code> 命令进入该目录，并使用 <code class="language-plaintext highlighter-rouge">pwd</code> 命令获取脚本所在目录的绝对路径。将结果赋值给 <code class="language-plaintext highlighter-rouge">real_script_path</code> 变量。</p>
 
-<p>我们测试一下：</p>
+<h4 id="7-判断数组是否为空">7. 判断数组是否为空</h4>
 
-<p>新建test1.txt、test2.txt, 在test1.txt里加入<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190718image-20230105190717915.png" alt="image-20230105190717915" style="zoom:50%;" /></p>
+<p>在 shell 脚本中，可以使用 <code class="language-plaintext highlighter-rouge">-z</code> 测试运算符来检查数组是否为空。以下是一个示例，演示如何检查数组是否为空：</p>
 
-<p>然后，执行 swift run Counter -i test1.txt -o test2.txt -v, 查看输出</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
-<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105190934image-20230105190933826.png" alt="image-20230105190933826" /></p>
+<span class="c"># 创建一个空数组</span>
+<span class="nv">empty_array</span><span class="o">=()</span>
 
-<p>我们查看test2.txt文件</p>
+<span class="c"># 创建一个非空数组</span>
+<span class="nv">non_empty_array</span><span class="o">=(</span><span class="s2">"元素1"</span> <span class="s2">"元素2"</span> <span class="s2">"元素3"</span><span class="o">)</span>
 
-<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230105191015image-20230105191015159.png" alt="image-20230105191015159" /></p>
+<span class="c"># 检查 empty_array 是否为空</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">empty_array</span><span class="p">[*]</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"empty_array 是空的"</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"empty_array 不是空的"</span>
+<span class="k">fi</span>
 
-<p>确实也写进去了。</p>
-
-<p>但是我们还没完事，我们现在只能在当前根目录下，执行，还需要加swift run。这显然很麻烦，也不合规。</p>
-
-<p>那么就需要我们打一个release的二进制文件，移到/urs/local/bin下。</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> .build/debug
-<span class="nb">cp</span> <span class="nt">-f</span> Counter /usr/local/bin/counter
+<span class="c"># 检查 non_empty_array 是否为空</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="k">${</span><span class="nv">non_empty_array</span><span class="p">[*]</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"non_empty_array 是空的"</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"non_empty_array 不是空的"</span>
+<span class="k">fi</span>
 </code></pre></div></div>
 
-<p>这样，不管在哪，我们都可以直接执行counter命令啦！</p>
+<h4 id="8-获取cpu架构">8. 获取cpu架构</h4>
 
-<h4 id="结束语">结束语</h4>
+<p>在 shell 脚本中，可以使用 <code class="language-plaintext highlighter-rouge">uname</code> 命令来判断 CPU 的架构。<code class="language-plaintext highlighter-rouge">uname</code> 命令用于输出系统信息，其中包括硬件架构。要获取硬件架构，可以使用 <code class="language-plaintext highlighter-rouge">uname -m</code> 命令。</p>
 
-<p>往往有些事情非我们了解的范围内的时候，我们内心是有些陌生、一头雾水、抗拒的，但是只要你沉下心来，去以一颗学习的心，去了解，去学习，那么就可以突破你的舒适圈，你的极限。</p>
+<h4 id="9-读取管道传进来文本">9. 读取管道传进来文本</h4>
 
-<p>搞懂这些之后，回头在看swiftLint代码，也变得容易多了，后续，我会继续学习swiftLint的相关实现。</p>
+<p>在 shell 脚本中，可以使用 <code class="language-plaintext highlighter-rouge">read</code> 命令从管道中读取传入的文本。以下是一个示例，演示如何在 shell 脚本中读取从管道传入的文本：</p>
 
-<h4 id="参考">参考</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bashCopy code
+#!/bin/bash
 
-<p>https://blog.csdn.net/Desgard_Duan/article/details/111878243</p>
+# 从管道中读取传入的文本
+while IFS= read -r input_line; do
+  # 输出传入的文本
+  echo "您传入的文本是：$input_line"
+done
+</code></pre></div></div>
 
-<p>https://www.avanderlee.com/swift/command-line-tool-package-manager/</p>
+<p>在这个示例中，我们使用 <code class="language-plaintext highlighter-rouge">while</code> 循环和 <code class="language-plaintext highlighter-rouge">read</code> 命令从管道中读取传入的文本。<code class="language-plaintext highlighter-rouge">IFS=</code> 用于保留空白字符，<code class="language-plaintext highlighter-rouge">-r</code> 选项用于防止反斜杠转义。对于从管道中读取的每一行文本，我们都会输出相应的内容。</p>
 
-<p>https://developer.apple.com/documentation/packagedescription</p>
+<h4 id="10-文字颜色背景颜色">10. 文字颜色、背景颜色</h4>
 
-<p>https://github.com/apple/swift-argument-parser</p>
+<p>在 shell 中，可以使用 ANSI 转义序列来更改文本颜色和背景颜色。ANSI 转义序列是一种特殊的字符序列，用于控制终端的显示属性，如颜色、粗体、下划线等。</p>
 
-<p>https://apple.github.io/swift-argument-parser/documentation/argumentparser/gettingstarted/</p>
+<p>以下是一些常见的 ANSI 转义序列，用于更改文本颜色和背景颜色：</p>
 
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-01-05T00:00:00+08:00"><!-- start custom article footer snippet -->
+<ul>
+  <li>文本颜色：
+    <ul>
+      <li>黑色：<code class="language-plaintext highlighter-rouge">\033[30m</code></li>
+      <li>红色：<code class="language-plaintext highlighter-rouge">\033[31m</code></li>
+      <li>绿色：<code class="language-plaintext highlighter-rouge">\033[32m</code></li>
+      <li>黄色：<code class="language-plaintext highlighter-rouge">\033[33m</code></li>
+      <li>蓝色：<code class="language-plaintext highlighter-rouge">\033[34m</code></li>
+      <li>洋红色：<code class="language-plaintext highlighter-rouge">\033[35m</code></li>
+      <li>青色：<code class="language-plaintext highlighter-rouge">\033[36m</code></li>
+      <li>白色：<code class="language-plaintext highlighter-rouge">\033[37m</code></li>
+    </ul>
+  </li>
+  <li>背景颜色：
+    <ul>
+      <li>黑色：<code class="language-plaintext highlighter-rouge">\033[40m</code></li>
+      <li>红色：<code class="language-plaintext highlighter-rouge">\033[41m</code></li>
+      <li>绿色：<code class="language-plaintext highlighter-rouge">\033[42m</code></li>
+      <li>黄色：<code class="language-plaintext highlighter-rouge">\033[43m</code></li>
+      <li>蓝色：<code class="language-plaintext highlighter-rouge">\033[44m</code></li>
+      <li>洋红色：<code class="language-plaintext highlighter-rouge">\033[45m</code></li>
+      <li>青色：<code class="language-plaintext highlighter-rouge">\033[46m</code></li>
+      <li>白色：<code class="language-plaintext highlighter-rouge">\033[47m</code></li>
+    </ul>
+  </li>
+</ul>
+
+<p>要在 shell 脚本中使用这些 ANSI 转义序列，请将它们与要显示的文本一起输出。例如，要输出红色文本，可以使用以下命令：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bashCopy code
+echo -e "\033[31mThis is red text\033[0m"
+</code></pre></div></div>
+
+<p>在这个示例中，我们使用 <code class="language-plaintext highlighter-rouge">-e</code> 选项告诉 <code class="language-plaintext highlighter-rouge">echo</code> 命令解释转义序列。<code class="language-plaintext highlighter-rouge">\033[31m</code> 将文本颜色更改为红色，<code class="language-plaintext highlighter-rouge">\033[0m</code> 将颜色重置为默认值。</p>
+
+<p>要同时更改文本颜色和背景颜色，可以将相应的转义序列组合在一起。例如，要输出白色文本和蓝色背景，可以使用以下命令：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bashCopy code
+echo -e "\033[37;44mWhite text on a blue background\033[0m"
+</code></pre></div></div>
+
+<p>在这个示例中，我们将文本颜色的转义序列（<code class="language-plaintext highlighter-rouge">\033[37m</code>）和背景颜色的转义序列（<code class="language-plaintext highlighter-rouge">\033[44m</code>）组合在一起。请注意，这些转义序列之间用分号（<code class="language-plaintext highlighter-rouge">;</code>）分隔</p>
+
+<h4 id="11-shell-中给命令传入一个数组作为多参数">11. shell 中给命令传入一个数组作为多参数</h4>
+
+<p>如果一个命令比如test [paths] test 命令可以传入至少一个path作为参数, 我们需要如下给test传入：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">array</span><span class="o">=(</span><span class="s2">"path1"</span>, <span class="s2">"path2"</span>, <span class="s2">"path3"</span><span class="o">)</span>
+<span class="nb">test</span> <span class="si">$(</span><span class="nb">printf</span> <span class="s2">"%s "</span> <span class="s2">"</span><span class="k">${</span><span class="nv">array</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="si">)</span>
+</code></pre></div></div>
+
+<h4 id="12-如何判断脚本是否在bash-shell中运行">12. 如何判断脚本是否在Bash shell中运行</h4>
+
+<p><code class="language-plaintext highlighter-rouge">-z "${BASH_VERSION:-}"</code> 是一个 Bash 条件表达式，用于检查当前 shell 是否为 Bash。这个表达式的含义如下：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-z</code>：这是一个测试运算符，用于检查字符串的长度是否为零。如果字符串长度为零，则返回真（true）；否则返回假（false）。</li>
+  <li><code class="language-plaintext highlighter-rouge">"${BASH_VERSION:-}"</code>：这是一个参数扩展表达式，用于获取 <code class="language-plaintext highlighter-rouge">BASH_VERSION</code> 变量的值。如果 <code class="language-plaintext highlighter-rouge">BASH_VERSION</code> 变量未设置或为空，则使用空字符串替换。<code class="language-plaintext highlighter-rouge">BASH_VERSION</code> 变量在 Bash shell 中自动设置，包含当前 Bash 版本的信息。</li>
+</ul>
+
+<p>因此，<code class="language-plaintext highlighter-rouge">-z "${BASH_VERSION:-}"</code> 表达式的含义是：如果 <code class="language-plaintext highlighter-rouge">BASH_VERSION</code> 变量为空（即字符串长度为零），则返回真（true）；否则返回假（false）。换句话说，如果当前 shell 不是 Bash（即 <code class="language-plaintext highlighter-rouge">BASH_VERSION</code> 未设置），则此表达式为真（true）。</p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-04-07T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -712,7 +664,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/04/00_iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">iOS自旋锁与互斥锁</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">基于homebrew 的code lint 集成</a></div><div class="next"><span>NEXT</span><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">home brew 的研究</a></div></div></div>
 
 </div>
 

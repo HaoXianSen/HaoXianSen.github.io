@@ -2,10 +2,11 @@
 title: Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）
 tags: iOS pre-commit hooks
 key: 109
-# article_header:
-# type: cover 
-# image:
- # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png 
+publshed: true
+article_header: 
+  type: cover
+  image:
+    src: https://img.win3000.com/m00/70/2a/85eadc413d1ca36a417bb6c4439c3a62.jpg
 ---
 
 # Objective-CLint

@@ -169,9 +169,13 @@ layout: base
             </div>
           {%- elsif _article_header_type == 'cover' -%}
             {%- if page.article_header.image.src -%}
+              {%- assign _article_header_height = page.article_header.height | default: layout.article_header.height -%}
+              {%- if _article_header_height -%}
+                {%- assign _header_style = 'min-height:' | append: _article_header_height | append: ';' -%}
+              {%- endif -%}
               {%- include snippets/get-nav-url.html path=page.article_header.image.src -%}
               {%- assign _header_image_src = __return -%}
-              <img class="article__header--cover" src="{{ _header_image_src }}"></img>
+              <img class="article__header--cover" style="{{ _header_style }}" src="{{ _header_image_src }}"></img>
             {%- endif -%}
           {%- endif -%}
 
