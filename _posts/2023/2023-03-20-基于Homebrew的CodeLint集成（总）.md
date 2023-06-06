@@ -307,13 +307,40 @@ SwiftLint 就没有什么可说的了，强大&实用&支持各种方式接入~�
 #### 使用
 
 * 直接采用Unix可执行文件
+
+  * 去[github](https://github.com/HaoXianSen/LintMaker/releases) 下载可执行文件，直接使用 | 放入urs/local/bin下
+
 * HomeBrew方式
+
+  * ``` shell
+    brew tap haoxiansen/private
+    ```
+
+  * ```shell
+    brew update 
+    ```
+
+  * ```shell
+    brew install lintmaker && brew upgrade lintmaker
+    ```
+
 
 #### 效果展示
 
 * 无可检查文件
-  * 
-* 
+  * ![image-20230606162944764](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606162944image-20230606162944764.png)
+  
+* 存在问题
+
+  * ![image-20230606163221890](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163222image-20230606163221890.png)
+
+* oc-lint 成功， swiftlint 跳过
+
+  ![image-20230606163204367](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163204image-20230606163204367.png)
+
+  ![image-20230606163258916](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163259image-20230606163258916.png)
+
+  ![image-20230606163316722](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163316image-20230606163316722.png)
 
 #### 总结
 

@@ -808,8 +808,40 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 <h4 id="使用">使用</h4>
 
 <ul>
-  <li>直接采用Unix可执行文件</li>
-  <li>HomeBrew方式</li>
+  <li>
+    <p>直接采用Unix可执行文件</p>
+
+    <ul>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>去<a href="https://github.com/HaoXianSen/LintMaker/releases">github</a> 下载可执行文件，直接使用</td>
+              <td>放入urs/local/bin下</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>HomeBrew方式</p>
+
+    <ul>
+      <li>
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap haoxiansen/private
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew update 
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>lintmaker <span class="o">&amp;&amp;</span> brew upgrade lintmaker
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
 </ul>
 
 <h4 id="效果展示">效果展示</h4>
@@ -817,10 +849,25 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 <ul>
   <li>无可检查文件
     <ul>
-      <li></li>
+      <li><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606162944image-20230606162944764.png" alt="image-20230606162944764" /></li>
     </ul>
   </li>
-  <li></li>
+  <li>
+    <p>存在问题</p>
+
+    <ul>
+      <li><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163222image-20230606163221890.png" alt="image-20230606163221890" /></li>
+    </ul>
+  </li>
+  <li>
+    <p>oc-lint 成功， swiftlint 跳过</p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163204image-20230606163204367.png" alt="image-20230606163204367" /></p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163259image-20230606163258916.png" alt="image-20230606163258916" /></p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163316image-20230606163316722.png" alt="image-20230606163316722" /></p>
+  </li>
 </ul>
 
 <h4 id="总结">总结</h4>
