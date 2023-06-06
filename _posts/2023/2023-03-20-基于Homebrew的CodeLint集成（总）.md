@@ -323,6 +323,9 @@ SwiftLint 就没有什么可说的了，强大&实用&支持各种方式接入~�
   * ```shell
     brew install lintmaker && brew upgrade lintmaker
     ```
+    
+  * ``` shell
+    lintmaker --install
 
 
 #### 效果展示
