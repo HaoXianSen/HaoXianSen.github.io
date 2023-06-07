@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-06-07T18:34:29+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
-</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html"></title><link href="http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html" rel="alternate" type="text/html" title="" /><published>2023-06-07T18:34:29+08:00</published><updated>2023-06-07T18:34:29+08:00</updated><id>http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome%20brew%E7%9A%84%20pre-commit%20iOS%20lint%20%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E</id><content type="html" xml:base="http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">&lt;h3 id=&quot;lintmaker&quot;&gt;lintmaker&lt;/h3&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-06-07T21:30:38+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">基于home brew的iOS Codelint 安装工具（lintmaker)</title><link href="http://localhost:4000/2023/06/07/%E5%9F%BA%E4%BA%8Ehomebrew%E7%9A%84pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html" rel="alternate" type="text/html" title="基于home brew的iOS Codelint 安装工具（lintmaker)" /><published>2023-06-07T00:00:00+08:00</published><updated>2023-06-07T00:00:00+08:00</updated><id>http://localhost:4000/2023/06/07/%E5%9F%BA%E4%BA%8Ehomebrew%E7%9A%84pre-commit%20iOS%20lint%20%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E</id><content type="html" xml:base="http://localhost:4000/2023/06/07/%E5%9F%BA%E4%BA%8Ehomebrew%E7%9A%84pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">&lt;h2 id=&quot;lintmaker&quot;&gt;lintmaker&lt;/h2&gt;
 
-&lt;h4 id=&quot;简介&quot;&gt;简介&lt;/h4&gt;
+&lt;h3 id=&quot;简介&quot;&gt;简介&lt;/h3&gt;
 
 &lt;p&gt;lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swift、objc语言的lint工具集成。&lt;/p&gt;
 
 &lt;p&gt;使用lintmaker 可以傻瓜式一键安装、生效，在git 项目中，每次git commit 就会验证其代码规范性。&lt;/p&gt;
 
-&lt;h4 id=&quot;主要功能&quot;&gt;主要功能&lt;/h4&gt;
+&lt;h3 id=&quot;主要功能&quot;&gt;主要功能&lt;/h3&gt;
 
 &lt;ul&gt;
   &lt;li&gt;下载规则配置文件以及hook script、缓存到Library/Caches/ &amp;amp;&amp;amp; 移动到当前目录（或者指定目录）下&lt;/li&gt;
@@ -17,7 +17,7 @@
   &lt;li&gt;更新， 可全量更新（即更新配置文件 &amp;amp; 更新lint 工具），也可以只更新配置文件或者lint工具&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;架构思路&quot;&gt;架构思路&lt;/h4&gt;
+&lt;h3 id=&quot;架构思路&quot;&gt;架构思路&lt;/h3&gt;
 
 &lt;p&gt;home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。&lt;/p&gt;
 
@@ -29,7 +29,7 @@
   &lt;li&gt;内部功能则是打着方便、好用、傻瓜式的原则进行开发&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;使用&quot;&gt;使用&lt;/h4&gt;
+&lt;h3 id=&quot;使用&quot;&gt;使用&lt;/h3&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
@@ -128,7 +128,7 @@ OPTIONS:
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;部分截图&quot;&gt;部分截图&lt;/h4&gt;
+&lt;h3 id=&quot;部分截图&quot;&gt;部分截图&lt;/h3&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
@@ -151,7 +151,7 @@ OPTIONS:
 
     &lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182956image-20230607182955883.png&quot; alt=&quot;image-20230607182955883&quot; /&gt;&lt;/p&gt;
   &lt;/li&gt;
-&lt;/ul&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author></entry><entry><title type="html">home brew 的研究</title><link href="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html" rel="alternate" type="text/html" title="home brew 的研究" /><published>2023-05-31T00:00:00+08:00</published><updated>2023-05-31T00:00:00+08:00</updated><id>http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+&lt;/ul&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="CLI" /><category term="homebrew" /><category term="codeLint" /><summary type="html">lintmaker 简介 lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swift、objc语言的lint工具集成。 使用lintmaker 可以傻瓜式一键安装、生效，在git 项目中，每次git commit 就会验证其代码规范性。 主要功能 下载规则配置文件以及hook script、缓存到Library/Caches/ &amp;amp;&amp;amp; 移动到当前目录（或者指定目录）下 安装lint 依赖工具，home brew tap update, Objective-Clint, swiftlint、python3等工具 清理空间目录，即删除配置文件以及hook script 卸载安装， 清除空间目录 &amp;amp;&amp;amp; 卸载Objective-Clint、swiftlint 更新， 可全量更新（即更新配置文件 &amp;amp; 更新lint 工具），也可以只更新配置文件或者lint工具 架构思路 home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。 我们目标则是打造一个基于home brew 安装、更新的安装工具-lintmaker 我们创建自己的三方Tap， haoxiansen/homebrew-private Lintmaker 的开发则是尝试用swift 进行开发CLI程序 内部功能则是打着方便、好用、傻瓜式的原则进行开发 使用 lintmaker安装 # 安装 brew tap haoxiansen/private brew install lint-maker # 更新 brew update brew upgrade lint-maker lintmaker 卸载 brew uninstall lint-maker install # 默认在当前目录安装 lintmaker install USAGE: lintmaker install [--project-path &amp;lt;project-path&amp;gt;] [--configure-git-path &amp;lt;configure-git-path&amp;gt;] OPTIONS: -p, --project-path &amp;lt;project-path&amp;gt; Please input a workspace path -c, --configure-git-path &amp;lt;configure-git-path&amp;gt; Please input a accessible url, like https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format .swiftlint.yml (default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git) --version Show the version. -h, --help Show help information. clean # 默认清除当前目录 lintmaker clean USAGE: lintmaker clean [--project-path &amp;lt;project-path&amp;gt;] [--configure-git-path &amp;lt;configure-git-path&amp;gt;] OPTIONS: -p, --project-path &amp;lt;project-path&amp;gt; Please input a workspace path -c, --configure-git-path &amp;lt;configure-git-path&amp;gt; Please input a accessible url, like https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format .swiftlint.yml (default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git) --version Show the version. -h, --help Show help information. uninstall lintmaker uninstall USAGE: lintmaker uninstall OPTIONS: --version Show the version. -h, --help Show help information. update # 默认全量更新 lintmaker update USAGE: lintmaker update [--project-path &amp;lt;project-path&amp;gt;] [--configure-git-path &amp;lt;configure-git-path&amp;gt;] [--configuration-only] [--lint-only] OPTIONS: -p, --project-path &amp;lt;project-path&amp;gt; a git workspace path, if not set defult is current directory -c, --configure-git-path &amp;lt;configure-git-path&amp;gt; Please input a accessible url, like https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format .swiftlint.yml (default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git) --configuration-only if set --configuration-only, only update configuration file --lint-only if set --lint-only, only update lint tools --version Show the version. -h, --help Show help information. 部分截图 安装成功 清理成功 更新成功 卸载成功</summary></entry><entry><title type="html">home brew 的研究</title><link href="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html" rel="alternate" type="text/html" title="home brew 的研究" /><published>2023-05-31T00:00:00+08:00</published><updated>2023-05-31T00:00:00+08:00</updated><id>http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
 
 &lt;p&gt;虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。&lt;/p&gt;
 

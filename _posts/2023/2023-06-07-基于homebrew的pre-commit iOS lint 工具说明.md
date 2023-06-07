@@ -1,6 +1,6 @@
 ---
-title: 基于home brew的 pre-commit iOS lint 工具说明
-tags: [iOS] [MAC] [Plugin]
+title: 基于home brew的iOS Codelint 安装工具（lintmaker)
+tags: CLI homebrew codeLint
 published: true
 key: 155 
 article_header: 
@@ -11,15 +11,15 @@ article_header:
 
 
 
-### lintmaker
+## lintmaker
 
-#### 简介
+### 简介
 
 lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swift、objc语言的lint工具集成。
 
 使用lintmaker 可以傻瓜式一键安装、生效，在git 项目中，每次git commit 就会验证其代码规范性。
 
-#### 主要功能
+### 主要功能
 
 * 下载规则配置文件以及hook script、缓存到Library/Caches/ && 移动到当前目录（或者指定目录）下
 * 安装lint 依赖工具，home brew tap update, Objective-Clint, swiftlint、python3等工具
@@ -27,7 +27,7 @@ lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swi
 * 卸载安装， 清除空间目录 && 卸载Objective-Clint、swiftlint
 * 更新， 可全量更新（即更新配置文件 & 更新lint 工具），也可以只更新配置文件或者lint工具
 
-#### 架构思路
+### 架构思路
 
 home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。
 
@@ -37,7 +37,7 @@ home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。
 * Lintmaker 的开发则是尝试用swift 进行开发CLI程序
 * 内部功能则是打着方便、好用、傻瓜式的原则进行开发
 
-#### 使用
+### 使用
 
 * lintmaker安装
 
@@ -138,7 +138,7 @@ home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。
   
   ```
 
-#### 部分截图
+### 部分截图
 
 * 安装成功
 
