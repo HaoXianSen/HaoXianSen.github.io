@@ -685,8 +685,10 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 
 <p>我们需要打一个release的可执行包，手动移到/urs/local/bin下。</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># tong</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># build 打包默认是根据你的mac系统打包的</span>
 swift build <span class="nt">--configuration</span> release <span class="nt">--product</span> Counter
+<span class="c"># 我们还可以增加参数--build-system [native | xcode] 进行打包，xcode 打出来的包适合x86和arm系统</span>
+swift build <span class="nt">--configuration</span> release <span class="nt">--build-system</span> xcode <span class="nt">--product</span> Counter
 <span class="nb">cd</span> .build/release/Counter
 <span class="nb">cp</span> <span class="nt">-f</span> Counter /usr/local/bin/counter
 </code></pre></div></div>
