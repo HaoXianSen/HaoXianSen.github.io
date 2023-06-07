@@ -1,8 +1,10 @@
 ---
 title: 基于home brew的 pre-commit iOS lint 工具说明
 tags: [iOS] [MAC] [Plugin]
+published: true
 key: 155 
-type: cover
+article_header: 
+  type: cover
   image:
     src: https://img.win3000.com/m00/bf/12/3105168fd57dc74f49f1a7ac462c0b18.jpg 
 ---
