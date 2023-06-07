@@ -1,5 +1,157 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-06-07T18:30:07+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
-</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html">home brew 的研究</title><link href="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html" rel="alternate" type="text/html" title="home brew 的研究" /><published>2023-05-31T00:00:00+08:00</published><updated>2023-05-31T00:00:00+08:00</updated><id>http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-06-07T18:32:33+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">harry’s blog</title><subtitle>harry's technology blog 
+</subtitle><author><name>harry</name><email>harry_c2016@163.com</email></author><entry><title type="html"></title><link href="http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html" rel="alternate" type="text/html" title="" /><published>2023-06-07T18:32:33+08:00</published><updated>2023-06-07T18:32:33+08:00</updated><id>http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome%20brew%E7%9A%84%20pre-commit%20iOS%20lint%20%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E</id><content type="html" xml:base="http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">&lt;h3 id=&quot;lintmaker&quot;&gt;lintmaker&lt;/h3&gt;
+
+&lt;h4 id=&quot;简介&quot;&gt;简介&lt;/h4&gt;
+
+&lt;p&gt;lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swift、objc语言的lint工具集成。&lt;/p&gt;
+
+&lt;p&gt;使用lintmaker 可以傻瓜式一键安装、生效，在git 项目中，每次git commit 就会验证其代码规范性。&lt;/p&gt;
+
+&lt;h4 id=&quot;主要功能&quot;&gt;主要功能&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;下载规则配置文件以及hook script、缓存到Library/Caches/ &amp;amp;&amp;amp; 移动到当前目录（或者指定目录）下&lt;/li&gt;
+  &lt;li&gt;安装lint 依赖工具，home brew tap update, Objective-Clint, swiftlint、python3等工具&lt;/li&gt;
+  &lt;li&gt;清理空间目录，即删除配置文件以及hook script&lt;/li&gt;
+  &lt;li&gt;卸载安装， 清除空间目录 &amp;amp;&amp;amp; 卸载Objective-Clint、swiftlint&lt;/li&gt;
+  &lt;li&gt;更新， 可全量更新（即更新配置文件 &amp;amp; 更新lint 工具），也可以只更新配置文件或者lint工具&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;架构思路&quot;&gt;架构思路&lt;/h4&gt;
+
+&lt;p&gt;home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。&lt;/p&gt;
+
+&lt;p&gt;我们目标则是打造一个基于home brew 安装、更新的安装工具-lintmaker&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;我们创建自己的三方Tap， haoxiansen/homebrew-private&lt;/li&gt;
+  &lt;li&gt;Lintmaker 的开发则是尝试用swift 进行开发CLI程序&lt;/li&gt;
+  &lt;li&gt;内部功能则是打着方便、好用、傻瓜式的原则进行开发&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;使用&quot;&gt;使用&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;lintmaker安装&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 安装&lt;/span&gt;
+brew tap haoxiansen/private
+brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;lint-maker
+&lt;span class=&quot;c&quot;&gt;# 更新&lt;/span&gt;
+brew update 
+brew upgrade lint-maker
+  
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;lintmaker 卸载&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;brew uninstall lint-maker
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;install&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c&quot;&gt;# 默认在当前目录安装&lt;/span&gt;
+  lintmaker &lt;span class=&quot;nb&quot;&gt;install
+  
+  &lt;/span&gt;USAGE: lintmaker &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;] &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;]
+  
+  OPTIONS:
+    &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;
+                            Please input a workspace path
+    &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;
+                            Please input a accessible url, like
+                            https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                            .swiftlint.yml &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;               Show the version.
+    &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;              Show &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;information.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;clean&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 默认清除当前目录&lt;/span&gt;
+lintmaker clean
+  
+USAGE: lintmaker clean &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;] &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;]
+  
+OPTIONS:
+  &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;
+                          Please input a workspace path
+  &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;
+                          Please input a accessible url, like
+                          https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                          .swiftlint.yml &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;               Show the version.
+  &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;              Show &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;information.
+  
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;uninstall&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;lintmaker uninstall
+  
+USAGE: lintmaker uninstall
+  
+OPTIONS:
+  &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;               Show the version.
+  &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;              Show &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;information.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;update&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 默认全量更新&lt;/span&gt;
+lintmaker update
+  
+USAGE: lintmaker update &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;] &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;] &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--configuration-only&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--lint-only&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  
+OPTIONS:
+  &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--project-path&lt;/span&gt; &amp;lt;project-path&amp;gt;
+                          a git workspace path, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;not &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;defult is current directory
+  &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--configure-git-path&lt;/span&gt; &amp;lt;configure-git-path&amp;gt;
+                          Please input a accessible url, like
+                          https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                          .swiftlint.yml &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;--configuration-only&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--configuration-only&lt;/span&gt;, only update configuration file
+  &lt;span class=&quot;nt&quot;&gt;--lint-only&lt;/span&gt;             &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--lint-only&lt;/span&gt;, only update lint tools
+  &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;               Show the version.
+  &lt;span class=&quot;nt&quot;&gt;-h&lt;/span&gt;, &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;              Show &lt;span class=&quot;nb&quot;&gt;help &lt;/span&gt;information.
+  
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;部分截图&quot;&gt;部分截图&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装成功&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182823image-20230607182823209.png&quot; alt=&quot;image-20230607182823209&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;清理成功&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182848image-20230607182847914.png&quot; alt=&quot;image-20230607182847914&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;更新成功&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182929image-20230607182928941.png&quot; alt=&quot;image-20230607182928941&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;卸载成功&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182956image-20230607182955883.png&quot; alt=&quot;image-20230607182955883&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author></entry><entry><title type="html">home brew 的研究</title><link href="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html" rel="alternate" type="text/html" title="home brew 的研究" /><published>2023-05-31T00:00:00+08:00</published><updated>2023-05-31T00:00:00+08:00</updated><id>http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6</id><content type="html" xml:base="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">&lt;h3 id=&quot;前言&quot;&gt;前言&lt;/h3&gt;
 
 &lt;p&gt;虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。&lt;/p&gt;
 
@@ -1856,40 +2008,4 @@ key: 107
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/Tyilo/insert_dylib&quot;&gt;insert_dylib&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/nygard/class-dump&quot;&gt;class-dump&lt;/a&gt;&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><category term="MAC" /><category term="Plugin" /><summary type="html">前提 为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如 title: position、anchorPoint、frame理解 tags: iOS key: 107 # article_header: # type: cover # image: # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png OK，所以首先呢我把Typora的所有文档看了一遍，没有入口可配置。那咋办？ 想法也就从这诞生了，我能不能写个插件，在Typora 新建文件的时候，手动插入预置文字，接下来记录插件开发过程，成功不成功最后见分晓！ 着手干（查资料） 通过查看资料，我们需要两个东西辅助，1.class-dump) 2. insert_dylib  基本原理就是： Mach-O 二进制文件Load Commands中的 LC_LOAD_DYLIB 标头告诉 macOS在执行期间要加载哪些动态库 (dylib)。所以我们只需要在二进制文件中添加一条LC_LOAD_DYLIB就可以。而insert_dylib工具已经为我们实现了添加的功能 接下来一个一个解释： class-dump 通过名字我们大概能猜到这是一个什么工具，类似一个解释类的工具，确实他也是干这个的，正确安装之后，我们可以通过class-dump [option] Mach-o文件，输出mac app的暴露类的相关属性，OK，我们用的就是class-dump -H Mach-o文件 输出头文件，我们通过头文件查看mac app源头文件，然后找到需要hook的类进行hook（具体的安装可以点击超链接查看） insert_dylib 这个工具，可以帮助我们插入一个dylib 到Mach-o二进制文件中，所以也就是说我们需要做一个framework然后通过这个库，嵌入到app的Mach-o二进制文件里 ok，工具都全乎了，接下来的时间，就是需要我们做一个framework，这个framework是用专门hook的动态库。 当然hook，Objective-C里就是runtime里的Swizzing Method搞定，这个iOS 开发应该都用过不少（常规技术） 具体实践 new project - framework 我们新建一个framework，用来做动态库 查看class-dump的类，hook 找到的类做功能 cd 到 /Applications/Typora.app/Contents/MacOS/ 使用class-dump -H /Applications/Typora.app/Contents/MacOS/Typora -o /Users/haoyh02/Desktop/typora.h 输出头文件解析到桌面目标目录，如下 ok，接下来我就需要分析头文件，找出自己需要hook的类，以及方法，当然这个过程才是最漫长的，而且是不断的尝试出来的。具体的分析我就不赘述了，就是看代码呗。 最终我们找到了LibraryCommands 类，他大概就是一些文件命令处理，比如新建文件，当然我们hook的是这个类，但是具体文件处理则是Document这个类，集成于NSDocument。 具体看代码 // // TyporaAutoRejectHook.m // TyporaAutoReject // // Created by 郝玉鸿 on 2022/8/26. // #import &amp;lt;Foundation/Foundation.h&amp;gt; #import &amp;lt;AppKit/AppKit.h&amp;gt; #import &quot;TyporaAutoReject.h&quot; #import &amp;lt;objc/runtime.h&amp;gt; void ty_hook(Class originClass, SEL originSelector, Class swizzClass, SEL swizzSelector) { Method originalMethod = class_getInstanceMethod(originClass, originSelector); Method swizzledMethod = class_getInstanceMethod(swizzClass, swizzSelector); if(originalMethod &amp;amp;&amp;amp; swizzledMethod) { method_exchangeImplementations(originalMethod, swizzledMethod); } } @interface Document : NSDocument @end @interface LibraryCommands: NSObject @property(retain) Document *document; @end @implementation NSObject (Typora) + (void)hookThunder{ ty_hook(objc_getClass(&quot;LibraryCommands&quot;), @selector(createFile:), [self class], @selector(hook_newDocument:)); } - (void)hook_newDocument:(id)args { [self hook_newDocument:args]; dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ LibraryCommands *commans = (LibraryCommands *)self; Document *document = commans.document; NSString *injectString = @&quot;---\ntitle: &amp;lt;xxxx&amp;gt; \ntags: [iOS] [MAC] [Plugin]&amp;gt; \nkey: xxx \n# article_header:\n# type: cover \n# image:\n # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png \n---&quot;; [document setValue:injectString forKeyPath:@&quot;content&quot;]; [document writeToURL:document.fileURL ofType:document.fileType error:nil]; [document performSelector:NSSelectorFromString(@&quot;syncToClient&quot;)]; [document performSelector:NSSelectorFromString(@&quot;syncToSelf&quot;)]; }); } @end static void __attribute__((constructor)) initialize(void) { [NSObject hookThunder]; } 很简单，思路就是hook到新建文件的方法，然后2s之后，文件内插入一段预置文字。然后同步界面。 copy framework的产出（编译，products/xxx.framework）到mac app 下的contents/MacOS OK，接下来我们需要build工程，得到products/xxx.framework 产物。xcode13 隐藏了products，我们只需要打开pbxproj文件, 修改mainGroup 和 productRefGroup 一样（本身也是一样的，我们只需要copy再次保存就好了），保存就可以出现，也可以到DerivedData里去找 然后copy framework，到/Applications/Typora.app/Contents/ 下即可。 执行insert_dylib 命令 ./insert_dylib --all-yes /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora 执行这个命令后，即可嵌入framework 重新打开应用 一定要重新打开应用，否则不生效（这个其实不用想也是这样，毕竟我们是编译型程序） ok，当然这个步骤很麻烦，为了我们能更好的重复验证，我写了脚本执行，这些命令 sudo rm -d -r /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework sudo mv -f /Users/haoyh02/Library/Developer/Xcode/DerivedData/TyporaAutoReject-duhvxgpyrtuykugkepbmpmhciiyh/Build/Products/Debug/* /Applications/Typora.app/Contents/MacOS/ ./insert_dylib --all-yes /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora ​ ​ 至此，我们为Typora做的小插件，完全生效了。我们来看一下效果： ​ 参考 安装class-dump 如何为macOS应用开发插件 insert_dylib class-dump</summary></entry><entry><title type="html">position、anchorPoint、frame理解</title><link href="http://localhost:4000/2022/05/01/00_position_anchorPoint_frame.html" rel="alternate" type="text/html" title="position、anchorPoint、frame理解" /><published>2022-05-01T00:00:00+08:00</published><updated>2022-05-01T00:00:00+08:00</updated><id>http://localhost:4000/2022/05/01/00_position_anchorPoint_frame</id><content type="html" xml:base="http://localhost:4000/2022/05/01/00_position_anchorPoint_frame.html">&lt;h4 id=&quot;前情提要&quot;&gt;前情提要&lt;/h4&gt;
-
-&lt;p&gt;​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。&lt;/p&gt;
-
-&lt;h4 id=&quot;进入正文&quot;&gt;进入正文&lt;/h4&gt;
-
-&lt;p&gt;frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view&lt;/p&gt;
-
-&lt;p&gt;bounds：表示了一个view的本地坐标系下，参照物是自身，他的修改不会改变frame，但是会改变其的子view的位置，为什么呢？稍后我会画图解释&lt;/p&gt;
-
-&lt;p&gt;position：这是CALayer的属性，我的理解是他的物理中心点，他和anchorPoint有着密切的关系&lt;/p&gt;
-
-&lt;p&gt;anchorPoint：也是CALayer的属性，翻译过来叫做锚点，也就是固定的点，他的坐标系是以unit 坐标系定义，左上角为(0,0)， 右上角(1, 0), 左下角(0,1), 右下角(1,1)&lt;/p&gt;
-
-&lt;p&gt;好！概念都说完了，但是这个概念只能让我们理解一部分，并不能真实的理解到他们的具体作用，下面我们用图的概念去一点点理解&lt;/p&gt;
-
-&lt;h4 id=&quot;深入&quot;&gt;深入&lt;/h4&gt;
-
-&lt;p&gt;frame 没什么可说的，我们以前frame布局，用的再熟练不过了，他就是view在其父view中位置&lt;/p&gt;
-
-&lt;p&gt;如果我们修改了frame，那么就会直接影响到他的位置和大小。&lt;/p&gt;
-
-&lt;p&gt;对于bounds 来说，他是自身的坐标系，如果我们修改了他的origin，那么他的子view就会以这个点为为原点来计算位置，比如：一个红色的view，我们设置了他的bounds.origin为（-20， 20），那么他就会改变自己的本地坐标系的原点为-20，-20，那么当我们设置一个蓝色的子viewframe的origin为（0，0），那么这个子view就会向右下偏移20，因为当前左上角的原点为-20，-20，（0，0）点的位置在右下角偏移20的位置，所以最后看到蓝色view并不是靠着左上角。文字描述有点。。。费劲，还是想办法画图吧。。。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/image-20210929181748669.png&quot; alt=&quot;image-20210929181748669&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;大概就是这样的一个过程，所以bounds.origin的修改会导致子view的位置改变，那么修改bounds的size呢？ 改变自己bounds的size会使自身的大小发生变化，从而影响frame，不会影响父view&lt;/p&gt;
-
-&lt;p&gt;那么对于position 和anchorPoint，我受一片他人的文章影响，有一个很恰当的比喻：&lt;/p&gt;
-
-&lt;p&gt;一幅画，anchorPoint就相当于在这个画的四个角或者中间沾一块胶（或者你有高档的什么固定的都行。。），而position就相当于这块胶要沾在哪个位置，这么来说的话他应该是和anchor重合的，比如说position为墙壁的某个点，anchorPoint为画的中间（0.5，0.5），那么画就会沾到position的位置，我们view默认的position就是view的中心点相对于父view的点，所以如果我们改变anchor的话就类比刚才图片的问题，是那个角或者中点固定到这个position点而已。&lt;/p&gt;
-
-&lt;p&gt;也画个图吧。。。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/image-20210929183736725.png&quot; alt=&quot;image-20210929183736725&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;基本上通过上边的介绍，我想你和我都掌握这几个属性的真正含义。&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><summary type="html">前情提要 ​ 最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。 进入正文 frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view bounds：表示了一个view的本地坐标系下，参照物是自身，他的修改不会改变frame，但是会改变其的子view的位置，为什么呢？稍后我会画图解释 position：这是CALayer的属性，我的理解是他的物理中心点，他和anchorPoint有着密切的关系 anchorPoint：也是CALayer的属性，翻译过来叫做锚点，也就是固定的点，他的坐标系是以unit 坐标系定义，左上角为(0,0)， 右上角(1, 0), 左下角(0,1), 右下角(1,1) 好！概念都说完了，但是这个概念只能让我们理解一部分，并不能真实的理解到他们的具体作用，下面我们用图的概念去一点点理解 深入 frame 没什么可说的，我们以前frame布局，用的再熟练不过了，他就是view在其父view中位置 如果我们修改了frame，那么就会直接影响到他的位置和大小。 对于bounds 来说，他是自身的坐标系，如果我们修改了他的origin，那么他的子view就会以这个点为为原点来计算位置，比如：一个红色的view，我们设置了他的bounds.origin为（-20， 20），那么他就会改变自己的本地坐标系的原点为-20，-20，那么当我们设置一个蓝色的子viewframe的origin为（0，0），那么这个子view就会向右下偏移20，因为当前左上角的原点为-20，-20，（0，0）点的位置在右下角偏移20的位置，所以最后看到蓝色view并不是靠着左上角。文字描述有点。。。费劲，还是想办法画图吧。。。 大概就是这样的一个过程，所以bounds.origin的修改会导致子view的位置改变，那么修改bounds的size呢？ 改变自己bounds的size会使自身的大小发生变化，从而影响frame，不会影响父view 那么对于position 和anchorPoint，我受一片他人的文章影响，有一个很恰当的比喻： 一幅画，anchorPoint就相当于在这个画的四个角或者中间沾一块胶（或者你有高档的什么固定的都行。。），而position就相当于这块胶要沾在哪个位置，这么来说的话他应该是和anchor重合的，比如说position为墙壁的某个点，anchorPoint为画的中间（0.5，0.5），那么画就会沾到position的位置，我们view默认的position就是view的中心点相对于父view的点，所以如果我们改变anchor的话就类比刚才图片的问题，是那个角或者中点固定到这个position点而已。 也画个图吧。。。 基本上通过上边的介绍，我想你和我都掌握这几个属性的真正含义。</summary></entry></feed>
+&lt;p&gt;&lt;a href=&quot;https://github.com/nygard/class-dump&quot;&gt;class-dump&lt;/a&gt;&lt;/p&gt;</content><author><name>harry</name><email>harry_c2016@163.com</email></author><category term="iOS" /><category term="MAC" /><category term="Plugin" /><summary type="html">前提 为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如 title: position、anchorPoint、frame理解 tags: iOS key: 107 # article_header: # type: cover # image: # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png OK，所以首先呢我把Typora的所有文档看了一遍，没有入口可配置。那咋办？ 想法也就从这诞生了，我能不能写个插件，在Typora 新建文件的时候，手动插入预置文字，接下来记录插件开发过程，成功不成功最后见分晓！ 着手干（查资料） 通过查看资料，我们需要两个东西辅助，1.class-dump) 2. insert_dylib  基本原理就是： Mach-O 二进制文件Load Commands中的 LC_LOAD_DYLIB 标头告诉 macOS在执行期间要加载哪些动态库 (dylib)。所以我们只需要在二进制文件中添加一条LC_LOAD_DYLIB就可以。而insert_dylib工具已经为我们实现了添加的功能 接下来一个一个解释： class-dump 通过名字我们大概能猜到这是一个什么工具，类似一个解释类的工具，确实他也是干这个的，正确安装之后，我们可以通过class-dump [option] Mach-o文件，输出mac app的暴露类的相关属性，OK，我们用的就是class-dump -H Mach-o文件 输出头文件，我们通过头文件查看mac app源头文件，然后找到需要hook的类进行hook（具体的安装可以点击超链接查看） insert_dylib 这个工具，可以帮助我们插入一个dylib 到Mach-o二进制文件中，所以也就是说我们需要做一个framework然后通过这个库，嵌入到app的Mach-o二进制文件里 ok，工具都全乎了，接下来的时间，就是需要我们做一个framework，这个framework是用专门hook的动态库。 当然hook，Objective-C里就是runtime里的Swizzing Method搞定，这个iOS 开发应该都用过不少（常规技术） 具体实践 new project - framework 我们新建一个framework，用来做动态库 查看class-dump的类，hook 找到的类做功能 cd 到 /Applications/Typora.app/Contents/MacOS/ 使用class-dump -H /Applications/Typora.app/Contents/MacOS/Typora -o /Users/haoyh02/Desktop/typora.h 输出头文件解析到桌面目标目录，如下 ok，接下来我就需要分析头文件，找出自己需要hook的类，以及方法，当然这个过程才是最漫长的，而且是不断的尝试出来的。具体的分析我就不赘述了，就是看代码呗。 最终我们找到了LibraryCommands 类，他大概就是一些文件命令处理，比如新建文件，当然我们hook的是这个类，但是具体文件处理则是Document这个类，集成于NSDocument。 具体看代码 // // TyporaAutoRejectHook.m // TyporaAutoReject // // Created by 郝玉鸿 on 2022/8/26. // #import &amp;lt;Foundation/Foundation.h&amp;gt; #import &amp;lt;AppKit/AppKit.h&amp;gt; #import &quot;TyporaAutoReject.h&quot; #import &amp;lt;objc/runtime.h&amp;gt; void ty_hook(Class originClass, SEL originSelector, Class swizzClass, SEL swizzSelector) { Method originalMethod = class_getInstanceMethod(originClass, originSelector); Method swizzledMethod = class_getInstanceMethod(swizzClass, swizzSelector); if(originalMethod &amp;amp;&amp;amp; swizzledMethod) { method_exchangeImplementations(originalMethod, swizzledMethod); } } @interface Document : NSDocument @end @interface LibraryCommands: NSObject @property(retain) Document *document; @end @implementation NSObject (Typora) + (void)hookThunder{ ty_hook(objc_getClass(&quot;LibraryCommands&quot;), @selector(createFile:), [self class], @selector(hook_newDocument:)); } - (void)hook_newDocument:(id)args { [self hook_newDocument:args]; dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ LibraryCommands *commans = (LibraryCommands *)self; Document *document = commans.document; NSString *injectString = @&quot;---\ntitle: &amp;lt;xxxx&amp;gt; \ntags: [iOS] [MAC] [Plugin]&amp;gt; \nkey: xxx \n# article_header:\n# type: cover \n# image:\n # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png \n---&quot;; [document setValue:injectString forKeyPath:@&quot;content&quot;]; [document writeToURL:document.fileURL ofType:document.fileType error:nil]; [document performSelector:NSSelectorFromString(@&quot;syncToClient&quot;)]; [document performSelector:NSSelectorFromString(@&quot;syncToSelf&quot;)]; }); } @end static void __attribute__((constructor)) initialize(void) { [NSObject hookThunder]; } 很简单，思路就是hook到新建文件的方法，然后2s之后，文件内插入一段预置文字。然后同步界面。 copy framework的产出（编译，products/xxx.framework）到mac app 下的contents/MacOS OK，接下来我们需要build工程，得到products/xxx.framework 产物。xcode13 隐藏了products，我们只需要打开pbxproj文件, 修改mainGroup 和 productRefGroup 一样（本身也是一样的，我们只需要copy再次保存就好了），保存就可以出现，也可以到DerivedData里去找 然后copy framework，到/Applications/Typora.app/Contents/ 下即可。 执行insert_dylib 命令 ./insert_dylib --all-yes /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora 执行这个命令后，即可嵌入framework 重新打开应用 一定要重新打开应用，否则不生效（这个其实不用想也是这样，毕竟我们是编译型程序） ok，当然这个步骤很麻烦，为了我们能更好的重复验证，我写了脚本执行，这些命令 sudo rm -d -r /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework sudo mv -f /Users/haoyh02/Library/Developer/Xcode/DerivedData/TyporaAutoReject-duhvxgpyrtuykugkepbmpmhciiyh/Build/Products/Debug/* /Applications/Typora.app/Contents/MacOS/ ./insert_dylib --all-yes /Applications/Typora.app/Contents/MacOS/TyporaAutoReject.framework/TyporaAutoReject Typora_backup Typora ​ ​ 至此，我们为Typora做的小插件，完全生效了。我们来看一下效果： ​ 参考 安装class-dump 如何为macOS应用开发插件 insert_dylib class-dump</summary></entry></feed>

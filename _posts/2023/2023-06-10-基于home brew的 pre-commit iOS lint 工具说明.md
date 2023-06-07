@@ -1,5 +1,5 @@
 ---
-title: 基于home brew的 pre-commit iOS lint 工具使用说明
+title: 基于home brew的 pre-commit iOS lint 工具说明
 tags: [iOS] [MAC] [Plugin]
 key: 155 
 type: cover

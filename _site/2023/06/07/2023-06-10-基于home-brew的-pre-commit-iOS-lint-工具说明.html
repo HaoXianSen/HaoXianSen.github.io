@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>Home - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>harry’s blog</title>
 
-<meta name="description" content="harry's technology blog 
-">
-<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="">
+<link rel="canonical" href="http://localhost:4000/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -260,7 +259,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -452,341 +451,208 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
 " href="/">harry’s blog</a></div><button class="button button--secondary button--circle search-button js-search-toggle">
           <div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div>
           </button></div><nav class="navigation">
-        <ul><li class="navigation__item navigation__item--active"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
+        <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="harry"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html"><h2 itemprop="headline" class="item__header"></h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody"></div><p><a href="/2023/06/07/2023-06-10-%E5%9F%BA%E4%BA%8Ehome-brew%E7%9A%84-pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">Read more</a></p></div><div class="article__info clearfix"><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 07, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-06-07T18:32:33+08:00"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">home brew 的研究</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
-
-虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。
-
-因此，需要对home brew 做一个深入的研究。
-
-正文
-
-home brew 简介
-
-如果你是一名MacOs的使用者，那么我相信你肯定知道 home brew，也可能已经对于home brew 普通的一些命令非常熟悉了。那么home brew是什么？
-
-引用brew 官方文档的一句介绍的话：The Missing Package Manager for macOS (or Linux)， Homebrew Cask installs macOS apps, fonts and plugins ...</div><p><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 31, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-05-31T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html"><h2 itemprop="headline" class="item__header">shell 杂记(不断更新...)</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">终端输出奇技淫巧
-
-1. \u{1B}[1A\u{1B}[K
-
-这是一种 ANSI 转义序列，通常用于控制终端的光标位置和清除屏幕上的文本。”\u{1B}[1A” 表示将光标向上移动一行，”\u{1B}[K” 表示清除当前光标位置后面的文本。组合在一起，这个序列的意思是将光标移动到当前行的开头并清除该行的文本。
-
-Pod cache
-
-http://blog.fpliu.com/it/os/macOS/software/CocoaPods/pod-cache
-
-shell 杂记
-
-1. shell 语句中的while 循环语句
-
-while test 条件
-do 
-# 循环体代码
-done
-
-while test $count -gt 0; do
-echo ""
-done
-
-while...</div><p><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=shell">shell</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Apr 07, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-04-07T00:00:00+08:00">
-    <meta itemprop="keywords" content="shell"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html"><h2 itemprop="headline" class="item__header">基于homebrew 的code lint 集成</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">基于homebrew 的code lint 集成(总)
-
-前情
-
-之前文章中我们已经讲到了采用pre-commit 集成工具去集成code lint 工具（Objective-CLint、swiftlint），文章地址，这种方式当然很方便，但是也很难扩展。比如swiftLint 我们就没有很好的办法让其以html或者其他的方式打开，只能显示到控制台，再比如我们后续想要整合oc和swift lint的结果。也没有好的办法实现。那么我们就要另辟西路。
-
-当然我们还是采用pre-commit 的时期，只是我们不在采用pre-commit工具集成，我们自己写pre-commit脚本、自己做工具的安装等等时期。
-
-这样我们的可扩展行很强，我们想干什么都可以，只要我们能想的到的…
-
-开发/架构
-
-...</div><p><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=swift">swift</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=CLI">CLI</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=objective-c">objective-c</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homebrew">homebrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 20, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="122">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-03-20T00:00:00+08:00">
-    <meta itemprop="keywords" content="swift,CLI,objective-c,homebrew"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><h2 itemprop="headline" class="item__header">如何创建一个三方home brew tap</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
-
-为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。
-
-1. 创建三方Tap仓库
-
-​	如何创建三方tap库？
-
- 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字...</div><p><a href="/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html"><h2 itemprop="headline" class="item__header">swift 编写第一个CLI程序</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">用swift 编写第一个CLI(command line tool)程序
-
-
-
-起因
-
-因为在研究swiftLint的时候，发现了熟悉的swift code，但却无法理解到底实现了什么？
-
-发现swiftlint 都是基于开源库swift-argument-parser 做的，于是乎去了解apple的开源库swift-argument-parser ,  然后才知道了，这里面还大有玄机嘞！
-
-swift-argument-parser 这个是用来解析命令行参数的苹果开源库，应用这个库能很方便的进行命令行参数解析。
-
-后来非常好奇，那么swiftLint工程里的Package.swift文件又是啥呀？
-
-一练的疑问，一头的雾水，于是乎扎入到探究的深坑中…
-
-经过一两天的研究，翻看appl...</div><p><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=swift">swift</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=CLI">CLI</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 05, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="111">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-05T00:00:00+08:00">
-    <meta itemprop="keywords" content="swift,CLI"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2023/01/04/iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html"><h2 itemprop="headline" class="item__header">iOS自旋锁与互斥锁</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">iOS中自旋锁和互斥锁
-
-
-
-起因
-
-属性修饰符atomic，是否是绝对线程安全的？
-
-当然乍一看，这两个问题好像没有必然的联系，但是了解atomic的内部实现，就能明白为什么我能跨度到自旋锁和互斥锁。（因为atomic其实内部是对于setter和getter加锁实现的）
-
-后边我们再看atomic到底是否安全的问题
-
-定义
-
-锁：在计算机科学中，锁是在执行多线程时用于强行限制资源访问的同步机制，即用于在并发控制中保证对互斥要求的满足。(维基百科中的定义)
-
-自旋锁： 自旋锁其实就是线程再未获得锁的时候处于忙等的状态，一直消耗cpu，而不会进入内核态。
-
-互斥锁：互斥锁则是当未获得锁时，线程进入内核态，释放cpu的消耗，直到锁资源被释放，重新唤起休眠的线程。
-
-其实从定义中我们也能很明...</div><p><a href="/2023/01/04/iOS%E4%B8%AD%E8%87%AA%E6%97%8B%E9%94%81%E5%92%8C%E4%BA%92%E6%96%A5%E9%94%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 04, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-01-04T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/09/14/Objective_CLint.html"><h2 itemprop="headline" class="item__header">Objective-CLint（创建一个轻量级的、支持pre-commit的Objective-C 的静态检查）</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">Objective-CLint
-创建一个轻量级的、支持pre-commit的Objective-C 的静态检查
-
-感谢
-感谢 spacecommander作者提供的Objective-C lint的思路以及open source
-本文大部分是基于 spacecommander累加的一些新功能。再次感谢开源作者，非常棒👍🏻
-
-架构/构思
-1.前因
-因为OC-Lint的重量型检查，导致如果使用OCLint 那么首先我们需要安装OCLint 以及 还需要编译工程，如果我们使用pre-commit那么
-就会导致我们每次 git commit 时间会增加很多，每次 commit可能对于我们来说都是一种煎熬。ok那么就需要我们使用另外的方式解决。
-
-OK，解决方法之一就是我们之间使用Clang-f...</div><p><a href="/2022/09/14/Objective_CLint.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=pre-commit">pre-commit</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=hooks">hooks</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Sep 14, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="109">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-09-14T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS,pre-commit,hooks"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">关于iOS 代码质量把控研究</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前提
-
-code review 是我们工作中可以说必不可少的一环，一方面能够提早的发现代码中不合理的部分、或者不稳定、架构不合理的部分，提高代码的质量；另外一方面能，更够让团队的知识共享，互相熟悉业务需求，以及团队写的好的部分。OK，作为code review最早最基础的一环，可以说是代码规范。如果人工进行代码规范的维护，难免会遗漏，而且会花费时间在这部分。
-
-所以，针对这种情况，我们可以做的是，做一个lint帮助我们检测不规范的代码，OK，下面就lint，开始研究！
-
-Lint 时机
-
-我们熟知的Objective-C lint，有OClint、Infer; swift 有swiftLint，首先我们先不考虑这个几个lint的问题，我们先考虑一个重要的问题，lint应该放到什么阶段？...</div><p><a href="/2022/08/29/%E5%85%B3%E4%BA%8EiOS-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E6%8A%8A%E6%8E%A7%E7%A0%94%E7%A9%B6.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 29, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="110">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html"><h2 itemprop="headline" class="item__header">我想搞个mac app 插件，仅仅为了Typroa插入几行预置文字</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前提
-
-为了更好的维持我的博客系统，想着之后的博客都发布于github.io， 那么如果你有搭建过github.io 那么相比都知道YAML, 通过MARK down 中插入YAML FORMAT 语言，我们可以控制博客的标题、评论等等。。那么简单来说就是我不想用Typora每次建立一个新blog，都需要繁琐的插入那一堆YAML，比如
-
-title: position、anchorPoint、frame理解
-
-tags: iOS
-
-key: 107
-
-# article_header:
-
-# type: cover
-
-# image:
-
-# src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-...</div><p><a href="/2022/08/26/%E6%88%91%E6%83%B3%E6%90%9E%E4%B8%AATyproa%E7%9A%84%E6%8F%92%E4%BB%B6-%E4%BB%85%E4%BB%85%E4%B8%BA%E4%BA%86%E6%8F%92%E5%85%A5%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=MAC">MAC</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Plugin">Plugin</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 26, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="108">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-26T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS,MAC,Plugin"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/05/01/00_position_anchorPoint_frame.html"><h2 itemprop="headline" class="item__header">position、anchorPoint、frame理解</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
-
-​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。
-
-进入正文
-
-frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view
-
-bounds：表示了一个view的本地坐标系下，参照物是自身，...</div><p><a href="/2022/05/01/00_position_anchorPoint_frame.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/08/01_flutter_and_ios_matter.html"><h2 itemprop="headline" class="item__header">解决原生横滑scrollView和Flutter 纵滑CustomScroll的冲突</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
-
-
-
-最近项目中在横向滑动的PageViewController（WMPageController）里嵌入了Flutter 的 CustomScrollView，原本会觉得一切ok，却出现了一个致命的问题：安卓嵌入之后滑动流程稳定，没有任何问题，iOS 嵌入之后出现Flutter 页面滑动卡顿、不流畅，体现在触发flutter 列表滑动的同时，会触发原生横滑，且必须垂直滑动（无一点左右的滑动偏移）才会稳定触发Flutter 列表的滑动，否则容易触发左右横滑，所以我们习惯了单手用手机的人，根本无法顺畅滑动。如下面的gif（其实我已经很努力的在上下滑了，很明显上下滑动的距离大于水平滑动的距离，用户的用意也应该是要上下滑动，但是却触发了横滑）：
-
-
-
-解决方式
-
-
-
-首先触摸flutt...</div><p><a href="/2020/06/08/01_flutter_and_ios_matter.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 08, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="101">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-08T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter,iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/07/00_flutter-hot-reload.html"><h2 itemprop="headline" class="item__header">热重载原理研究和探索</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">热重载原理研究和探索
-
-1. 前言
-
-
-
-Flutter 亚秒级别的热重载是开发者的神兵利器，它能够提供我们快速修改UI、增加功能、修复bug，不需要重新启动应用，就可以看到改动效果。那么Flutter是如何做到这样的功能的呢？下面我们一起探究一下其中的原理。
-
-2. 首先需要知道JIT 和AOT
-
-
-
-JIT
-
-JIT（Just In Time），指的是运行时编译，Flutter 在debug模式下采用这种方式，在运行时动态下发和执行代码，启动速度快，但是由于在运行时编译，性能会受影响。
-
-
-
-AOT
-
-AOT（Ahead Of Time），指的是在运行之前进行编译，Flutter 在Release模式下采用，可以为特定的平台生成稳定的二进制代码、执行性能好、运行速度快，但是每次都需...</div><p><a href="/2020/06/07/00_flutter-hot-reload.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 07, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="100">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-07T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/05/01/02_flutter_text_has_underline.html"><h2 itemprop="headline" class="item__header">Flutter Text 文字下有黄色下划线</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">导致原因
-
-导致这种情况发生的原因是因为，Text widget 隶属于Material 风格下的组件，如果根节点不是Material 相关组件，则会使用默认带黄色下划线的格式。如果根节点是Material 容器组件，则会采用其Material风格的样式（即不带有下换线）。
-
-解决方式
-
-1. 采用根节点为脚手架Scaffold组件
-Scaffold(body: content,);
-
-2.  采用根节点为Material 组件
-Material(child: content);
-
-3. 逐个修改Text 组件的style 下的decoration为TextDecoration.none
-child: Text(
-                      "专栏的文章",
-     ...</div><p><a href="/2020/05/01/02_flutter_text_has_underline.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="102">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
-      </article></div>
-</div><div class="layout--home"></div>
-<script>/*(function () {
-
-})();*/
-</script>
-
-
-</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1></h1></header></div><meta itemprop="headline" content=""><div class="article__info clearfix"><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 07, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-06-07T18:32:33+08:00"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="lintmaker">lintmaker</h3>
+
+<h4 id="简介">简介</h4>
+
+<p>lintmaker 是使用swift 开发的一个CLI工具。主要负责了iOS 工程swift、objc语言的lint工具集成。</p>
+
+<p>使用lintmaker 可以傻瓜式一键安装、生效，在git 项目中，每次git commit 就会验证其代码规范性。</p>
+
+<h4 id="主要功能">主要功能</h4>
+
+<ul>
+  <li>下载规则配置文件以及hook script、缓存到Library/Caches/ &amp;&amp; 移动到当前目录（或者指定目录）下</li>
+  <li>安装lint 依赖工具，home brew tap update, Objective-Clint, swiftlint、python3等工具</li>
+  <li>清理空间目录，即删除配置文件以及hook script</li>
+  <li>卸载安装， 清除空间目录 &amp;&amp; 卸载Objective-Clint、swiftlint</li>
+  <li>更新， 可全量更新（即更新配置文件 &amp; 更新lint 工具），也可以只更新配置文件或者lint工具</li>
+</ul>
+
+<h4 id="架构思路">架构思路</h4>
+
+<p>home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。</p>
+
+<p>我们目标则是打造一个基于home brew 安装、更新的安装工具-lintmaker</p>
+
+<ul>
+  <li>我们创建自己的三方Tap， haoxiansen/homebrew-private</li>
+  <li>Lintmaker 的开发则是尝试用swift 进行开发CLI程序</li>
+  <li>内部功能则是打着方便、好用、傻瓜式的原则进行开发</li>
+</ul>
+
+<h4 id="使用">使用</h4>
+
+<ul>
+  <li>
+    <p>lintmaker安装</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装</span>
+brew tap haoxiansen/private
+brew <span class="nb">install </span>lint-maker
+<span class="c"># 更新</span>
+brew update 
+brew upgrade lint-maker
+  
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>lintmaker 卸载</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew uninstall lint-maker
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>install</p>
+  </li>
+</ul>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c"># 默认在当前目录安装</span>
+  lintmaker <span class="nb">install
+  
+  </span>USAGE: lintmaker <span class="nb">install</span> <span class="o">[</span><span class="nt">--project-path</span> &lt;project-path&gt;] <span class="o">[</span><span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;]
+  
+  OPTIONS:
+    <span class="nt">-p</span>, <span class="nt">--project-path</span> &lt;project-path&gt;
+                            Please input a workspace path
+    <span class="nt">-c</span>, <span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;
+                            Please input a accessible url, like
+                            https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                            .swiftlint.yml <span class="o">(</span>default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git<span class="o">)</span>
+    <span class="nt">--version</span>               Show the version.
+    <span class="nt">-h</span>, <span class="nt">--help</span>              Show <span class="nb">help </span>information.
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>clean</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 默认清除当前目录</span>
+lintmaker clean
+  
+USAGE: lintmaker clean <span class="o">[</span><span class="nt">--project-path</span> &lt;project-path&gt;] <span class="o">[</span><span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;]
+  
+OPTIONS:
+  <span class="nt">-p</span>, <span class="nt">--project-path</span> &lt;project-path&gt;
+                          Please input a workspace path
+  <span class="nt">-c</span>, <span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;
+                          Please input a accessible url, like
+                          https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                          .swiftlint.yml <span class="o">(</span>default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git<span class="o">)</span>
+  <span class="nt">--version</span>               Show the version.
+  <span class="nt">-h</span>, <span class="nt">--help</span>              Show <span class="nb">help </span>information.
+  
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>uninstall</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lintmaker uninstall
+  
+USAGE: lintmaker uninstall
+  
+OPTIONS:
+  <span class="nt">--version</span>               Show the version.
+  <span class="nt">-h</span>, <span class="nt">--help</span>              Show <span class="nb">help </span>information.
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>update</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 默认全量更新</span>
+lintmaker update
+  
+USAGE: lintmaker update <span class="o">[</span><span class="nt">--project-path</span> &lt;project-path&gt;] <span class="o">[</span><span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;] <span class="o">[</span><span class="nt">--configuration-only</span><span class="o">]</span> <span class="o">[</span><span class="nt">--lint-only</span><span class="o">]</span>
+  
+OPTIONS:
+  <span class="nt">-p</span>, <span class="nt">--project-path</span> &lt;project-path&gt;
+                          a git workspace path, <span class="k">if </span>not <span class="nb">set </span>defult is current directory
+  <span class="nt">-c</span>, <span class="nt">--configure-git-path</span> &lt;configure-git-path&gt;
+                          Please input a accessible url, like
+                          https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git, contains .clang-format
+                          .swiftlint.yml <span class="o">(</span>default: https://gitlab.corp.youdao.com/hikari/app/ios/gzlint.git<span class="o">)</span>
+  <span class="nt">--configuration-only</span>    <span class="k">if </span><span class="nb">set</span> <span class="nt">--configuration-only</span>, only update configuration file
+  <span class="nt">--lint-only</span>             <span class="k">if </span><span class="nb">set</span> <span class="nt">--lint-only</span>, only update lint tools
+  <span class="nt">--version</span>               Show the version.
+  <span class="nt">-h</span>, <span class="nt">--help</span>              Show <span class="nb">help </span>information.
+  
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="部分截图">部分截图</h4>
+
+<ul>
+  <li>
+    <p>安装成功</p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182823image-20230607182823209.png" alt="image-20230607182823209" /></p>
+  </li>
+  <li>
+    <p>清理成功</p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182848image-20230607182847914.png" alt="image-20230607182847914" /></p>
+  </li>
+  <li>
+    <p>更新成功</p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182929image-20230607182928941.png" alt="image-20230607182928941" /></p>
+  </li>
+  <li>
+    <p>卸载成功</p>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182956image-20230607182955883.png" alt="image-20230607182955883" /></p>
+  </li>
+</ul>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-06-07T18:32:33+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --><div class="article__license"><div class="license">
+    <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
+      <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
+      </a>
+    </p>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">home brew 的研究</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
 
 <!-- end custom main bottom snippet --></div>
             </div></div></div><div class="page__footer d-print-none">
@@ -1349,6 +1215,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script><script type="text/x-mathjax-config">
 	var _config = { tex2jax: {
 		inlineMath: [['$','$'], ['\\(','\\)']]
