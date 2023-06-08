@@ -135,8 +135,21 @@ home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。
     --lint-only             if set --lint-only, only update lint tools
     --version               Show the version.
     -h, --help              Show help information.
-  
   ```
+
+ * help
+
+   ```shell
+   lintmaker --help
+   lintmaker help [subcommand]
+   ```
+
+ * 注意事项
+
+   * 所有命令只会对当前目录（指定目录）生效，不可全局生效，所以要求我们每一个git 项目都去集成
+   * 可执行一次install，在某个目录，其他git项目执行 lintmaker update --configuration-only即可生效
+   * 如若版本lint 工具升级，可执行lintmaker update 或者lintmaker update --lint-only
+   * 如若只升级configuration files， 执行lintmaker update --configuration-only，可实现当前目录或者指定目录的configuration files的升级。
 
 ### 部分截图
 

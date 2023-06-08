@@ -597,8 +597,24 @@ OPTIONS:
   <span class="nt">--lint-only</span>             <span class="k">if </span><span class="nb">set</span> <span class="nt">--lint-only</span>, only update lint tools
   <span class="nt">--version</span>               Show the version.
   <span class="nt">-h</span>, <span class="nt">--help</span>              Show <span class="nb">help </span>information.
-  
 </code></pre></div>    </div>
+  </li>
+  <li>
+    <p>help</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lintmaker <span class="nt">--help</span>
+lintmaker <span class="nb">help</span> <span class="o">[</span>subcommand]
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>注意事项</p>
+
+    <ul>
+      <li>所有命令只会对当前目录（指定目录）生效，不可全局生效，所以要求我们每一个git 项目都去集成</li>
+      <li>可执行一次install，在某个目录，其他git项目执行 lintmaker update –configuration-only即可生效</li>
+      <li>如若版本lint 工具升级，可执行lintmaker update 或者lintmaker update –lint-only</li>
+      <li>如若只升级configuration files， 执行lintmaker update –configuration-only，可实现当前目录或者指定目录的configuration files的升级。</li>
+    </ul>
   </li>
 </ul>
 

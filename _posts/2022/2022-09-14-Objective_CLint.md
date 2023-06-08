@@ -35,6 +35,12 @@ OK，解决方法之一就是我们之间使用Clang-format，我们知道其实
 5. 修改了部分自定义规则代码，以适应灵活的代码不规范
 6. [.clang-format](https://github.com/HaoXianSen/Objective-CLint/blob/main/.clang-format) 配置了更多的clang 规则
 
+------
+
+​	2023.6.8 更新
+
+1、增加命令
+
 ### 使用
 
 1. 安装 pre-commit , ``` brew install pre-commit ```
