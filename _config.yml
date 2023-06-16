@@ -97,8 +97,8 @@ sources: bootcdn # bootcdn (default), unpkg
 
 ## => Sharing
 ##############################
-# sharing:
-#   provider: # false (default), "addtoany", "addthis", "custom"
+sharing:
+  provider: "addtoany" # false (default), "addtoany", "addthis", "custom"
 
 #   ## AddThis
 #   addthis:
