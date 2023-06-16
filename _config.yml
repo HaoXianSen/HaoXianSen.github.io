@@ -111,7 +111,7 @@ comments:
   provider: gitalk
   gitalk:
     clientID    : "94156de881bfeb261eac"
-    clientSecret: "2675ee08f2fc782693cf0a22c1feb3b2a3cc877b"
+    clientSecret: "b233f322bb11cae5d3b16f3884c6721c97ef63ce"
     repository  : "HYHComment"
     owner       : "HaoXianSen"
     admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
