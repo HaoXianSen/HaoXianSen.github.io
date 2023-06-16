@@ -168,3 +168,39 @@ home brew 是 MAC\Linux 上非常方便的安装CLI或者Application的工具。
 * 卸载成功
 
   ![image-20230607182955883](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182956image-20230607182955883.png)
+
+### 可能会遇到的问题（MAC M1、M2）
+
+- homebrew 报错，无法更细taps, 导致工具安装报错（警告⚠️）
+
+  - 主要原因呢，在于MAC M1/M2系统上brew 更改了安装目录，目录由urs/local/Homebrew 变更为 opt/Homebrew，然后导致这个目录下的git 认为是不安全的git目录
+
+  - 我们需要执行以下命令去信任这三个目录
+
+    ```shell
+    git config --global --add safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-cask
+    
+    git config --global --add safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-core
+    
+    git config --global --add safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-services
+    ```
+
+    
+
+- 安装objc-lint失败	
+
+  ```shell
+[error] 安装objc-lint失败， 原因：==> Fetching haoxiansen/private/objc-lint 
+==> Downloading https://github.com/HaoXianSen/Objective-CLint/archive/refs/tags/v1.0.0.tar.gz Already downloaded: /Users/xxx/Library/Caches/Homebrew/downloads/252b1d1bc021d2a4de2c95bb39262e61aa06d9861245b37bafa15947f025efc0--Objective-CLint-1.0.0.tar.gz
+==> Installing objc-lint from haoxiansen/private 
+==> Homebrew has enabled anonymous aggregate formula and cask analytics. Read the analytics documentation (and how to opt-out) here:  https://docs.brew.sh/Analytics No analytics have been recorded yet (nor will be during this `brew` run). 
+==> Homebrew is run entirely by unpaid volunteers. Please consider donating:   https://github.com/Homebrew/brew#donations Updated 1 tap (homebrew/services). 
+No changes to formulae or casks.
+Error: Xcode alone is not sufficient on Monterey. Install the Command Line Tools:  xcode-select --install
+```
+
+	xcode-select 可以打印更改我们xcode命令行工具所依赖目录，说白了其实就是xcode带了很多命令，比如我们熟知的xcodebuild、cc、make， 其实就是这个xcode这些命令所在的目录。
+
+	xcode-select --install 是会打开一个安装弹框，安装这些开发工具。
+
+	其实就是我们这里边会引用到xcode的命令，但是你的电脑没安装，所有需要按照提示执行一下：xcode-select --install

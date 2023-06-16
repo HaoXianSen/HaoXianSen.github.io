@@ -642,15 +642,57 @@ lintmaker <span class="nb">help</span> <span class="o">[</span>subcommand]
     <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230607182956image-20230607182955883.png" alt="image-20230607182955883" /></p>
   </li>
 </ul>
+
+<h3 id="可能会遇到的问题mac-m1m2">可能会遇到的问题（MAC M1、M2）</h3>
+
+<ul>
+  <li>
+    <p>homebrew 报错，无法更细taps, 导致工具安装报错（警告⚠️）</p>
+
+    <ul>
+      <li>
+        <p>主要原因呢，在于MAC M1/M2系统上brew 更改了安装目录，目录由urs/local/Homebrew 变更为 opt/Homebrew，然后导致这个目录下的git 认为是不安全的git目录</p>
+      </li>
+      <li>
+        <p>我们需要执行以下命令去信任这三个目录</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--global</span> <span class="nt">--add</span> safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-cask
+    
+git config <span class="nt">--global</span> <span class="nt">--add</span> safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-core
+    
+git config <span class="nt">--global</span> <span class="nt">--add</span> safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-services
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>安装objc-lint失败</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>error] 安装objc-lint失败， 原因：<span class="o">==&gt;</span> Fetching haoxiansen/private/objc-lint 
+<span class="o">==&gt;</span> Downloading https://github.com/HaoXianSen/Objective-CLint/archive/refs/tags/v1.0.0.tar.gz Already downloaded: /Users/xxx/Library/Caches/Homebrew/downloads/252b1d1bc021d2a4de2c95bb39262e61aa06d9861245b37bafa15947f025efc0--Objective-CLint-1.0.0.tar.gz
+<span class="o">==&gt;</span> Installing objc-lint from haoxiansen/private 
+<span class="o">==&gt;</span> Homebrew has enabled anonymous aggregate formula and cask analytics. Read the analytics documentation <span class="o">(</span>and how to opt-out<span class="o">)</span> here:  https://docs.brew.sh/Analytics No analytics have been recorded yet <span class="o">(</span>nor will be during this <span class="sb">`</span>brew<span class="sb">`</span> run<span class="o">)</span><span class="nb">.</span> 
+<span class="o">==&gt;</span> Homebrew is run entirely by unpaid volunteers. Please consider donating:   https://github.com/Homebrew/brew#donations Updated 1 tap <span class="o">(</span>homebrew/services<span class="o">)</span><span class="nb">.</span> 
+No changes to formulae or casks.
+Error: Xcode alone is not sufficient on Monterey. Install the Command Line Tools:  xcode-select <span class="nt">--install</span>
+</code></pre></div>    </div>
+
+    <p>xcode-select 可以打印更改我们xcode命令行工具所依赖目录，说白了其实就是xcode带了很多命令，比如我们熟知的xcodebuild、cc、make， 其实就是这个xcode这些命令所在的目录。</p>
+
+    <p>xcode-select –install 是会打开一个安装弹框，安装这些开发工具。</p>
+
+    <p>其实就是我们这里边会引用到xcode的命令，但是你的电脑没安装，所有需要按照提示执行一下：xcode-select –install</p>
+  </li>
+</ul>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-06-07T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --><div class="article__license"><div class="license">
+<!-- end custom article footer snippet --><div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div></div><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
       <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">home brew 的研究</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html">home brew 的研究</a></div><div class="next"><span>NEXT</span><a href="/2023/06/12/MGJRouterKit%E7%9A%84%E7%A0%94%E7%A9%B6.html">MGJRouterKit 实现、优劣浅析</a></div></div></div>
 
 </div>
 

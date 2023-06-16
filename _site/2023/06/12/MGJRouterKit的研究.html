@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>home brew 的研究 - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>MGJRouterKit 实现、优劣浅析 - harry’s blog</title>
 
-<meta name="description" content="前言虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。因此，需要对home brew 做一个深入的研究。正文home brew 简介如果你是一名MacOs的使用者，那么我相信你肯定知道...">
-<link rel="canonical" href="http://localhost:4000/2023/05/31/homeBrew%E6%8E%A2%E7%A9%B6.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="代码浅析存通过MGJRouter 单例管理。并且缓存在NSMutableDictionay *routes, 那么我们来看一下，他具体缓存的数据结构是什么样子的？例如 aa://bb/cc/dd关键代码为：+ (void)registerURLPattern:(NSString *)URLPattern toHa...">
+<link rel="canonical" href="http://localhost:4000/2023/06/12/MGJRouterKit%E7%9A%84%E7%A0%94%E7%A9%B6.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,381 +454,345 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/56/35/2d27f423708985c2ccafffe891d4c4ff.jpg"></img><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/bf/12/3105168fd57dc74f49f1a7ac462c0b18.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>home brew 的研究</h1></header></div><meta itemprop="headline" content="home brew 的研究"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>MGJRouterKit 实现、优劣浅析</h1></header></div><meta itemprop="headline" content="MGJRouterKit 实现、优劣浅析"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 31, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="136">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-05-31T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=iOS">iOS</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E7%BB%84%E4%BB%B6%E5%8C%96">组件化</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%B7%AF%E7%94%B1%E4%B8%AD%E9%97%B4%E4%BB%B6">路由中间件</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 12, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="156">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-06-12T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,组件化,路由中间件"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="前言">前言</h3>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="代码浅析">代码浅析</h3>
 
-<p>虽然已经对homeBrew 如何去指定自己的taps 、如何写Formula脚本、以及安装更新自己的软件，有了一定的了解和使用，但是终归感觉不了解整体homeBrew的架构、机制。</p>
+<h4 id="存">存</h4>
 
-<p>因此，需要对home brew 做一个深入的研究。</p>
+<p>通过<code class="language-plaintext highlighter-rouge">MGJRouter</code> 单例管理。并且缓存在<code class="language-plaintext highlighter-rouge">NSMutableDictionay *routes</code>, 那么我们来看一下，他具体缓存的数据结构是什么样子的？</p>
 
-<h3 id="正文">正文</h3>
+<p>例如 aa://bb/cc/dd</p>
 
-<h4 id="home-brew-简介">home brew 简介</h4>
+<p>关键代码为：</p>
 
-<p>如果你是一名MacOs的使用者，那么我相信你肯定知道 home brew，也可能已经对于home brew 普通的一些命令非常熟悉了。那么home brew是什么？</p>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">registerURLPattern</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">URLPattern</span> <span class="nf">toHandler</span><span class="p">:(</span><span class="n">MGJRouterHandler</span><span class="p">)</span><span class="nv">handler</span>
+<span class="p">{</span>
+    <span class="p">[[</span><span class="n">self</span> <span class="nf">sharedInstance</span><span class="p">]</span> <span class="nf">addURLPattern</span><span class="p">:</span><span class="n">URLPattern</span> <span class="nf">andHandler</span><span class="p">:</span><span class="n">handler</span><span class="p">];</span>
+<span class="p">}</span>
 
-<p>引用brew 官方文档的一句介绍的话：<strong>The Missing Package Manager for macOS (or Linux)， <a href="https://formulae.brew.sh/cask/">Homebrew Cask</a> installs macOS apps, fonts and plugins and other non-open source software.</strong>，home brew 一个MacOS 或者 Linux缺失包的管理器，通过brew cask还可以安装MasOS app 、字体、插件和一些不开源的软件。</p>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">addURLPattern</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">URLPattern</span> <span class="nf">andHandler</span><span class="p">:(</span><span class="n">MGJRouterHandler</span><span class="p">)</span><span class="nv">handler</span>
+<span class="p">{</span>
+    <span class="n">NSMutableDictionary</span> <span class="o">*</span><span class="n">subRoutes</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">addURLPattern</span><span class="p">:</span><span class="n">URLPattern</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">handler</span> <span class="o">&amp;&amp;</span> <span class="n">subRoutes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">subRoutes</span><span class="p">[</span><span class="s">@"_"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">handler</span> <span class="nf">copy</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-<p>那么其实来说brew的意思呢是酿造的意思，home brew 呢也有着自家酿酒的意思，也就是说home brew 下载源码，自己进行编译。</p>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSMutableDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nf">addURLPattern</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">URLPattern</span>
+<span class="p">{</span>
+    <span class="n">NSArray</span> <span class="o">*</span><span class="n">pathComponents</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">pathComponentsFromURL</span><span class="p">:</span><span class="n">URLPattern</span><span class="p">];</span>
 
-<p>总体来说，home brew 就是一个命令行工具和MacOS 软件包管理安装工具。</p>
+    <span class="n">NSMutableDictionary</span><span class="o">*</span> <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">routes</span><span class="p">;</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span> <span class="n">pathComponent</span> <span class="k">in</span> <span class="n">pathComponents</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="n">subRoutes</span> <span class="nf">objectForKey</span><span class="p">:</span><span class="n">pathComponent</span><span class="p">])</span> <span class="p">{</span>
+            <span class="n">subRoutes</span><span class="p">[</span><span class="nf">pathComponent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSMutableDictionary</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">init</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">subRoutes</span><span class="p">[</span><span class="nf">pathComponent</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">subRoutes</span><span class="p">;</span>
+<span class="p">}</span>
 
-<h4 id="home-brew-有趣命名">home brew 有趣命名</h4>
 
-<p>先来了解一下相关的概念：</p>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSArray</span><span class="o">*</span><span class="p">)</span><span class="nf">pathComponentsFromURL</span><span class="p">:(</span><span class="n">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">URL</span>
+<span class="p">{</span>
 
-<ul>
-  <li><strong>formula</strong> ：字面意思为配方，也就是homeBrew包的安装源码编译的脚本（ruby编写）</li>
-  <li><strong>cask</strong> ：字面意思也为桶，但是它功能类似于formula的，它是用来装定义了安装MacOS app的ruby脚本</li>
-  <li><strong>keg</strong> ：字面意思是桶，那么就是我们酿完酒之后需要的桶子装。也就是给定的Formula编译之后套件资料夹e.g. <code class="language-plaintext highlighter-rouge">/usr/local/Cellar/foo/0.1</code></li>
-  <li><strong>rack</strong>：字面意思是支架的意思，也就是存放酒桶的架子，即keg的目录e.g. <code class="language-plaintext highlighter-rouge">/usr/local/Cellar/foo</code></li>
-  <li>**keg-only: ** 字面意思是不会超出桶，其实就是homeBrew不会做link到urs/bin操作的formula</li>
-  <li><strong>cellar</strong>：字面意思为地窖，也就是存放所有支架的，即代表/usr/local/Cellar/目录</li>
-  <li><strong>Caskroom</strong>：字面意思呢是cask的房子，也就是用来存放一个或者多个cask的</li>
-  <li><strong>external command</strong>：一些brew的子命令但是不是在Homebrew/brew仓库，相当于我们扩展的一些brew命令</li>
-  <li><strong>tap</strong>：用来存放Formula、cask、external command的目录</li>
-  <li><strong>bottle</strong> ：提前构建好的酒桶，放到就架子上，也就是说是提前构建好的keg，然后放到rack上</li>
-</ul>
+    <span class="n">NSMutableArray</span> <span class="o">*</span><span class="n">pathComponents</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableArray</span> <span class="nf">array</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">URL</span> <span class="nf">rangeOfString</span><span class="p">:</span><span class="s">@"://"</span><span class="p">].</span><span class="n">location</span> <span class="o">!=</span> <span class="n">NSNotFound</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">NSArray</span> <span class="o">*</span><span class="n">pathSegments</span> <span class="o">=</span> <span class="p">[</span><span class="n">URL</span> <span class="nf">componentsSeparatedByString</span><span class="p">:</span><span class="s">@"://"</span><span class="p">];</span>
+        <span class="c1">// 如果 URL 包含协议，那么把协议作为第一个元素放进去</span>
+        <span class="p">[</span><span class="n">pathComponents</span> <span class="nf">addObject</span><span class="p">:</span><span class="n">pathSegments</span><span class="p">[</span><span class="mi">0</span><span class="p">]];</span>
+        
+        <span class="c1">// 如果只有协议，那么放一个占位符</span>
+        <span class="n">URL</span> <span class="o">=</span> <span class="n">pathSegments</span><span class="p">.</span><span class="n">lastObject</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">URL</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">[</span><span class="n">pathComponents</span> <span class="nf">addObject</span><span class="p">:</span><span class="n">MGJ_ROUTER_WILDCARD_CHARACTER</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
-<p>当我们了解了这些概念，在我们使用中或者理解homebrew工作机制会更有帮助。</p>
-
-<p>用一张图来了解一下这些概念：</p>
-
-<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230531175637image-20230531175637534.png" alt="image-20230531175637534" /></p>
-
-<p>也就是说我们home brew是一个自己酿酒的过程，首先我们需要酿酒的配方（Formula），存放配方（Formula）的地方呢叫做tap，home brew 可以有多个tap。我们根据配方呢会造出来至少一桶酒keg，然后我们把酒桶呢是摆到了酒架子上。 最后呢我们存放酒架子的地方是酒窖。</p>
-
-<p>那么tap呢就对应目录为urs/local/Homebrew/Library/Taps/; 配方呢是tap目录下个某个Formula脚本。</p>
-
-<p>keg比如是/usr/local/Cellar/foo/0.1， rack呢就是/usr/local/Cellar/foo/ ，酒窖呢就对应为/usr/local/Cellar/</p>
-
-<h4 id="home-brew-的一些机制">home brew 的一些机制</h4>
-
-<p>由上面的介绍我们可以知道，我们整个比较关键的点，其实就是formula（配方）的制作。home brew 会根据formula进行编译安装。</p>
-
-<p>下面我们介绍一下整体的一个机制/命令：</p>
-
-<p>先来讲讲我们经常用到的几个命令：</p>
-
-<ul>
-  <li>首先如果我们去执行 brew update，这个时候home brew 会更新自己tap 以及我们自定义的tap</li>
-  <li>如果我们自己创建了自己的tap，需要命名为homebrew-[特殊的名字]，否则你安装tap什么的会非常麻烦, 具体可以参看之前的<a href="https://haoxiansen.github.io/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">文章</a></li>
-  <li>更新tap只能执行 brew update</li>
-  <li>卸载tap， brew untap [tap名字]</li>
-  <li>安装CLI， brew install [CLI名字]， 重新安装brew reinstall</li>
-  <li>卸载CLI， brew uninstall [CLI名字]</li>
-</ul>
-
-<p>再来讲讲homebrew整体的一个机制</p>
-
-<ul>
-  <li>
-    <p>首先我们先了解一下MacOS的文件系统</p>
-
-    <ul>
-      <li>bin/ 目录下存放的系统内置一些终端命令可执行文件，eg. ls、cp 等等</li>
-      <li>sbin/ 系统管理命令，这里存放的是系统管理员使用的管理程序</li>
-      <li>/etc 目录包含各种系统配置文件，许多网络配置文件也在/etc中</li>
-      <li>/home 用户主目录的基点，比如用户user的主目录就是/home/user，可以用~user表示</li>
-      <li><strong>/usr</strong> 是个很重要的目录，通常这一文件系统很大，因为所有程序安装在这里。/usr 里的所有文件一般来自linux发行版(distribution )；本地安装的程序和其他东西在/usr/local 下，因为这样可以在升级新版系统或新发行版时无须重新安装全部程序。/usr 目录下的许多内容是可选的，但这些功能会使用户使用系统更加有效。/usr可容纳许多大型的软件包和它们的配置文件。</li>
-      <li>/usr/bin  集中了几乎所有用户命令，是系统的软件库。另有些命令在/bin 或/usr/local/bin 中</li>
-      <li>/usr/sbin
-包括了根文件系统不必要的系统管理命令</li>
-      <li>/usr/local
-本地安装的软件和其他文件放在这里。这与/usr很相似。用户可能会在这发现一些比较大的软件包</li>
-      <li>/usr/local/bin
-本地增加的命令 （就是在shell终端里执行的一些非系统命令）</li>
-      <li>/usr/local/lib
-本地增加的库</li>
-    </ul>
-  </li>
-  <li>
-    <p>了解以上的目录之后，我们再来看一下和home brew 相关的目录</p>
-
-    <ul>
-      <li>
-        <p>/usr/local/Homebrew 这里是homebrew的工程目录，我们采用homebrew提供的安装方式，他就会在这里建立Homebrew目录，以及clone 远程homebrew仓库。并且他会将自己的/usr/local/Homebrew/bin/brew下的 链接到/usr/local/bin 下，这样我们brew命令就可以在终端使用</p>
-
-        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230601115342image-20230601115342002.png" alt="image-20230601115342002" /></p>
-      </li>
-      <li>
-        <p>我们home brew taps 在usr/local/Homebrew/Library/Taps/下，也就是说首次安装的时候其实不存在Taps，从<a href="https://github.com/Homebrew/brew/tree/master/Library">github</a> 我们可以看的出。首次安装后，brew 会执行 brew tap 操作去添加公开的两个taps：homebrew-core、homebrew-cask， homebrew-core用来存放公开的CLI formula， homebrew-cask 存放MacOsApp的formula。我们自己的三方tap也会安装到这个目录下。</p>
-
-        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230601120201image-20230601120201634.png" alt="image-20230601120201634" /></p>
-
-        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230601120305image-20230601120305439.png" alt="image-20230601120305439" /></p>
-      </li>
-      <li>
-        <p>就如上面有趣的命名一样，brew 采用 formula（配方）酿制好酒，装入keg（酒桶）放入到rack(酒架子)上存在Caller(酒窖)。没错urs/locall/Caller 就是这个酒窖。brew 会把所有的编译好的文件都摆好放进去。</p>
-
-        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230601121007image-20230601121007292.png" alt="image-20230601121007292" /></p>
-      </li>
-      <li>
-        <p>上一步之后呢，他会把酒桶里的bin/的可执行文件，link到urs/bin下，实现可执行。</p>
-      </li>
-      <li>
-        <p>最后呢，它会在/Users/xxx/Library/Caches/Homebrew，缓存文件下缓存未解压文件。</p>
-
-        <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230601121919image-20230601121919209.png" alt="image-20230601121919209" /></p>
-      </li>
-    </ul>
-
-    <p>以上呢就是我们对于brew 从安装到创建taps再到安装具体的软件，根据目录进行一个过程性描述。</p>
-  </li>
-</ul>
-
-<h5 id="用一个复杂的git-formula-去了解-formula脚本内容">用一个复杂的git formula 去了解 formula脚本内容</h5>
-
-<p>​	我们上面有讲到，最重要的其实就是Formula脚本的编写，配方决定着你酿出来的是什么酒。</p>
-
-<p>​	那么我们就用一个复杂一点的Formula的脚本例子，从例子中讲述，每一部分是什么作用。</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Formula 脚本必须继承Formula类</span>
-<span class="k">class</span> <span class="nc">Git</span> <span class="o">&lt;</span> <span class="no">Formula</span>
-  	<span class="c1"># 用来描述你的工具的一句话</span>
-    <span class="n">desc</span> <span class="s2">"Distributed revision control system"</span>
-  	<span class="c1"># 必须是https的正确地址，可通过brew home 查看，如果发布到正式的tap这个有检验</span>
-    <span class="n">homepage</span> <span class="s2">"https://git-scm.com"</span>
-  	<span class="c1"># 下载链接，也是一个源码库</span>
-    <span class="n">url</span> <span class="s2">"https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.39.1.tar.xz"</span>
-  	<span class="c1"># 源码zip包对应的一个sha256，用来验证缓存的完整性和安全性</span>
-    <span class="n">sha256</span> <span class="s2">"40a38a0847b30c371b35873b3afcf123885dd41ea3ecbbf510efa97f3ce5c161"</span>
-  	<span class="c1"># 需要遵循的许可</span>
-    <span class="n">license</span> <span class="s2">"GPL-2.0-only"</span>
-  	<span class="c1"># 可以直接通过--head 进行下载的，如果通过--head 就不会用url或者去下载</span>
-    <span class="n">head</span> <span class="s2">"https://github.com/git/git.git"</span><span class="p">,</span> <span class="ss">branch: </span><span class="s2">"master"</span>
-  	<span class="c1"># 检查是否有新版本的block</span>
-    <span class="n">livecheck</span> <span class="k">do</span>
-      <span class="n">url</span> <span class="s2">"https://www.kernel.org/pub/software/scm/git/"</span>
-      <span class="n">regex</span><span class="p">(</span><span class="sr">/href=.*?git[._-]v?(\d+(?:\.\d+)+)\.t/i</span><span class="p">)</span>
-    <span class="k">end</span>
-  
-  	<span class="c1"># 已经编译好的可执行二进制文件对应的sha256, 如果有对应平台的bottle会直接采用</span>
-    <span class="n">bottle</span> <span class="k">do</span>
-      <span class="n">sha256</span> <span class="ss">arm64_ventura:  </span><span class="s2">"2d9a37ed166b873b440d958901013b1e654bbd5ac727ccf1aedbf2775ef1d755"</span>
-      <span class="n">sha256</span> <span class="ss">arm64_monterey: </span><span class="s2">"64f0c9cc05c506988b61e178562347032d86e4140063a57ca96fedb9c7ca7456"</span>
-      <span class="n">sha256</span> <span class="ss">arm64_big_sur:  </span><span class="s2">"943e530d20cabe88ba728bf1e7c6a5872fa28701b42f6426372b813bd535922e"</span>
-      <span class="n">sha256</span> <span class="ss">ventura:        </span><span class="s2">"f927b7c352d1e202cc072ea0f5582f8c09c57c6a374daf5682eae6de21ea04d5"</span>
-      <span class="n">sha256</span> <span class="ss">monterey:       </span><span class="s2">"b9849b6591a22a1cc2326301b258299888c8fd03dbb479793bab971bf14aadc8"</span>
-      <span class="n">sha256</span> <span class="ss">big_sur:        </span><span class="s2">"7119f027abde700c0f3c7a012cceb7b0246a862735b3309f5ee70a63f7e69251"</span>
-      <span class="n">sha256</span> <span class="ss">x86_64_linux:   </span><span class="s2">"3c62fb80f565b24970423a4f882959377bbd8b67dc023ed8f47543faffe6fa36"</span>
-    <span class="k">end</span>
-  
-  	<span class="c1"># 依赖库，可指定具体场景时机使用</span>
-    <span class="n">depends_on</span> <span class="s2">"gettext"</span>
-    <span class="n">depends_on</span> <span class="s2">"pcre2"</span>
-  
-  	<span class="c1"># MacOS 提供的一些依赖库</span>
-    <span class="n">uses_from_macos</span> <span class="s2">"curl"</span><span class="p">,</span> <span class="ss">since: :catalina</span> <span class="c1"># macOS &lt; 10.15.6 has broken cert path logic</span>
-    <span class="n">uses_from_macos</span> <span class="s2">"expat"</span>
-    <span class="n">uses_from_macos</span> <span class="s2">"zlib"</span><span class="p">,</span> <span class="ss">since: :high_sierra</span>
-  
-  	<span class="c1"># linux 系统的一些依赖</span>
-    <span class="n">on_linux</span> <span class="k">do</span>
-      <span class="n">depends_on</span> <span class="s2">"linux-headers@5.15"</span> <span class="o">=&gt;</span> <span class="ss">:build</span>
-      <span class="n">depends_on</span> <span class="s2">"openssl@1.1"</span> <span class="c1"># Uses CommonCrypto on macOS</span>
-    <span class="k">end</span>
-  
-  	<span class="c1"># 额外的一些下载资源，会被定义为resource</span>
-    <span class="n">resource</span> <span class="s2">"html"</span> <span class="k">do</span>
-      <span class="n">url</span> <span class="s2">"https://mirrors.edge.kernel.org/pub/software/scm/git/git-htmldocs-2.39.1.tar.xz"</span>
-      <span class="n">sha256</span> <span class="s2">"032de9396c907383c8236e094a038191d54822a212390c2ce2fcd749db90dfd0"</span>
-    <span class="k">end</span>
-  
-    <span class="n">resource</span> <span class="s2">"man"</span> <span class="k">do</span>
-      <span class="n">url</span> <span class="s2">"https://mirrors.edge.kernel.org/pub/software/scm/git/git-manpages-2.39.1.tar.xz"</span>
-      <span class="n">sha256</span> <span class="s2">"b522a58e963fd5137f660802ec5a93283abfa3eaa0f069ebb6e7f00e529cc775"</span>
-    <span class="k">end</span>
-  
-    <span class="n">resource</span> <span class="s2">"Net::SMTP::SSL"</span> <span class="k">do</span>
-      <span class="n">url</span> <span class="s2">"https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Net-SMTP-SSL-1.04.tar.gz"</span>
-      <span class="n">sha256</span> <span class="s2">"7b29c45add19d3d5084b751f7ba89a8e40479a446ce21cfd9cc741e558332a00"</span>
-    <span class="k">end</span>
-  
-  	<span class="c1"># 安装方法， 定义了如何安装， 里面具体内容不做过多注释了~</span>
-    <span class="k">def</span> <span class="nf">install</span>
-      <span class="c1"># If these things are installed, tell Git build system not to use them</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"NO_FINK"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"NO_DARWIN_PORTS"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"PYTHON_PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="s2">"python"</span><span class="p">)</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"PERL_PATH"</span><span class="p">]</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="s2">"perl"</span><span class="p">)</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"USE_LIBPCRE2"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"INSTALL_SYMLINKS"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"LIBPCREDIR"</span><span class="p">]</span> <span class="o">=</span> <span class="no">Formula</span><span class="p">[</span><span class="s2">"pcre2"</span><span class="p">].</span><span class="nf">opt_prefix</span>
-      <span class="no">ENV</span><span class="p">[</span><span class="s2">"V"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span> <span class="c1"># build verbosely</span>
-  
-      <span class="n">perl_version</span> <span class="o">=</span> <span class="no">Utils</span><span class="p">.</span><span class="nf">safe_popen_read</span><span class="p">(</span><span class="s2">"perl"</span><span class="p">,</span> <span class="s2">"--version"</span><span class="p">)[</span><span class="sr">/v(\d+\.\d+)(?:\.\d+)?/</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-  
-      <span class="k">if</span> <span class="no">OS</span><span class="p">.</span><span class="nf">mac?</span>
-        <span class="no">ENV</span><span class="p">[</span><span class="s2">"PERLLIB_EXTRA"</span><span class="p">]</span> <span class="o">=</span> <span class="sx">%W[
-          </span><span class="si">#{</span><span class="no">MacOS</span><span class="p">.</span><span class="nf">active_developer_dir</span><span class="si">}</span><span class="sx">
-          /Library/Developer/CommandLineTools
-          /Applications/Xcode.app/Contents/Developer
-        ]</span><span class="p">.</span><span class="nf">uniq</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="o">|</span>
-          <span class="s2">"</span><span class="si">#{</span><span class="nb">p</span><span class="si">}</span><span class="s2">/Library/Perl/</span><span class="si">#{</span><span class="n">perl_version</span><span class="si">}</span><span class="s2">/darwin-thread-multi-2level"</span>
-        <span class="k">end</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># The git-gui and gitk tools are installed by a separate formula (git-gui)</span>
-      <span class="c1"># to avoid a dependency on tcl-tk and to avoid using the broken system</span>
-      <span class="c1"># tcl-tk (see https://github.com/Homebrew/homebrew-core/issues/36390)</span>
-      <span class="c1"># This is done by setting the NO_TCLTK make variable.</span>
-      <span class="n">args</span> <span class="o">=</span> <span class="sx">%W[
-        prefix=</span><span class="si">#{</span><span class="n">prefix</span><span class="si">}</span><span class="sx">
-        sysconfdir=</span><span class="si">#{</span><span class="n">etc</span><span class="si">}</span><span class="sx">
-        CC=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cc</span><span class="si">}</span><span class="sx">
-        CFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cflags</span><span class="si">}</span><span class="sx">
-        LDFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">ldflags</span><span class="si">}</span><span class="sx">
-        NO_TCLTK=1
-      ]</span>
-  
-      <span class="n">args</span> <span class="o">+=</span> <span class="k">if</span> <span class="no">OS</span><span class="p">.</span><span class="nf">mac?</span>
-        <span class="sx">%w[NO_OPENSSL=1 APPLE_COMMON_CRYPTO=1]</span>
-      <span class="k">else</span>
-        <span class="n">openssl_prefix</span> <span class="o">=</span> <span class="no">Formula</span><span class="p">[</span><span class="s2">"openssl@1.1"</span><span class="p">].</span><span class="nf">opt_prefix</span>
-  
-        <span class="sx">%W[NO_APPLE_COMMON_CRYPTO=1 OPENSSLDIR=</span><span class="si">#{</span><span class="n">openssl_prefix</span><span class="si">}</span><span class="sx">]</span>
-      <span class="k">end</span>
-  		
-  		<span class="c1"># 调用系统的cmake 进行install安装</span>
-      <span class="nb">system</span> <span class="s2">"make"</span><span class="p">,</span> <span class="s2">"install"</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
-  
-      <span class="n">git_core</span> <span class="o">=</span> <span class="n">libexec</span><span class="o">/</span><span class="s2">"git-core"</span>
-      <span class="n">rm</span> <span class="n">git_core</span><span class="o">/</span><span class="s2">"git-svn"</span>
-  
-      <span class="c1"># Install the macOS keychain credential helper</span>
-      <span class="k">if</span> <span class="no">OS</span><span class="p">.</span><span class="nf">mac?</span>
-        <span class="n">cd</span> <span class="s2">"contrib/credential/osxkeychain"</span> <span class="k">do</span>
-          <span class="nb">system</span> <span class="s2">"make"</span><span class="p">,</span> <span class="s2">"CC=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-                         <span class="s2">"CFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cflags</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-                         <span class="s2">"LDFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">ldflags</span><span class="si">}</span><span class="s2">"</span>
-          <span class="n">git_core</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"git-credential-osxkeychain"</span>
-          <span class="nb">system</span> <span class="s2">"make"</span><span class="p">,</span> <span class="s2">"clean"</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># Generate diff-highlight perl script executable</span>
-      <span class="n">cd</span> <span class="s2">"contrib/diff-highlight"</span> <span class="k">do</span>
-        <span class="nb">system</span> <span class="s2">"make"</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># Install the netrc credential helper</span>
-      <span class="n">cd</span> <span class="s2">"contrib/credential/netrc"</span> <span class="k">do</span>
-        <span class="nb">system</span> <span class="s2">"make"</span><span class="p">,</span> <span class="s2">"test"</span>
-        <span class="n">git_core</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"git-credential-netrc"</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># Install git-subtree</span>
-      <span class="n">cd</span> <span class="s2">"contrib/subtree"</span> <span class="k">do</span>
-        <span class="nb">system</span> <span class="s2">"make"</span><span class="p">,</span> <span class="s2">"CC=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cc</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-                       <span class="s2">"CFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">cflags</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-                       <span class="s2">"LDFLAGS=</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">ldflags</span><span class="si">}</span><span class="s2">"</span>
-        <span class="n">git_core</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"git-subtree"</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># install the completion script first because it is inside "contrib"</span>
-      <span class="n">bash_completion</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"contrib/completion/git-completion.bash"</span>
-      <span class="n">bash_completion</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"contrib/completion/git-prompt.sh"</span>
-      <span class="n">zsh_completion</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"contrib/completion/git-completion.zsh"</span> <span class="o">=&gt;</span> <span class="s2">"_git"</span>
-      <span class="n">cp</span> <span class="s2">"</span><span class="si">#{</span><span class="n">bash_completion</span><span class="si">}</span><span class="s2">/git-completion.bash"</span><span class="p">,</span> <span class="n">zsh_completion</span>
-  
-      <span class="p">(</span><span class="n">share</span><span class="o">/</span><span class="s2">"git-core"</span><span class="p">).</span><span class="nf">install</span> <span class="s2">"contrib"</span>
-  
-      <span class="c1"># We could build the manpages ourselves, but the build process depends</span>
-      <span class="c1"># on many other packages, and is somewhat crazy, this way is easier.</span>
-      <span class="n">man</span><span class="p">.</span><span class="nf">install</span> <span class="n">resource</span><span class="p">(</span><span class="s2">"man"</span><span class="p">)</span>
-      <span class="p">(</span><span class="n">share</span><span class="o">/</span><span class="s2">"doc/git-doc"</span><span class="p">).</span><span class="nf">install</span> <span class="n">resource</span><span class="p">(</span><span class="s2">"html"</span><span class="p">)</span>
-  
-      <span class="c1"># Make html docs world-readable</span>
-      <span class="n">chmod</span> <span class="mo">0644</span><span class="p">,</span> <span class="no">Dir</span><span class="p">[</span><span class="s2">"</span><span class="si">#{</span><span class="n">share</span><span class="si">}</span><span class="s2">/doc/git-doc/**/*.{html,txt}"</span><span class="p">]</span>
-      <span class="n">chmod</span> <span class="mo">0755</span><span class="p">,</span> <span class="no">Dir</span><span class="p">[</span><span class="s2">"</span><span class="si">#{</span><span class="n">share</span><span class="si">}</span><span class="s2">/doc/git-doc/{RelNotes,howto,technical}"</span><span class="p">]</span>
-  
-      <span class="c1"># git-send-email needs Net::SMTP::SSL or Net::SMTP &gt;= 2.34</span>
-      <span class="n">resource</span><span class="p">(</span><span class="s2">"Net::SMTP::SSL"</span><span class="p">).</span><span class="nf">stage</span> <span class="k">do</span>
-        <span class="p">(</span><span class="n">share</span><span class="o">/</span><span class="s2">"perl5"</span><span class="p">).</span><span class="nf">install</span> <span class="s2">"lib/Net"</span>
-      <span class="k">end</span>
-  
-      <span class="c1"># This is only created when building against system Perl, but it isn't</span>
-      <span class="c1"># purged by Homebrew's post-install cleaner because that doesn't check</span>
-      <span class="c1"># "Library" directories. It is however pointless to keep around as it</span>
-      <span class="c1"># only contains the perllocal.pod installation file.</span>
-      <span class="n">rm_rf</span> <span class="n">prefix</span><span class="o">/</span><span class="s2">"Library/Perl"</span>
-  
-      <span class="c1"># Set the macOS keychain credential helper by default</span>
-      <span class="c1"># (as Apple's CLT's git also does this).</span>
-      <span class="k">if</span> <span class="no">OS</span><span class="p">.</span><span class="nf">mac?</span>
-        <span class="p">(</span><span class="n">buildpath</span><span class="o">/</span><span class="s2">"gitconfig"</span><span class="p">).</span><span class="nf">write</span> <span class="o">&lt;&lt;~</span><span class="no">EOS</span><span class="sh">
-          [credential]
-          </span><span class="se">\t</span><span class="sh">helper = osxkeychain
-</span><span class="no">        EOS</span>
-        <span class="n">etc</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"gitconfig"</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  
-    <span class="k">def</span> <span class="nf">caveats</span>
-      <span class="o">&lt;&lt;~</span><span class="no">EOS</span><span class="sh">
-        The Tcl/Tk GUIs (e.g. gitk, git-gui) are now in the `git-gui` formula.
-        Subversion interoperability (git-svn) is now in the `git-svn` formula.
-</span><span class="no">      EOS</span>
-    <span class="k">end</span>
-  
-		<span class="c1"># 测试方法，如果要发布到官方的tap中，test测试必须通过</span>
-    <span class="nb">test</span> <span class="k">do</span>
-      <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"init"</span>
-      <span class="sx">%w[haunted house]</span><span class="p">.</span><span class="nf">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">touch</span> <span class="n">testpath</span><span class="o">/</span><span class="n">f</span> <span class="p">}</span>
-      <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"haunted"</span><span class="p">,</span> <span class="s2">"house"</span>
-      <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">,</span> <span class="s2">"user.name"</span><span class="p">,</span> <span class="s2">"'A U Thor'"</span>
-      <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">,</span> <span class="s2">"user.email"</span><span class="p">,</span> <span class="s2">"author@example.com"</span>
-      <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"commit"</span><span class="p">,</span> <span class="s2">"-a"</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"Initial Commit"</span>
-      <span class="n">assert_equal</span> <span class="s2">"haunted</span><span class="se">\n</span><span class="s2">house"</span><span class="p">,</span> <span class="n">shell_output</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">bin</span><span class="si">}</span><span class="s2">/git ls-files"</span><span class="p">).</span><span class="nf">strip</span>
-  
-      <span class="c1"># Check Net::SMTP or Net::SMTP::SSL works for git-send-email</span>
-      <span class="k">if</span> <span class="no">OS</span><span class="p">.</span><span class="nf">mac?</span>
-        <span class="sx">%w[foo bar]</span><span class="p">.</span><span class="nf">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">touch</span> <span class="n">testpath</span><span class="o">/</span><span class="n">f</span> <span class="p">}</span>
-        <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span>
-        <span class="nb">system</span> <span class="n">bin</span><span class="o">/</span><span class="s2">"git"</span><span class="p">,</span> <span class="s2">"commit"</span><span class="p">,</span> <span class="s2">"-a"</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"Second Commit"</span>
-        <span class="n">assert_match</span> <span class="s2">"Authentication Required"</span><span class="p">,</span> <span class="n">pipe_output</span><span class="p">(</span>
-          <span class="s2">"</span><span class="si">#{</span><span class="n">bin</span><span class="si">}</span><span class="s2">/git send-email --from=test@example.com --to=dev@null.com "</span> <span class="p">\</span>
-          <span class="s2">"--smtp-server=smtp.gmail.com --smtp-server-port=587 "</span> <span class="p">\</span>
-          <span class="s2">"--smtp-encryption=tls --confirm=never HEAD^ 2&gt;&amp;1"</span><span class="p">,</span>
-        <span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-  
+    <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">pathComponent</span> <span class="k">in</span> <span class="p">[[</span><span class="n">NSURL</span> <span class="nf">URLWithString</span><span class="p">:</span><span class="n">URL</span><span class="p">]</span> <span class="nf">pathComponents</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">([</span><span class="n">pathComponent</span> <span class="nf">isEqualToString</span><span class="p">:</span><span class="s">@"/"</span><span class="p">])</span> <span class="k">continue</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">([[</span><span class="n">pathComponent</span> <span class="nf">substringToIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="nf">isEqualToString</span><span class="p">:</span><span class="s">@"?"</span><span class="p">])</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">[</span><span class="n">pathComponents</span> <span class="nf">addObject</span><span class="p">:</span><span class="n">pathComponent</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">pathComponents</span> <span class="nf">copy</span><span class="p">];</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>以上我们把Formula类相关的属性、方法的作用都做了注释，大家可以看看~，对于install方法内部没有做过多的注释，原因是git 安装方式，不是今天的主要内容，大致就是利用系统命令或者依赖命令完成编译安装。</p>
+<p>其中关键方法为<code class="language-plaintext highlighter-rouge">- (NSMutableDictionary *)addURLPattern:(NSString *)URLPattern</code>，此方法会将例如 aa://bb/cc/dd 这样一个URL生成如下的结构：</p>
 
-<p>如果有更多对Formula类方法了解的，可以参考官方的<a href="https://rubydoc.brew.sh/Formula">文档</a></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"aa"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"bb"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"cc"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nl">"dd"</span><span class="p">:</span><span class="w"> </span><span class="p">{}}}}}</span><span class="w">
+</span></code></pre></div></div>
 
-<h3 id="结束语">结束语</h3>
+<p>也就是说这个方法执行完之后，我们的routes就会变成这样的一个结构，最后把dd对应的{} return 回去。</p>
 
-<p>通过home brew的学习，我们可以从中了解到设计者的幽默和设计理念。以酿酒的过程应用到brew的软件安装过程中，实在属于很形象也和强大。如果有好的mac 缺失的工具，我们也可以提供一份自己的力量对于brew 社区，mac 社区。</p>
+<p>然后通过</p>
 
-<h3 id="引用--学习">引用 &amp; 学习</h3>
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">if</span> <span class="p">(</span><span class="n">handler</span> <span class="o">&amp;&amp;</span> <span class="n">subRoutes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">subRoutes</span><span class="p">[</span><span class="s">@"_"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">handler</span> <span class="nf">copy</span><span class="p">];</span>
+    <span class="p">}</span> 
+</code></pre></div></div>
 
-<p><a href="https://docs.brew.sh/">home brew 官网</a></p>
+<p>将handler加入到字典里，最后routes就会变成</p>
 
-<p><a href="https://github.com/Homebrew/install/blob/master/install.sh">home brew install.sh</a></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"aa": {"bb": {"cc": {"dd": {"_": handler}}}}}
+</code></pre></div></div>
 
-<p><a href="https://rubydoc.brew.sh/Formula">brew class list</a></p>
+<h4 id="取">取</h4>
 
-<p><a href="https://juejin.cn/post/6894537190295109645">有趣的home brew命名</a></p>
+<p>关键代码为：</p>
 
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-05-31T00:00:00+08:00"><!-- start custom article footer snippet -->
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">openURL</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">URL</span> <span class="nf">withUserInfo</span><span class="p">:(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">userInfo</span> <span class="nf">completion</span><span class="p">:(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">id</span> <span class="n">result</span><span class="p">))</span><span class="nv">completion</span>
+<span class="p">{</span>
+    <span class="n">URL</span> <span class="o">=</span> <span class="p">[</span><span class="n">URL</span> <span class="nf">stringByAddingPercentEscapesUsingEncoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+    <span class="n">NSMutableDictionary</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">[[</span><span class="n">self</span> <span class="nf">sharedInstance</span><span class="p">]</span> <span class="nf">extractParametersFromURL</span><span class="p">:</span><span class="n">URL</span> <span class="nf">matchExactly</span><span class="p">:</span><span class="nb">NO</span><span class="p">];</span>
+    
+    <span class="p">[</span><span class="n">parameters</span> <span class="nf">enumerateKeysAndObjectsUsingBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">id</span> <span class="n">key</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">obj</span><span class="p">,</span> <span class="n">BOOL</span> <span class="o">*</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">([</span><span class="n">obj</span> <span class="nf">isKindOfClass</span><span class="p">:[</span><span class="n">NSString</span> <span class="nf">class</span><span class="p">]])</span> <span class="p">{</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="nf">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="nf">stringByReplacingPercentEscapesUsingEncoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}];</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">parameters</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">MGJRouterHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s">@"block"</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">completion</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="nf">MGJRouterParameterCompletion</span><span class="p">]</span> <span class="o">=</span> <span class="n">completion</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">userInfo</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="nf">MGJRouterParameterUserInfo</span><span class="p">]</span> <span class="o">=</span> <span class="n">userInfo</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">[</span><span class="n">parameters</span> <span class="nf">removeObjectForKey</span><span class="p">:</span><span class="s">@"block"</span><span class="p">];</span>
+            <span class="n">handler</span><span class="p">(</span><span class="n">parameters</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="n">NSMutableDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nf">extractParametersFromURL</span><span class="p">:(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">url</span> <span class="nf">matchExactly</span><span class="p">:(</span><span class="n">BOOL</span><span class="p">)</span><span class="nv">exactly</span>
+<span class="p">{</span>
+    <span class="n">NSMutableDictionary</span><span class="o">*</span> <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableDictionary</span> <span class="nf">dictionary</span><span class="p">];</span>
+    
+    <span class="n">parameters</span><span class="p">[</span><span class="nf">MGJRouterParameterURL</span><span class="p">]</span> <span class="o">=</span> <span class="n">url</span><span class="p">;</span>
+    
+    <span class="n">NSMutableDictionary</span><span class="o">*</span> <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">routes</span><span class="p">;</span>
+    <span class="n">NSArray</span><span class="o">*</span> <span class="n">pathComponents</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nf">pathComponentsFromURL</span><span class="p">:</span><span class="n">url</span><span class="p">];</span>
+    
+    <span class="n">BOOL</span> <span class="n">found</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="c1">// borrowed from HHRouter(https://github.com/Huohua/HHRouter)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span> <span class="n">pathComponent</span> <span class="k">in</span> <span class="n">pathComponents</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="c1">// 对 key 进行排序，这样可以把 ~ 放到最后</span>
+        <span class="n">NSArray</span> <span class="o">*</span><span class="n">subRoutesKeys</span> <span class="o">=</span><span class="p">[</span><span class="n">subRoutes</span><span class="p">.</span><span class="n">allKeys</span> <span class="nf">sortedArrayUsingComparator</span><span class="p">:</span><span class="o">^</span><span class="n">NSComparisonResult</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="n">obj1</span><span class="p">,</span> <span class="n">NSString</span> <span class="o">*</span><span class="n">obj2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj1</span> <span class="nf">compare</span><span class="p">:</span><span class="n">obj2</span><span class="p">];</span>
+        <span class="p">}];</span>
+        
+        <span class="k">for</span> <span class="p">(</span><span class="n">NSString</span><span class="o">*</span> <span class="n">key</span> <span class="k">in</span> <span class="n">subRoutesKeys</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">([</span><span class="n">key</span> <span class="nf">isEqualToString</span><span class="p">:</span><span class="n">pathComponent</span><span class="p">]</span> <span class="o">||</span> <span class="p">[</span><span class="n">key</span> <span class="nf">isEqualToString</span><span class="p">:</span><span class="n">MGJ_ROUTER_WILDCARD_CHARACTER</span><span class="p">])</span> <span class="p">{</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+                <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">subRoutes</span><span class="p">[</span><span class="nf">key</span><span class="p">];</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">([</span><span class="n">key</span> <span class="nf">hasPrefix</span><span class="p">:</span><span class="s">@":"</span><span class="p">])</span> <span class="p">{</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+                <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">subRoutes</span><span class="p">[</span><span class="nf">key</span><span class="p">];</span>
+                <span class="n">NSString</span> <span class="o">*</span><span class="n">newKey</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">substringFromIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span>
+                <span class="n">NSString</span> <span class="o">*</span><span class="n">newPathComponent</span> <span class="o">=</span> <span class="n">pathComponent</span><span class="p">;</span>
+                <span class="c1">// 再做一下特殊处理，比如 :id.html -&gt; :id</span>
+                <span class="k">if</span> <span class="p">([</span><span class="n">self</span><span class="p">.</span><span class="n">class</span> <span class="nf">checkIfContainsSpecialCharacter</span><span class="p">:</span><span class="n">key</span><span class="p">])</span> <span class="p">{</span>
+                    <span class="n">NSCharacterSet</span> <span class="o">*</span><span class="n">specialCharacterSet</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSCharacterSet</span> <span class="nf">characterSetWithCharactersInString</span><span class="p">:</span><span class="n">specialCharacters</span><span class="p">];</span>
+                    <span class="n">NSRange</span> <span class="n">range</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">specialCharacterSet</span><span class="p">];</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">range</span><span class="p">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">NSNotFound</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="c1">// 把 pathComponent 后面的部分也去掉</span>
+                        <span class="n">newKey</span> <span class="o">=</span> <span class="p">[</span><span class="n">newKey</span> <span class="nf">substringToIndex</span><span class="p">:</span><span class="n">range</span><span class="p">.</span><span class="n">location</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                        <span class="n">NSString</span> <span class="o">*</span><span class="n">suffixToStrip</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">substringFromIndex</span><span class="p">:</span><span class="n">range</span><span class="p">.</span><span class="n">location</span><span class="p">];</span>
+                        <span class="n">newPathComponent</span> <span class="o">=</span> <span class="p">[</span><span class="n">newPathComponent</span> <span class="nf">stringByReplacingOccurrencesOfString</span><span class="p">:</span><span class="n">suffixToStrip</span> <span class="nf">withString</span><span class="p">:</span><span class="s">@""</span><span class="p">];</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="nf">newKey</span><span class="p">]</span> <span class="o">=</span> <span class="n">newPathComponent</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">exactly</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// 如果没有找到该 pathComponent 对应的 handler，则以上一层的 handler 作为 fallback</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">found</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">subRoutes</span><span class="p">[</span><span class="s">@"_"</span><span class="p">])</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// Extract Params From Query.</span>
+    <span class="n">NSArray</span><span class="o">&lt;</span><span class="n">NSURLQueryItem</span> <span class="o">*&gt;</span> <span class="o">*</span><span class="n">queryItems</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSURLComponents</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithURL</span><span class="p">:[[</span><span class="n">NSURL</span> <span class="nf">alloc</span><span class="p">]</span> <span class="nf">initWithString</span><span class="p">:</span><span class="n">url</span><span class="p">]</span> <span class="nf">resolvingAgainstBaseURL</span><span class="p">:</span><span class="nb">false</span><span class="p">].</span><span class="n">queryItems</span><span class="p">;</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="n">NSURLQueryItem</span> <span class="o">*</span><span class="n">item</span> <span class="k">in</span> <span class="n">queryItems</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="n">item</span><span class="p">.</span><span class="nf">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">.</span><span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">subRoutes</span><span class="p">[</span><span class="s">@"_"</span><span class="p">])</span> <span class="p">{</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s">@"block"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">subRoutes</span><span class="p">[</span><span class="s">@"_"</span><span class="p">]</span> <span class="nf">copy</span><span class="p">];</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">parameters</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>取的逻辑呢，其实也是匹配我们已经存好的数据结构，例如 aa://bb/cc/dd</p>
+
+<p>首先我们会匹配aa，然后取出aa 对应的dictionary，再匹配bb，同理获取dictionary，一直到for 循环完dd，取到最后的dictionary，然后如果URL有query， 会把query.name作为parameters key, value作为 key的值。这样我们就能取到最后匹配到的block。</p>
+
+<p>其中有一个特殊处理就是：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">else</span> <span class="nf">if</span> <span class="p">([</span><span class="n">key</span> <span class="nf">hasPrefix</span><span class="p">:</span><span class="s">@":"</span><span class="p">])</span> <span class="p">{</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+                <span class="n">subRoutes</span> <span class="o">=</span> <span class="n">subRoutes</span><span class="p">[</span><span class="nf">key</span><span class="p">];</span>
+                <span class="n">NSString</span> <span class="o">*</span><span class="n">newKey</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">substringFromIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span>
+                <span class="n">NSString</span> <span class="o">*</span><span class="n">newPathComponent</span> <span class="o">=</span> <span class="n">pathComponent</span><span class="p">;</span>
+                <span class="c1">// 再做一下特殊处理，比如 :id.html -&gt; :id</span>
+                <span class="k">if</span> <span class="p">([</span><span class="n">self</span><span class="p">.</span><span class="n">class</span> <span class="nf">checkIfContainsSpecialCharacter</span><span class="p">:</span><span class="n">key</span><span class="p">])</span> <span class="p">{</span>
+                    <span class="n">NSCharacterSet</span> <span class="o">*</span><span class="n">specialCharacterSet</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSCharacterSet</span> <span class="nf">characterSetWithCharactersInString</span><span class="p">:</span><span class="n">specialCharacters</span><span class="p">];</span>
+                    <span class="n">NSRange</span> <span class="n">range</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">specialCharacterSet</span><span class="p">];</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">range</span><span class="p">.</span><span class="n">location</span> <span class="o">!=</span> <span class="n">NSNotFound</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="c1">// 把 pathComponent 后面的部分也去掉</span>
+                        <span class="n">newKey</span> <span class="o">=</span> <span class="p">[</span><span class="n">newKey</span> <span class="nf">substringToIndex</span><span class="p">:</span><span class="n">range</span><span class="p">.</span><span class="n">location</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                        <span class="n">NSString</span> <span class="o">*</span><span class="n">suffixToStrip</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="nf">substringFromIndex</span><span class="p">:</span><span class="n">range</span><span class="p">.</span><span class="n">location</span><span class="p">];</span>
+                        <span class="n">newPathComponent</span> <span class="o">=</span> <span class="p">[</span><span class="n">newPathComponent</span> <span class="nf">stringByReplacingOccurrencesOfString</span><span class="p">:</span><span class="n">suffixToStrip</span> <span class="nf">withString</span><span class="p">:</span><span class="s">@""</span><span class="p">];</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="nf">newKey</span><span class="p">]</span> <span class="o">=</span> <span class="n">newPathComponent</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+
+<p>这块是其实做了URL路径中:xxx的特殊处理，将可变的Component匹配，并且将pattern里的Component作为key，openURL里的实际值作为value传入parameters。</p>
+
+<p>最后，移除取出block&amp;进行调用。</p>
+
+<p>这样就完成了一次我们open工作（也就是匹配过程）。</p>
+
+<h4 id="使用">使用</h4>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 注册</span>
+<span class="c1">// 我们需要注册一个URLPattern 和 对应的block</span>
+<span class="p">[</span><span class="n">MGJRouter</span> <span class="nf">registerURLPattern</span><span class="p">:</span><span class="s">@"mgj://foo/bar"</span> <span class="nf">toHandler</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">routerParameters</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nf">appendLog</span><span class="p">:</span><span class="s">@"匹配到了 url，以下是相关信息"</span><span class="p">];</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nf">appendLog</span><span class="p">:[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span><span class="s">@"routerParameters:%@"</span><span class="p">,</span> <span class="n">routerParameters</span><span class="p">]];</span>
+    <span class="p">}];</span>
+<span class="c1">// 使用</span>
+<span class="c1">// 通过URL 掉起</span>
+ <span class="p">[</span><span class="n">MGJRouter</span> <span class="nf">openURL</span><span class="p">:</span><span class="s">@"mgj://foo/bar"</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>更多使用请看MGJRouterKit demo.</p>
+
+<h3 id="优劣浅析">优劣浅析</h3>
+
+<h4 id="疑问">疑问？</h4>
+
+<p>URL 应该怎么管理？</p>
+
+<p>Register应该在哪里注册？</p>
+
+<p>URL 不能传递常规参数怎么办？比如我们要传一个block、image、data、object？</p>
+
+<p>缓存结构内存常驻？</p>
+
+<h4 id="对于疑问我觉得">对于疑问，我觉得</h4>
+
+<ul>
+  <li>
+    <p>URL 怎么管理？</p>
+
+    <p>首先URL 肯定需要统一管理，并且采用常量/宏定义，避免URL写的到处都是难管理和硬编码。</p>
+
+    <p>那么如果是组件化，</p>
+
+    <p>第一种方案：</p>
+
+    <p>我们可能得在Route组件里，写一个.h， 里面定义URL</p>
+
+    <p>如果多项目复用，或者工程很庞大，那么这个URL定义会非常多，查看管理起来也是一个比较严重的问题。</p>
+
+    <p>第二种方案：</p>
+
+    <p>module 自己隔离接口层，定义module内URL。</p>
+
+    <p>相对来说，我更喜欢第二种方案，定义、功能都明确，不存在多工程复用、迁移问题。</p>
+  </li>
+  <li>
+    <p>Register应该在哪里注册？</p>
+
+    <p>register按理我理解，也需要相对统一管理。</p>
+
+    <p>那么对应的也可以有两种方案：</p>
+
+    <p>第一种方案：</p>
+
+    <p>主工程统一定义，但是这种就会主工程耦合Module严重，主工程不够单一</p>
+
+    <p>第二种方法：</p>
+
+    <p>依然是module隔离接口层，并且给予一个注册/启动方法，所有需要注册的module内的URL，在模块内注册，主工程只要注册该模块就可以使用。Module之间其实没有依赖</p>
+  </li>
+  <li>
+    <p>URL 不能传递常规参数怎么办？比如我们要传一个block、image、data、object？</p>
+
+    <p>其实MGJ也想到了这个问题，所以提供了API <code class="language-plaintext highlighter-rouge">\+ (void)openURL:(NSString *)URL withUserInfo:(NSDictionary *)userInfo completion:(void (^)(id result))completion</code> 这个方法支持我们传递userInfo，字典是完全支持非常规参数的。</p>
+
+    <p>但是其实URL里是无法体现出来的。只能通过MGJRouterParameterUserInfo 这个key拿到userInfo，取里边的值，参数就会不透明。</p>
+
+    <p>那么实际使用中，我们可能就得看具体的实现/注释，判断我们需要userinfo传的参数。</p>
+  </li>
+  <li>
+    <p>缓存结构内存常驻？</p>
+
+    <p>从结构来说，他是dictionary嵌套，会不会导致内存过大？</p>
+
+    <p>下面是我的实验方法：</p>
+
+    <div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">demoTestMoreRegistURL</span> <span class="p">{</span>
+    <span class="n">NSInteger</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">NSInteger</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">MGJRouter</span> <span class="nf">registerURLPattern</span><span class="p">:[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span><span class="s">@"mgj://test%ld/demo%ld/performance%ld"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="nf">toHandler</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">routerParameters</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">[</span><span class="n">self</span> <span class="nf">appendLog</span><span class="p">:</span><span class="s">@"匹配到了 url，以下是相关信息"</span><span class="p">];</span>
+            <span class="p">[</span><span class="n">self</span> <span class="nf">appendLog</span><span class="p">:[</span><span class="n">NSString</span> <span class="nf">stringWithFormat</span><span class="p">:</span><span class="s">@"routerParameters:%@"</span><span class="p">,</span> <span class="n">routerParameters</span><span class="p">]];</span>
+        <span class="p">}];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230612205259image-20230612205259003.png" alt="image-20230612205259003" /></p>
+  </li>
+</ul>
+
+<p>​	测试采用的是模拟器iphone14，从测试数据来看，100-10000个URL，内存相差并不大，但是URL数量达到1000000的时候内存突然暴增来到690M，某些设备可能会导致内存crash。</p>
+
+<p>​	所以一般情况下，内存占用还好，但是我们项目庞大，路由达到百万级别还得慎用。</p>
+
+<p>总体来说，都有相对的一些解决方案/代替方案，但是我觉得根本上存在的问题是不太好解决的，比如URL管理，即使分离管理，还是可能出现庞大的问题。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>可以说MGJRouter从设计上、实现上来说还是非常不错的，劣势呢也不全是说设计者的问题，而是基于URL本身存在的问题。但是选择内存常驻确实可能在量级过大的时候导致严重问题。</p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-06-12T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div></div><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -836,7 +800,7 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/04/07/shell-%E6%8A%80%E6%9C%AF%E7%82%B9%E5%A4%87%E5%BF%98%E5%BD%95.html">shell 杂记(不断更新...)</a></div><div class="next"><span>NEXT</span><a href="/2023/06/07/%E5%9F%BA%E4%BA%8Ehomebrew%E7%9A%84pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">基于home brew的iOS Codelint 安装工具（lintmaker)</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/06/07/%E5%9F%BA%E4%BA%8Ehomebrew%E7%9A%84pre-commit-iOS-lint-%E5%B7%A5%E5%85%B7%E8%AF%B4%E6%98%8E.html">基于home brew的iOS Codelint 安装工具（lintmaker)</a></div></div></div>
 
 </div>
 
