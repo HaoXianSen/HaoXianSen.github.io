@@ -122,16 +122,17 @@ sharing:
 comments:
   provider: valine
   valine:
-    app_id  : "Woz7nxEuYtaxBK6LCyrFCy4V-gzGzoHsz"
-    app_key : "lov4hbnuItCqFbENTixANHK4"
+    app_id  : "2gniBXyrp2gwOnlpEhIE5Byc-gzGzoHsz"
+    app_key : "2fRkbFaSvAEdGAQkzBwuOVdZ"
+    placeholder: "快来评论吧！"
 
 ## => Pageview
 ##############################
 pageview:
   provider: leancloud
   leancloud:
-    app_id    : "Woz7nxEuYtaxBK6LCyrFCy4V-gzGzoHsz"
-    app_key   : "lov4hbnuItCqFbENTixANHK4"
+    app_id    : "2gniBXyrp2gwOnlpEhIE5Byc-gzGzoHsz"
+    app_key   : "2fRkbFaSvAEdGAQkzBwuOVdZ"
     app_class : "clicks"
 
 
