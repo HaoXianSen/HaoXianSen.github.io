@@ -11,10 +11,10 @@
 {%- if _VALINE_APP_ID and
   _VALINE_APP_KEY -%}
 
-<div id="vcomments"></div>
+<div class="vcomment v" data-class='v'></div>
 
 {%- if _VALINE_VISITOR -%}    
-<span id="{{page.url}}" class="leancloud-visitors" data-flag-title={{page.title}}>
+<span id="{{page.url}}" class="visitors" data-flag-title={{page.title}}>
 </span>
 {%- endif -%}
 

@@ -125,6 +125,7 @@ comments:
     app_id  : "2gniBXyrp2gwOnlpEhIE5Byc-gzGzoHsz"
     app_key : "2fRkbFaSvAEdGAQkzBwuOVdZ"
     placeholder: "快来评论吧！"
+    vistor: ture
 
 ## => Pageview
 ##############################
