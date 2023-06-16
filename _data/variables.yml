@@ -54,7 +54,7 @@ sources:
   unpkg:
     font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css'
     jquery: 'https://unpkg.com/jquery@3.3.1/dist/jquery.min.js'
-    leancloud_js_sdk: '//code.bdstatic.com/npm/leancloud-storage@4.13.2/dist/av-min.js
+    leancloud_js_sdk: '//code.bdstatic.com/npm/leancloud-storage@4.13.2/dist/av-min.js'
     gitalk:
       js: 'https://unpkg.com/gitalk@1.7.2/dist/gitalk.min.js'
       css: 'https://unpkg.com/gitalk@1.7.2/dist/gitalk.css'
