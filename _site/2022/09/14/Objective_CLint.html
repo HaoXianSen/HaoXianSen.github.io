@@ -549,16 +549,28 @@ repos:
 
 <ul>
   <li>
+    <p>clang-format 库更新、适配</p>
+
+    <ul>
+      <li>
+        <p>分别加入新版x86版的clang-format-x86， arm64版的clang-format-arm64</p>
+      </li>
+      <li>
+        <p>根据系统判断使用x86版本的还是arm64版本的</p>
+      </li>
+    </ul>
+  </li>
+  <li>
     <p>增加一些便捷性命令</p>
 
     <ul>
       <li>
-        <p>–reporter [<terminal>, &lt;html&gt;, <open_html>]</open_html></terminal></p>
+        <p>–reporter [terminal / html / open_html ]</p>
 
         <p>增加报告类型，1、terminal 终端直接输出 2、html 终端输出html 3、 直接web打开html</p>
       </li>
       <li>
-        <p>–output [<path>]</path></p>
+        <p>–output [path]</p>
 
         <p>增加可配置输出目的地址，如果带有–output 输出会直接输出到指定文件</p>
       </li>

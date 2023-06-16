@@ -79,13 +79,19 @@ OK，解决方法之一就是我们之间使用Clang-format，我们知道其实
 
 ### 2023年更新
 
+* clang-format 库更新、适配
+
+  * 分别加入新版x86版的clang-format-x86， arm64版的clang-format-arm64
+
+  * 根据系统判断使用x86版本的还是arm64版本的
+
 * 增加一些便捷性命令
 
-  * --reporter [<terminal>, <html>, <open_html>]
+  * --reporter \[terminal / html / open_html ]
 
     增加报告类型，1、terminal 终端直接输出 2、html 终端输出html 3、 直接web打开html
 
-  * --output [<path>]
+  * --output [path]
 
     增加可配置输出目的地址，如果带有--output 输出会直接输出到指定文件
 
