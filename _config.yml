@@ -107,7 +107,7 @@ sources: bootcdn # bootcdn (default), unpkg
 
 ## => Comments
 ##############################
-comments:
+# comments:
   provider: gitalk
   gitalk:
     clientID    : "94156de881bfeb261eac"
@@ -117,11 +117,11 @@ comments:
     admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
       - "HaoXianSen"
       #- "the-other-admin-github-id"
-# comments:
-#   provider: valine
-#   valine:
-#     app_id  : "Woz7nxEuYtaxBK6LCyrFCy4V-gzGzoHsz"
-#     app_key : "lov4hbnuItCqFbENTixANHK4"
+comments:
+  provider: valine
+  valine:
+    app_id  : "Woz7nxEuYtaxBK6LCyrFCy4V-gzGzoHsz"
+    app_key : "lov4hbnuItCqFbENTixANHK4"
 
 ## => Pageview
 ##############################
