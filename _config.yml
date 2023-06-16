@@ -108,8 +108,8 @@ sharing:
 ## => Comments
 ##############################
 # comments:
-  provider: gitalk
-  gitalk:
+  # provider: gitalk
+  # gitalk:
     clientID    : "94156de881bfeb261eac"
     clientSecret: "b233f322bb11cae5d3b16f3884c6721c97ef63ce"
     repository  : "HYHComment"
