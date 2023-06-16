@@ -112,12 +112,12 @@ sharing:
 # comments:
   # provider: gitalk
   # gitalk:
-    clientID    : "94156de881bfeb261eac"
-    clientSecret: "b233f322bb11cae5d3b16f3884c6721c97ef63ce"
-    repository  : "HYHComment"
-    owner       : "HaoXianSen"
-    admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
-      - "HaoXianSen"
+    # clientID    : "94156de881bfeb261eac"
+    # clientSecret: "b233f322bb11cae5d3b16f3884c6721c97ef63ce"
+    # repository  : "HYHComment"
+    # owner       : "HaoXianSen"
+    # admin: # Github repo owner and collaborators, only these guys can initialize github issues, IT IS A LIST.
+      # - "HaoXianSen"
       #- "the-other-admin-github-id"
 comments:
   provider: valine
@@ -191,7 +191,7 @@ defaults:
       aside:
         toc: true
       show_edit_on_github: false
-      show_subscribe: true
+      show_subscribe: false
       pageview: true
 
 # sidebar:

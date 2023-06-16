@@ -601,9 +601,18 @@ isCanceled ? [super touchesCancelled:touches withEvent:event] : [super touchesEn
 <hr />
 
 <p>这个问题也是困扰了许久，因为在安卓上表现良好，而在iphone上表现极其的不舒适，所以最初考虑到这也是Flutter团队对于CustomScrollView 原生渲染适配的问题，但是既然他们适配不好，我们就需要手动的去适配。但是从解决办法的探索中，我们发现Flutter的手势并不是通过iOS原生的手势实现的，而是自己的一套手势识别。而且FlutterViewController 的touches事件是被重写了，因为假如你重写了touches的方法，没有调用父类方法，那么会发现flutter 不能滑动，所以判断flutter的滑动事件Touches方法也是参与其中，所以记得调用父类方法。而我们重写了Touches的事件也是区分了一下用户意图要滑动的方向，相当于做了个手势的方向的识别。</p>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-06-08T00:00:00+08:00"><!-- start custom article footer snippet -->
+</div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+<a class="a2a_button_facebook"></a>
+<a class="a2a_button_twitter"></a>
+<a class="a2a_button_google_plus"></a>
+<a class="a2a_button_linkedin"></a>
+</div>
+<script async src="https://static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-06-08T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --><div class="article__subscribe"><div class="subscribe"><i class="fas fa-rss"></i> <a type="application/rss+xml" href="/feed.xml">Subscribe</a></div></div><div class="article__license"><div class="license">
+<!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
       <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
