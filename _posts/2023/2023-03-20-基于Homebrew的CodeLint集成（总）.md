@@ -51,7 +51,7 @@ article_header:
 
 ​	GZLintMaker 功能结构
 
-​	<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230526110210image-20230526110209988.png" alt="image-20230526110209988" style="zoom:40%;" />
+<img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230526110210image-20230526110209988.png" alt="image-20230526110209988" style="zoom:40%;" />
 
 GZLintMaker 是基于swift 写的一个CLI（Command-line interface， 命令行工具）。作为一个iOSer， 能够使用swift 去写CLI 工具其实也是一键很幸福的事情（题外话）。
 
@@ -66,7 +66,6 @@ GZLintMaker 主要包含紫色三部分功能， --install --clean --uninstall�
   * 移动配置文件、hook 脚本文件
 
     首先它会去默认的存放配置文件、执行脚本的git仓库，去clone 仓库内容。clone 完成			之后，我们把仓库里的.clang-formate . swiftlint移动到工程目录下（根目录）；将.pre-commit 脚本文件移动到.git/hooks/目录下，当然我们要确保这是一个基于git的仓库。最后我们删除远程存放这些文件的目录。
-    		
     <img 		src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230526111628image-20230526111628810.png" alt="image-20230526111628810" style="zoom:50%;" />
     		
     
