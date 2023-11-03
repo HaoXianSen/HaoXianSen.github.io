@@ -8,7 +8,9 @@ article_header:
         src: https://cdn.pixabay.com/photo/2017/01/18/16/46/hong-kong-1990268_1280.jpg
 ---
 
-## 基于gitlab的仓库管理，如何自动生成MR？
+### 基于gitlab的仓库管理，如何自动生成MR？
+
+----
 
 ### 前情
 
