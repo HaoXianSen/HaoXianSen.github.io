@@ -1,9 +1,0 @@
----
-title: <xxxx> 
-tags: [iOS] [MAC] [Plugin]> 
-key: xxx 
-# article_header:
-# type: cover 
-# image:
- # src: https://user-images.githubusercontent.com/8369671/80915045-153ff780-8d82-11ea-9acf-6ccbf2b05d9d.png 
----
