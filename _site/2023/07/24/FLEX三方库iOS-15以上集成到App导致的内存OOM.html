@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>如何创建一个三方home brew tap - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>FLEX在iOS15 以上设备的OOM排查 - harry’s blog</title>
 
-<meta name="description" content="前情提要为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增...">
-<link rel="canonical" href="http://localhost:4000/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="起因从iOS 15 开始我们发现FLEX 三方库在我们的iOS 工程无法使用，表现为ExploreToolBar可以正常显示，但是只要点击ToolBar上任何按钮都会发生内存占用暴增，导致内存崩溃（即OOM），这个问题虽然发现的很早，但是原因和方案一直没有去探索。导致其实有的时候我们遇到想要Debug的一些功能只...">
+<link rel="canonical" href="http://localhost:4000/2023/07/24/FLEX%E4%B8%89%E6%96%B9%E5%BA%93iOS-15%E4%BB%A5%E4%B8%8A%E9%9B%86%E6%88%90%E5%88%B0App%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98OOM.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,124 +454,212 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/56/35/2d27f423708985c2ccafffe891d4c4ff.jpg"></img><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://cdn.pixabay.com/photo/2017/01/18/16/46/hong-kong-1990268_1280.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>如何创建一个三方home brew tap</h1></header></div><meta itemprop="headline" content="如何创建一个三方home brew tap"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>FLEX在iOS15 以上设备的OOM排查</h1></header></div><meta itemprop="headline" content="FLEX在iOS15 以上设备的OOM排查"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=iOS">iOS</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 24, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="158">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-07-24T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="起因">起因</h3>
 
-<p>为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。</p>
+<p>从iOS 15 开始我们发现<a href="https://github.com/FLEXTool/FLEX">FLEX</a> 三方库在我们的iOS 工程无法使用，表现为ExploreToolBar可以正常显示，但是只要点击ToolBar上任何按钮都会发生内存占用暴增，导致内存崩溃（即OOM），这个问题虽然发现的很早，但是原因和方案一直没有去探索。导致其实有的时候我们遇到想要Debug的一些功能只能用iOS 15以下的一些设备去排查。甚至都想关掉FLEX。另外FLEX提供的DEBUG功能确实是非常的丰富，对于我们开发来说也是帮助很大，所以我觉得还是有必要排查清楚为什么会导致OOM，又该怎么去解决。（当然近期我也在github Flex 进行的反馈，至今没有接收到回复…）</p>
 
-<h4 id="1-创建三方tap仓库">1. 创建三方Tap仓库</h4>
+<h3 id="排查">排查</h3>
 
-<p>​	如何创建三方tap库？</p>
+<h4 id="排查发生崩溃的原因oom">排查发生崩溃的原因（OOM）</h4>
 
- 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字以 <strong>homebrew-</strong>   开头的。然后将建好的tap仓库git clone到本地；
- 	2. 在仓库里添加Formula目录，这个目录是放我们三方软件安装脚本的，具体的脚本我会在3点里细说。
+<p>其实最早之前我并不知道，是因为OOM崩溃的，直到开始探究为啥崩溃的时候才发现。发现的路径也很简单，</p>
 
-<p>​		如下：https://github.com/xxxx/homebrew-private</p>
+<p><strong>1、在点击explorerBar的按钮之后，整个UI会处于无法点击的状态，查看CPU内存占用会达到100%；</strong></p>
 
-<p>​	这样我们的准备工作就完成了。ok，那怎么添加到brew呢？</p>
+<p><strong>2、一段时间后，App会意外退出，也就是crash掉，debug Xcode会提示，内存占用过大，而crash。</strong></p>
 
-<h4 id="2-开发brew-三方库lib">2. 开发brew 三方库lib</h4>
+<h4 id="排查是否是ios-15-以上设备都会oom">排查是否是iOS 15 以上设备都会OOM</h4>
 
-<p>比如我们用shell 开发了一个命令行工具exampleLint， 我们把他放到了github里，地址为https://github.com/xxx/xxx/exampleLint.</p>
+<p>为什么会想到排查这一步，原因是当我们出现三方库问题时候，我们都会去官方的github issues 上看看是否已经出现这样的问题和解决方案。但是当我去git issues上看时候，并未发现这样的问题。那么首先我们需要排除一下是不是iOS 15以上通用问题。如果不是，那么可能就是我们的App专有问题。</p>
 
-<p>这样来说我们的三方lib就准备完成了…</p>
+<p>于是，我写了一个demo app， 架构为tabbar-&gt;navigation-&gt;controller, 启动时候，代开FLEX，然后发现并未出现crash，内存占用也正常，各个功能也正常。</p>
 
-<p>当然你可以选择任何语言去写，shell、swift、ruby、python等等</p>
+<p>接着我又按照我们现有App的架构，改造了这个demo，除了页面没有内容，其他的架构可以说是一模一样，同样也没有发现crash。</p>
 
-<h4 id="3-编写formula-ruby脚本文件">3. 编写Formula ruby脚本文件</h4>
+<p>OK，那么基本可以确认这不是一个iOS 15以上的普遍的crash，<strong>而是我们App的专有问题了。</strong></p>
 
-<p>来到了比较重要的环节，home brew 当然需要我们提供给它一个脚本，告诉他这个lib的一些信息啊，download地址等等，这个文件就是放在Formula目录下，是一个ruby脚本文件。</p>
+<p>接着，我就猜想可能是app中某些库，或者某些runtime hook 导致了冲突，发生了OOM。</p>
 
-<p>1、将2步骤中的lib可执行文件，打包成tar包</p>
+<h4 id="排查发生oom的节点">排查发生OOM的节点</h4>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将release文件打包成xxx.tar.gz</span>
-<span class="nb">tar</span> <span class="nt">-czf</span> xxx.tar.gz release
+<p>首先我们需要从入口开始排查，入口则是点击ExploreBar的按钮的Action，我们以“menu”的事件出发。</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230724151252image-20230724151251377.png" alt="image-20230724151251377" /></p>
+
+<p>ExploreBar 对应的Controller为FLEXExplorerViewController， menu对应的事件为：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">toggleMenuTool</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">toggleToolWithViewControllerProvider</span><span class="p">:</span><span class="o">^</span><span class="n">UINavigationController</span> <span class="o">*</span><span class="p">{</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">FLEXNavigationController</span> <span class="nf">withRootViewController</span><span class="p">:[</span><span class="n">FLEXGlobalsViewController</span> <span class="nf">new</span><span class="p">]];</span>
+    <span class="p">}</span> <span class="nf">completion</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">toggleToolWithViewControllerProvider</span><span class="p">:(</span><span class="n">UINavigationController</span> <span class="o">*</span><span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="kt">void</span><span class="p">))</span><span class="nv">future</span>
+                                  <span class="nf">completion</span><span class="p">:(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="kt">void</span><span class="p">))</span><span class="nv">completion</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">presentedViewController</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// We do NOT want to present the future; this is</span>
+        <span class="c1">// a convenience method for toggling the SAME TOOL</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nf">dismissViewControllerAnimated</span><span class="p">:</span><span class="nb">YES</span> <span class="nf">completion</span><span class="p">:</span><span class="n">completion</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">future</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">self</span> <span class="nf">presentViewController</span><span class="p">:</span><span class="n">future</span><span class="p">()</span> <span class="nf">animated</span><span class="p">:</span><span class="nb">YES</span> <span class="n">completion</span><span class="o">:</span><span class="n">completion</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
 </code></pre></div></div>
 
-<p>如果是shell开发，我们可以直接用github生成的.tar.gz文件</p>
+<p>从Action方法分析，得出，其实点解“menu”之后，会出发初始化FLEXNavigationController 和 它的rootViewController：FLEXGlobalsViewController， 然后将FLEXNavigationController 进行modal出来。</p>
 
-<p>2、生成SHA256</p>
+<p>从这部分代码来看，处理简单，也不存在造成OOM的疑点。</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shasum <span class="nt">-a</span> 256 xxx.tar.gz | <span class="nb">awk</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> xxx-sha256.txt
+<p>那么可能会造成OOM就出现在了FLEXNavigationController 或者FLEXGlobalsViewController里。我们接着再来看FLEXNavigationController：</p>
+
+<p>（：大片的代码我就不粘贴了，重点粘贴一下分析出可能OOM的代码</p>
+
+<p>FLEXNavigationController 主要是去实现了1. 给NavigationBar 增加了一些手势，包括点击、长按、轻扫，以及他们的手势处理（iOS 13 PresentStyle 为UIModalPresentationAutomatic、UIModalPresentationFormSheet、UIModalPresentationPageSheet会自带轻扫手势，也就是下拖，所以iOS 13以上为增加手势）2. 给controllers增加done rightNavigationBarItem，分别在push、viewWillAppear时候。</p>
+
+<pre><code class="language-objective-c">// 此代码为去除了一些无关的代码，只留了核心代码
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.beingPresented &amp;&amp; !self.didSetupPendingDismissButtons) {
+        for (UIViewController *vc in self.viewControllers) {
+            [self addNavigationBarItemsToViewController:vc.navigationItem];
+        }
+    }
+}
+</code></pre>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 此代码为去除了一些无关的代码，只留了核心代码</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">addNavigationBarItemsToViewController</span><span class="p">:(</span><span class="n">UINavigationItem</span> <span class="o">*</span><span class="p">)</span><span class="nv">navigationItem</span> <span class="p">{</span>
+    <span class="c1">// Give root view controllers a Done button if it does not already have one</span>
+    <span class="n">UIBarButtonItem</span> <span class="o">*</span><span class="n">done</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIBarButtonItem</span> <span class="nf">alloc</span><span class="p">]</span>
+        <span class="nl">initWithBarButtonSystemItem:</span><span class="n">UIBarButtonSystemItemDone</span>
+        <span class="nl">target:</span><span class="n">self</span>
+        <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="n">dismissAnimated</span><span class="p">)</span>
+    <span class="p">];</span>
+    
+    <span class="c1">// Prepend the button if other buttons exist already</span>
+    <span class="n">NSArray</span> <span class="o">*</span><span class="n">existingItems</span> <span class="o">=</span> <span class="n">navigationItem</span><span class="p">.</span><span class="n">rightBarButtonItems</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">existingItems</span><span class="p">.</span><span class="n">count</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">navigationItem</span><span class="p">.</span><span class="n">rightBarButtonItems</span> <span class="o">=</span> <span class="p">[@[</span><span class="n">done</span><span class="p">]</span> <span class="nf">arrayByAddingObjectsFromArray</span><span class="p">:</span><span class="n">existingItems</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">navigationItem</span><span class="p">.</span><span class="n">rightBarButtonItem</span> <span class="o">=</span> <span class="n">done</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>3、如果自己生成的tar包，则需要上传到github的release中，上传完会得到下载链接。</p>
+<p>下面，我们去分析一下FLEXGlobalsViewController，FLEXGlobalsViewController的继承链为 FLEXGlobalsViewController-&gt;FLEXFilteringTableViewController-&gt;FLEXTableViewController-&gt;UITableViewController。所以对于我们每一个父类其实都不可以放过。具体我们发现FLEXTableViewController留了初始化init方法，直接初始tableView的style，以及loadView去替换为自己的FLEXTableView为Controller的view和初始化ToolbarItem，以及正常的viewcontroller生命周期函数(:具体代码片段就不粘贴了:)</p>
 
-<p>4、生成formula安装脚本</p>
+<p>对于FLEXFilteringTableViewController则只是实现了loadView方法，设置代理以及注册cell；</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">create</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">xxx</span><span class="o">/</span><span class="n">exampleLint</span><span class="p">.</span><span class="nf">tar</span><span class="p">.</span><span class="nf">gz</span>
+<p>而对于FLEXGlobalsViewController，则是正常的生命周期方法，以及定制化的一些处理。</p>
+
+<p>OK，相关代码控制器逻辑已经分析清楚，下面我们分别在FLEXNavigationController、FLEXGlobalsViewController以及他的父类、基类的生命周期方法里打断点。然后点击ExploreBar触发，看他的执行。</p>
+
+<p>最后执行为：FLEXGlobalsViewController(init) -&gt; FLEXTableViewController(init)  -&gt;  FLEXNavigationController(viewDidLoad:) -&gt; FLEXNavigationController(viewWillAppear:)</p>
+
+<p>然后就进入界面卡死，内存占用不断增加的状态。ok，那么现在排除到最后执行到FLEXNavigationController(viewWillAppear:) ，正常执行完这个后会执行rootViewController的生命周期方法。</p>
+
+<p>那么我们大概率可以分析出，造成OOM的节点为FLEXNavigationController(viewWillAppear:) ，如上截图，FLEXNavigationController(viewWillAppear:) 其实也很简单，也就是给他的ViewController的navigationItem增加一个done的rightItem。</p>
+
+<p>我们尝试，把下面的代码注释掉再次运行：</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">beingPresented</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">self</span><span class="p">.</span><span class="n">didSetupPendingDismissButtons</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="n">vc</span> <span class="k">in</span> <span class="n">self</span><span class="p">.</span><span class="n">viewControllers</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">[</span><span class="n">self</span> <span class="nf">addNavigationBarItemsToViewController</span><span class="p">:</span><span class="n">vc</span><span class="p">.</span><span class="n">navigationItem</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 </code></pre></div></div>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ExampleLint</span> <span class="o">&lt;</span> <span class="no">Formula</span>
-  <span class="n">desc</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">homepage</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">url</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint/releases/download/1.0.0/exampleLint-mac.tar.gz"</span>
-  <span class="n">sha256</span> <span class="s2">"bde3c29d31576ad833d3e22c5ed2889589917a367b749977a7703e018fc99a43"</span>
-  <span class="n">version</span> <span class="s2">"1.0.0"</span>
-  <span class="k">def</span> <span class="nf">install</span>
-    <span class="n">bin</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"exampleLint"</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<p>果然，没有发生OOM，<strong>也就是说造成OOM的节点为给VC的navigationItem设置rightBarButtonItem。</strong></p>
+
+<h4 id="进一步排查原因">进一步排查原因</h4>
+
+<p>然后一个问题就出现在脑海，那么为什么同样的排查demo设备就没问题呢？</p>
+
+<p>所以我们借助Instrument做一下Leak查看，Instrument最后结果为：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230724154508image-20230724154508581.png" alt="image-20230724154508581" /></p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230724154622image-20230724154621958.png" alt="image-20230724154621958" /></p>
+
+<p>大概可以看出，itemBarbutton处于不断的一个布局，最后导致OOM。（：当然这个解释，我自己都不能说服。我还想知道为什么。</p>
+
+<p>所以我想要看看是否有其他的方式探索，找到其罪魁祸首。</p>
+
+<h3 id="进阶">进阶</h3>
+
+<h4 id="尝试采用寄存器追踪法">尝试采用寄存器追踪法</h4>
+
+<p>采用断点查看汇编，并且采用读取寄存器。并没有找到根本原因。有兴趣的请学习https://juejin.cn/post/6945393466218119182</p>
+
+<h4 id="三方库排除法">三方库排除法</h4>
+
+<p>1、逐量将崩溃App的疑似私有库三方库，加入到demo app中。做逐个排除。</p>
+
+<p>最后结果也没有崩溃，逐步排除是因为View、ViewController、NavigationController的hook导致的互相影响crash。</p>
+
+<p>2、 将崩溃App最简化，也就是移除启动的各种加载逻辑。只包括keyWindow、RootViewController。</p>
+
+<p>结果依然发生崩溃。</p>
+
+<h4 id="继续断点排查">继续断点排查</h4>
+
+<p>1、既然是因为外部给ViewControllers设置NavigationItem添加RightNavigationItem导致的crash，那么将navigationController 给viewControllers 的代码，移植到我们自己的CustomNavigationController。便于更好的排查问题。</p>
+
+<p>2、 断点一步一步的走。</p>
+
+<p>突然😱，发现了调用到了我们防护容器类的方法。难道是防护容器的hook出现了问题…</p>
+
+<p>3、排查哪个容器类的hook出现问题</p>
+
+<p>将所有容器类的hook注释掉，逐个打开测试，最后发现只有打开下面的hook时候会出现crash</p>
+
+<div class="language-objc highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">objc_getClass</span><span class="p">(</span><span class="s">"__NSDictionaryM"</span><span class="p">)</span> <span class="nf">gz_swizzleSEL</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nf">setObject</span><span class="p">:</span><span class="n">forKeyedSubscript</span><span class="o">:</span><span class="p">)</span> <span class="n">withSEL</span><span class="o">:</span><span class="k">@selector</span><span class="p">(</span><span class="n">gz_setObject</span><span class="o">:</span><span class="n">forKeyedSubscript</span><span class="o">:</span><span class="p">)];</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">gz_setObject</span><span class="p">:(</span><span class="n">id</span><span class="p">)</span><span class="nv">obj</span> <span class="nf">forKeyedSubscript</span><span class="p">:(</span><span class="n">id</span><span class="o">&lt;</span><span class="n">NSCopying</span><span class="o">&gt;</span><span class="p">)</span><span class="nv">key</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">obj</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">key</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">[</span><span class="n">self</span> <span class="nf">gz_setObject</span><span class="p">:</span><span class="n">obj</span> <span class="nf">forKeyedSubscript</span><span class="p">:</span><span class="n">key</span><span class="p">];</span>
+<span class="p">}</span>
+
 </code></pre></div></div>
 
-<p>将对应的信息添加补充到上边脚本里。</p>
+<p>这个方法是采用subscript复制会调用，比如<code class="language-plaintext highlighter-rouge">dict[@"key"] = value</code>。</p>
 
-<p>ExampleLint 继承于Formula类。具体文档查看https://docs.brew.sh/Formula-Cookbook</p>
+<p>然后我们一直打断点，最后发现了，autolayout的一个可变数组里存了一些Constraint，然后一直循环的赋值里边的key的value为nil，如下图：</p>
 
-<h4 id="4-小试牛刀">4. 小试牛刀</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230725180837image-20230725180836928.png" alt="image-20230725180836928" /></p>
 
-<p>安装我们自己的工具包：</p>
+<h3 id="分析">分析</h3>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="kp">private</span> <span class="err">或者</span> <span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="n">homebrew</span><span class="o">-</span><span class="kp">private</span>
-<span class="c1"># 我们可以带前缀homebrew-也可以不带，xxxx是github中最后地址的前一段，一般是自己github名</span>
-</code></pre></div></div>
+<p>👌🏻，通过上面的探寻，我们可以得出，可能是navigationItem赋值的时候触发了它的布局，布局呢，会存有它的各个约束字典，然后可能在iOS 16上需要移除（调整）约束，将key置为nil，然后不断的检测是否移除正确，如果没有移除会继续移除，而我们hook让其return出去，导致keyValue无法移除。造成循环。内存暴增、卡死界面。</p>
 
-<p>这样我们就可以将我们三方tap加入到brew中了，可到具体位置查看：</p>
+<p>所以我们需要修改一下我们hook，hook，不应该检测value是否存在，只需要检测key即可。</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nt">--repository</span> 可查看brew 安装位置，查看/Library/Taps/
-</code></pre></div></div>
+<h3 id="结果">结果</h3>
 
-<p>接下来就可以安装我们自己的软件了, 如下方式：</p>
+<p>最后的结果如分析所得。从开始的我们以为是FLEX本身的问题，到最后真凶的出现，确实经历了好多天，有的时候真想放弃，直接修改复制Item的时机，最后还是为了探索真理而坚持。</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>exampleLint
-</code></pre></div></div>
-
-<p>就可以安装我们的软件。</p>
-
-<h4 id="5-更新与版本">5. 更新与版本</h4>
-
-<p>我们难免会遇到lib版本需要更新。如何更新版本？</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap &lt;user/repo&gt; &lt;URL&gt;
-brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt; 
-</code></pre></div></div>
-
-<p>与安装brew 三方库一样，只要我们执行这个命令，github三方仓库就会更新到最新。</p>
-
-<h4 id="6-移除tap">6. 移除tap</h4>
-
-<p>移除使用以下命令</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew untap user/repo
-</code></pre></div></div>
-
-<h4 id="参考文献">参考文献</h4>
-
-<p>1、 <a href="https://docs.brew.sh/">homebrew 官网</a></p>
-
-<p>2、https://www.jianshu.com/p/df351f34c160</p>
+<p>只要坚持不放弃，一切问题都可以解决。</p>
 
 </div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
 <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
@@ -582,7 +670,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
 <a class="a2a_button_linkedin"></a>
 </div>
 <script async src="https://static.addtoany.com/menu/page.js"></script>
-<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-02-03T00:00:00+08:00"><!-- start custom article footer snippet -->
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-07-24T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -590,7 +678,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">swift 编写第一个CLI程序</a></div><div class="next"><span>NEXT</span><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">基于homebrew 的code lint 集成</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/06/12/MGJRouterKit%E7%9A%84%E7%A0%94%E7%A9%B6.html">MGJRouterKit 实现、优劣浅析</a></div><div class="next"><span>NEXT</span><a href="/2023/08/07/Flutter%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html">Flutter 入门简介</a></div></div></div>
 
 </div>
 

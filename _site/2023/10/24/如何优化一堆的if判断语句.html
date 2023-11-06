@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>如何创建一个三方home brew tap - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>如何优化一堆的if条件语句 - harry’s blog</title>
 
-<meta name="description" content="前情提要为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增...">
-<link rel="canonical" href="http://localhost:4000/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="如何优化一堆的if条件语句1.前提  func test() {    let currentList = model        for outlinesIndex in 0...currentList.outlines.count - 1 {            for subOutlinesIndex ...">
+<link rel="canonical" href="http://localhost:4000/2023/10/24/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E4%B8%80%E5%A0%86%E7%9A%84if%E5%88%A4%E6%96%AD%E8%AF%AD%E5%8F%A5.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,124 +454,415 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/56/35/2d27f423708985c2ccafffe891d4c4ff.jpg"></img><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://cdn.pixabay.com/photo/2017/01/18/16/46/hong-kong-1990268_1280.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>如何创建一个三方home brew tap</h1></header></div><meta itemprop="headline" content="如何创建一个三方home brew tap"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>如何优化一堆的if条件语句</h1></header></div><meta itemprop="headline" content="如何优化一堆的if条件语句"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=iOS">iOS</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">设计模式</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 24, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-10-24T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,设计模式"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h2 id="如何优化一堆的if条件语句">如何优化一堆的if条件语句</h2>
 
-<p>为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。</p>
+<h3 id="1前提">1.前提</h3>
 
-<h4 id="1-创建三方tap仓库">1. 创建三方Tap仓库</h4>
-
-<p>​	如何创建三方tap库？</p>
-
- 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字以 <strong>homebrew-</strong>   开头的。然后将建好的tap仓库git clone到本地；
- 	2. 在仓库里添加Formula目录，这个目录是放我们三方软件安装脚本的，具体的脚本我会在3点里细说。
-
-<p>​		如下：https://github.com/xxxx/homebrew-private</p>
-
-<p>​	这样我们的准备工作就完成了。ok，那怎么添加到brew呢？</p>
-
-<h4 id="2-开发brew-三方库lib">2. 开发brew 三方库lib</h4>
-
-<p>比如我们用shell 开发了一个命令行工具exampleLint， 我们把他放到了github里，地址为https://github.com/xxx/xxx/exampleLint.</p>
-
-<p>这样来说我们的三方lib就准备完成了…</p>
-
-<p>当然你可以选择任何语言去写，shell、swift、ruby、python等等</p>
-
-<h4 id="3-编写formula-ruby脚本文件">3. 编写Formula ruby脚本文件</h4>
-
-<p>来到了比较重要的环节，home brew 当然需要我们提供给它一个脚本，告诉他这个lib的一些信息啊，download地址等等，这个文件就是放在Formula目录下，是一个ruby脚本文件。</p>
-
-<p>1、将2步骤中的lib可执行文件，打包成tar包</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将release文件打包成xxx.tar.gz</span>
-<span class="nb">tar</span> <span class="nt">-czf</span> xxx.tar.gz release
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">currentList</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">for</span> <span class="n">outlinesIndex</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="n">currentList</span><span class="o">.</span><span class="n">outlines</span><span class="o">.</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="n">subOutlinesIndex</span> <span class="k">in</span> <span class="mi">0</span><span class="o">...</span><span class="n">currentList</span><span class="o">.</span><span class="n">outlines</span><span class="p">[</span><span class="n">outlinesIndex</span><span class="p">]</span><span class="o">.</span><span class="n">subOutlines</span><span class="o">.</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="n">currentList</span><span class="o">.</span><span class="n">outlines</span><span class="p">[</span><span class="n">outlinesIndex</span><span class="p">]</span><span class="o">.</span><span class="n">subOutlines</span><span class="p">[</span><span class="n">subOutlinesIndex</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">currentList</span><span class="o">.</span><span class="n">livingCardPackageContentId</span> <span class="p">{</span>
+                    <span class="c1">///先定位至分区才能获取显示cell,否则因为cell重用无法获取到未显示的cell</span>
+                    <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">scrollToRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="n">outlinesIndex</span><span class="p">),</span> <span class="nv">at</span><span class="p">:</span> <span class="o">.</span><span class="k">none</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                    <span class="c1">//bottomOffsetY &lt;= 0 说明已经滑到最底部</span>
+                    <span class="k">let</span> <span class="nv">bottomOffsetY</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">contentSize</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">height</span>
+                    <span class="k">guard</span> <span class="n">bottomOffsetY</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="k">return</span>
+                    <span class="p">}</span>
+                    
+                    <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.25</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="c1">///获取显示的cell</span>
+                        <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">cellForRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="n">outlinesIndex</span><span class="p">))</span> <span class="k">as?</span> <span class="kt">ServicesListTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+                            <span class="k">return</span>
+                        <span class="p">}</span>
+                        <span class="k">for</span> <span class="n">view</span> <span class="k">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">subviews</span> <span class="p">{</span>
+                            <span class="k">if</span> <span class="k">let</span> <span class="nv">subTableView</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="nf">viewWithTag</span><span class="p">(</span><span class="mi">888</span><span class="p">)</span> <span class="k">as?</span> <span class="kt">UITableView</span> <span class="p">{</span>
+                                <span class="k">guard</span> <span class="k">let</span> <span class="nv">subCell</span> <span class="o">=</span> <span class="n">subTableView</span><span class="o">.</span><span class="nf">cellForRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="n">subOutlinesIndex</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">))</span> <span class="k">as?</span> <span class="kt">ServicesSubListTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+                                    <span class="k">return</span>
+                                <span class="p">}</span>
+                                <span class="k">let</span> <span class="nv">livingCellPoint</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">convert</span><span class="p">(</span><span class="kt">CGPoint</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="nv">from</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">superview</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">livingCellPoint</span><span class="o">.</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">bottomOffsetY</span> <span class="p">{</span>
+                                    <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">setContentOffset</span><span class="p">(</span><span class="kt">CGPoint</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="n">bottomOffsetY</span><span class="p">),</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                                    <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">setContentOffset</span><span class="p">(</span><span class="kt">CGPoint</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="n">livingCellPoint</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">8</span><span class="p">),</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+                                <span class="p">}</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+  <span class="p">}</span>
 </code></pre></div></div>
 
-<p>如果是shell开发，我们可以直接用github生成的.tar.gz文件</p>
+<p>我们先来看一段代码，类似这样的代码是否也曾在你们的项目中无处不见？</p>
 
-<p>2、生成SHA256</p>
+<h3 id="2-透过本质看问题">2. 透过本质看问题</h3>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shasum <span class="nt">-a</span> 256 xxx.tar.gz | <span class="nb">awk</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> xxx-sha256.txt
+<p>本身来说if语句是没有问题的，这也就是为什么几乎所有的语言都有设计if条件语句。if条件语句也会让逻辑更清晰、扩展。但是， 如果像上边这样if嵌套、if里做的事情较多，一个方法可能有100+以上的代码。那么if语句可能就会变的不是太好维护和扩展。我们需要一些手段去简化（或者叫优化）if语句。</p>
+
+<h3 id="方案">方案</h3>
+
+<h4 id="31-卫语句">3.1 卫语句</h4>
+
+<p>最简单方案莫过于卫语句，那么卫语句是什么什么？卫语句其实就是判断不符合的条件直接退出。比如：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">xxxx</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+  
+  <span class="o">...</span>
+<span class="p">}</span>
+<span class="c1">// swift 推荐</span>
+<span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">guard</span> <span class="n">xxxx</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="k">return</span>
+	<span class="p">}</span>
+  
+  <span class="o">...</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>3、如果自己生成的tar包，则需要上传到github的release中，上传完会得到下载链接。</p>
+<p>善于使用卫语句，提前return，也在一定程度上简化if条件判断。但是首先我们的思路需要转变，我们需要先考虑不满足的条件。</p>
 
-<p>4、生成formula安装脚本</p>
+<h4 id="32-三目运算优化">3.2 三目运算优化</h4>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">create</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">xxx</span><span class="o">/</span><span class="n">exampleLint</span><span class="p">.</span><span class="nf">tar</span><span class="p">.</span><span class="nf">gz</span>
+<p>那其实三目运算也是一种好的优化方式（：我就比较喜欢用三目运算， 但是三目运算也只能是适合简单的代替。</p>
+
+<p>比如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func test() {
+	var title = ""
+	if type == .live {
+		title = "直播"
+	} else {
+		title = "回放"
+	}
+}
+
+// 我们其实用三目运算会更简单
+func test() {
+	let title = type == .live ? "直播" : "回放"
+}
+// 是不是看起来更简单。明了了呢？
 </code></pre></div></div>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ExampleLint</span> <span class="o">&lt;</span> <span class="no">Formula</span>
-  <span class="n">desc</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">homepage</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">url</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint/releases/download/1.0.0/exampleLint-mac.tar.gz"</span>
-  <span class="n">sha256</span> <span class="s2">"bde3c29d31576ad833d3e22c5ed2889589917a367b749977a7703e018fc99a43"</span>
-  <span class="n">version</span> <span class="s2">"1.0.0"</span>
-  <span class="k">def</span> <span class="nf">install</span>
-    <span class="n">bin</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"exampleLint"</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<h4 id="33-合并条件">3.3 合并条件</h4>
+
+<p>合并条件其实就是如果我们有处理相同事务的条件，可以进行合并判断。</p>
+
+<p>比如：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="o">.</span><span class="n">live</span> <span class="p">{</span>
+			<span class="nf">jumpLiveOrPlayback</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">playback</span> <span class="p">{</span>
+			<span class="nf">jumpLiveOrPlayback</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">gaozhongXiaoBan</span> <span class="p">{</span>
+			<span class="nf">jumpLiveOrPlayback</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">chuzhongXiaoBan</span> <span class="p">{</span>
+			<span class="nf">jumpClassin</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">video</span> <span class="p">{</span>
+			<span class="nf">jumpVideo</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 优化后</span>
+<span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="o">.</span><span class="n">live</span> <span class="o">||</span> <span class="n">type</span> <span class="o">==</span> <span class="o">.</span><span class="n">playback</span> <span class="o">||</span> <span class="n">type</span> <span class="o">==</span> <span class="o">.</span><span class="n">gaozhongXiaoBan</span> <span class="p">{</span>
+				<span class="nf">jumpLiveOrPlayback</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">chuzhongXiaoBan</span> <span class="p">{</span>
+			<span class="nf">jumpClassin</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">==</span> <span class="o">.</span><span class="n">video</span> <span class="p">{</span>
+			<span class="nf">jumpVideo</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>将对应的信息添加补充到上边脚本里。</p>
+<p>合理的合并条件，在很大程度上能提高代码的可读性。</p>
 
-<p>ExampleLint 继承于Formula类。具体文档查看https://docs.brew.sh/Formula-Cookbook</p>
+<h4 id="34-if-内容封装">3.4 if 内容封装</h4>
 
-<h4 id="4-小试牛刀">4. 小试牛刀</h4>
+<p>什么叫if内容封装， 也就是说我们将if条件为真需要执行的代码，用方法封装起来。</p>
 
-<p>安装我们自己的工具包：</p>
+<p>比如：</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="kp">private</span> <span class="err">或者</span> <span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="n">homebrew</span><span class="o">-</span><span class="kp">private</span>
-<span class="c1"># 我们可以带前缀homebrew-也可以不带，xxxx是github中最后地址的前一段，一般是自己github名</span>
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+		<span class="nf">a</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+		<span class="nf">b</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">{</span>
+		<span class="nf">c</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nf">d</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span> 
+
+<span class="kd">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">c</span><span class="p">()</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">d</span><span class="p">()</span> <span class="p">{</span>
+	<span class="o">...</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>这样我们就可以将我们三方tap加入到brew中了，可到具体位置查看：</p>
+<h4 id="35-利用设计模式">3.5 利用设计模式</h4>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nt">--repository</span> 可查看brew 安装位置，查看/Library/Taps/
+<h5 id="351-策略模式">3.5.1 策略模式</h5>
+
+<p>什么是策略模式呢？维基百科说：指对象有某个行为，但是在不同的场景中，该行为有不同的实现算法。从某种程度上说也是符合if条件语句的，条件语句则就是根据条件不同执行的逻辑不同。</p>
+
+<p>怎么实现呢？</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+			<span class="nf">doSomething1</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+			<span class="nf">doSomething2</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">{</span>
+			<span class="nf">doSomething3</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// 优化后</span>
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">AbstractsStrategy</span> <span class="p">{</span>
+	<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Strategy1</span><span class="p">:</span> <span class="kt">AbstractsStrategy</span> <span class="p">{</span>
+	<span class="k">override</span> <span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Strategy2</span><span class="p">:</span> <span class="kt">AbstractsStrategy</span> <span class="p">{</span>
+	<span class="k">override</span> <span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Strategy3</span><span class="p">:</span> <span class="kt">AbstractsStrategy</span> <span class="p">{</span>
+	<span class="k">override</span> <span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span> <span class="p">{</span>
+		<span class="o">...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">StrategyFactory</span> <span class="p">{</span>
+		<span class="kd">private</span> <span class="k">var</span> <span class="nv">strategy</span><span class="p">:</span> <span class="kt">AbstractStrategy</span><span class="p">?</span>
+		<span class="kd">private</span> <span class="k">var</span> <span class="nv">strategyMap</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="kt">Strategy1</span><span class="p">(),</span> <span class="mi">2</span><span class="p">:</span> <span class="kt">Strategy2</span><span class="p">(),</span> <span class="mi">3</span><span class="p">:</span> <span class="kt">Strategy3</span><span class="p">()]</span>
+		
+		<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">(</span><span class="n">_</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">{</span>
+			 <span class="n">strategy</span> <span class="o">=</span> <span class="n">strategyMap</span><span class="p">[</span><span class="n">type</span><span class="p">]</span> 
+			 <span class="k">guard</span> <span class="k">let</span> <span class="nv">strategy</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">strategy</span> <span class="k">else</span> <span class="p">{</span>
+			 		<span class="k">return</span>
+			 <span class="p">}</span>
+			 
+			 <span class="n">strategy</span><span class="o">.</span><span class="nf">doSomething</span><span class="p">()</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kt">StragtegyFactory</span><span class="p">()</span><span class="o">.</span><span class="nf">doSomething</span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>接下来就可以安装我们自己的软件了, 如下方式：</p>
+<h5 id="352-简单工厂模式">3.5.2 简单工厂模式</h5>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>exampleLint
+<p>其实简单工厂模式和策略模式代码类似，区别在于，简单工厂模式侧重于产出product实例。策略模式则是侧重于行为。所以根据设计模式的分类我们称简单工厂模式为创建型模式，而策略模式为行为模式。</p>
+
+<p>如：</p>
+
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+			<span class="nf">doSomething1</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+			<span class="nf">doSomething2</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">{</span>
+			<span class="nf">doSomething3</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler1</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler2</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler3</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="kd">func</span> <span class="nf">doSomething</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler</span> <span class="p">{</span>
+		<span class="kd">private</span> <span class="k">var</span> <span class="nv">strategyMap</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="kt">Handler1</span><span class="p">(),</span> <span class="mi">2</span><span class="p">:</span> <span class="kt">Handler2</span><span class="p">(),</span> <span class="mi">3</span><span class="p">:</span> <span class="kt">Handler3</span><span class="p">()]</span>
+		<span class="kd">class</span> <span class="kd">func</span> <span class="nf">create</span><span class="p">(</span><span class="n">_</span> <span class="n">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">AbstractHandler</span><span class="p">?</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kt">Map</span><span class="p">[</span><span class="n">type</span><span class="p">]</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+		<span class="kt">Handler</span><span class="o">.</span><span class="nf">create</span><span class="p">(</span><span class="n">type</span><span class="p">)?</span><span class="o">.</span><span class="nf">doSomething</span><span class="p">()</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>就可以安装我们的软件。</p>
+<h5 id="353-责任链模式">3.5.3 责任链模式</h5>
 
-<h4 id="5-更新与版本">5. 更新与版本</h4>
+<p>责任链的定义为：每一个处理对象决定它能处理哪些命令对象，它也知道如何将它不能处理的命令对象传递给该链中的下一个处理对象。该模式还描述了往该处理链的末尾添加新的处理对象的方法（百度百科）。</p>
 
-<p>我们难免会遇到lib版本需要更新。如何更新版本？</p>
+<p>如：</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap &lt;user/repo&gt; &lt;URL&gt;
-brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt; 
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+			<span class="nf">doSomething1</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+			<span class="nf">doSomething2</span><span class="p">()</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">{</span>
+			<span class="nf">doSomething3</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="k">var</span> <span class="nv">next</span><span class="p">:</span> <span class="kt">AbstractHandler</span><span class="p">?</span>
+		<span class="k">var</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span>
+		
+		<span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">type</span>
+		<span class="p">}</span>
+		
+		<span class="kd">func</span> <span class="nf">setNext</span><span class="p">(</span><span class="n">_</span> <span class="nv">next</span><span class="p">:</span> <span class="kt">AbstractHandler</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">next</span>
+		<span class="p">}</span>
+		
+		<span class="kd">func</span> <span class="nf">execute</span><span class="p">(</span><span class="n">_</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="n">type</span> <span class="o">==</span> <span class="k">self</span><span class="o">.</span><span class="n">type</span> <span class="p">{</span>
+						<span class="nf">do</span><span class="p">()</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="k">let</span> <span class="nv">next</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">next</span> <span class="p">{</span>
+						<span class="n">next</span><span class="o">.</span><span class="nf">doSomething</span><span class="p">()</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="nf">print</span><span class="p">(</span><span class="s">"没有处理器"</span><span class="p">)</span>
+				<span class="p">}</span>
+		<span class="p">}</span>
+		
+		<span class="kd">func</span> <span class="nf">do</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler1</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">override</span> <span class="kd">func</span> <span class="nf">do</span><span class="p">()</span> <span class="p">{</span>
+				<span class="o">...</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler2</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">override</span> <span class="kd">func</span> <span class="nf">do</span><span class="p">()</span> <span class="p">{</span>
+				<span class="o">...</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="kt">Handler3</span><span class="p">:</span> <span class="kt">AbstractHandler</span> <span class="p">{</span>
+		<span class="nf">init</span><span class="p">()</span> <span class="p">{</span>
+			<span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">type</span><span class="p">:</span> <span class="mi">3</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="k">override</span> <span class="kd">func</span> <span class="nf">do</span><span class="p">()</span> <span class="p">{</span>
+				<span class="o">...</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">let</span> <span class="nv">handler1</span> <span class="o">=</span> <span class="kt">Handler1</span><span class="p">()</span>
+		<span class="k">let</span> <span class="nv">handler2</span> <span class="o">=</span> <span class="kt">Handler2</span><span class="p">()</span>
+		<span class="k">let</span> <span class="nv">handler3</span> <span class="o">=</span> <span class="kt">Handler3</span><span class="p">()</span>
+		
+		<span class="n">handler1</span><span class="o">.</span><span class="nf">setNext</span><span class="p">(</span><span class="n">handler2</span><span class="p">)</span>
+		<span class="n">handler2</span><span class="o">.</span><span class="nf">setNext</span><span class="p">(</span><span class="n">handler3</span><span class="p">)</span>
+		
+		<span class="n">handler1</span><span class="o">.</span><span class="nf">execute</span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="p">}</span>
+
 </code></pre></div></div>
 
-<p>与安装brew 三方库一样，只要我们执行这个命令，github三方仓库就会更新到最新。</p>
+<hr />
 
-<h4 id="6-移除tap">6. 移除tap</h4>
+<p><strong>最后看一下我们开头说的代码优化后的样子：</strong></p>
 
-<p>移除使用以下命令</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew untap user/repo
+<div class="language-swift highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">func</span> <span class="nf">test</span><span class="p">()</span> <span class="p">{</span>        
+        <span class="k">var</span> <span class="nv">destinationRow</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span>
+        <span class="k">let</span> <span class="nv">destinationSection</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">outlines</span><span class="o">.</span><span class="n">firstIndex</span> <span class="p">{</span> <span class="n">outline</span> <span class="k">in</span>
+            <span class="n">destinationRow</span> <span class="o">=</span> <span class="n">outline</span><span class="o">.</span><span class="n">subOutlines</span><span class="o">.</span><span class="nf">firstIndex</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span><span class="nv">$0</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">livingCardPackageContentId</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">destinationRow</span> <span class="o">!=</span> <span class="kc">nil</span>
+        <span class="p">}</span>
+        
+        <span class="k">guard</span> <span class="k">let</span> <span class="nv">section</span> <span class="o">=</span> <span class="n">destinationSection</span><span class="p">,</span> <span class="k">let</span> <span class="nv">row</span> <span class="o">=</span> <span class="n">destinationRow</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+                
+        <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">scrollToRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="n">section</span><span class="p">),</span> <span class="nv">at</span><span class="p">:</span> <span class="o">.</span><span class="k">none</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="c1">// bottomOffsetY &lt;= 0 说明内容不超过一屏</span>
+        <span class="k">let</span> <span class="nv">bottomOffsetY</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">contentSize</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">height</span>
+        <span class="k">guard</span> <span class="n">bottomOffsetY</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        
+        <span class="kt">DispatchQueue</span><span class="o">.</span><span class="n">main</span><span class="o">.</span><span class="nf">asyncAfter</span><span class="p">(</span><span class="nv">deadline</span><span class="p">:</span> <span class="o">.</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.25</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">///获取显示的cell</span>
+            <span class="k">guard</span> <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">cellForRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="n">section</span><span class="p">))</span> <span class="k">as?</span> <span class="kt">ServicesListTableViewCell</span><span class="p">,</span> 
+            <span class="k">let</span> <span class="nv">subTableView</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">subviews</span><span class="o">.</span><span class="nf">first</span><span class="p">(</span><span class="nv">where</span><span class="p">:</span> <span class="p">{</span><span class="nv">$0</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="mi">888</span><span class="p">})</span> <span class="k">as?</span> <span class="kt">UITableView</span><span class="p">,</span> 
+            <span class="k">let</span> <span class="nv">subCell</span> <span class="o">=</span> <span class="n">subTableView</span><span class="o">.</span><span class="nf">cellForRow</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span> <span class="n">row</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">))</span> <span class="k">as?</span> <span class="kt">ServicesSubListTableViewCell</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">return</span>
+            <span class="p">}</span>
+            
+            <span class="k">let</span> <span class="nv">livingCellPoint</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">convert</span><span class="p">(</span><span class="kt">CGPoint</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">origin</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="nv">from</span><span class="p">:</span> <span class="n">subCell</span><span class="o">.</span><span class="n">superview</span><span class="p">)</span>
+            <span class="k">let</span> <span class="nv">offsetY</span> <span class="o">=</span> <span class="n">livingCellPoint</span><span class="o">.</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">bottomOffsetY</span> <span class="p">?</span> <span class="nv">bottomOffsetY</span> <span class="p">:</span> <span class="n">livingCellPoint</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">8</span>
+            <span class="k">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="nf">setContentOffset</span><span class="p">(</span><span class="kt">CGPoint</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">y</span><span class="p">:</span> <span class="n">offsetY</span><span class="p">),</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+        <span class="p">}</span>
+   <span class="p">}</span>
 </code></pre></div></div>
 
-<h4 id="参考文献">参考文献</h4>
+<h3 id="总结">总结</h3>
 
-<p>1、 <a href="https://docs.brew.sh/">homebrew 官网</a></p>
+<p>当然使用设计模式去优化if代码，还有其他的设计模式，比如优先状态机等。</p>
 
-<p>2、https://www.jianshu.com/p/df351f34c160</p>
+<p>所有的方式也是可以组合使用。我们的目的是让代码更好阅读、更好扩展、更好维护。</p>
+
+<p>不一定所有的if都要进行优化，一些简单的，本身来说就是很明确、很容易阅读、维护。那么其实就不需要优化。我们针对的是if过多、嵌套过多、不利于维护的代码。</p>
+
+<p>最后，引用常说的一句话，要不因为使用设计模式而设计代码，这样反而得不偿失。</p>
 
 </div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
 <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
@@ -582,7 +873,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
 <a class="a2a_button_linkedin"></a>
 </div>
 <script async src="https://static.addtoany.com/menu/page.js"></script>
-<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-02-03T00:00:00+08:00"><!-- start custom article footer snippet -->
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-10-24T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -590,7 +881,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">swift 编写第一个CLI程序</a></div><div class="next"><span>NEXT</span><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">基于homebrew 的code lint 集成</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/08/17/%E4%BD%BF%E7%94%A8hombrew-%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84Mac-app.html">使用homeBrew 发布自己的Mac 软件</a></div></div></div>
 
 </div>
 

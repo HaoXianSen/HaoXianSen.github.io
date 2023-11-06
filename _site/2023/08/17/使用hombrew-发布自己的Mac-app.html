@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>如何创建一个三方home brew tap - harry’s blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>使用homeBrew 发布自己的Mac 软件 - harry’s blog</title>
 
-<meta name="description" content="前情提要为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增...">
-<link rel="canonical" href="http://localhost:4000/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta name="description" content="使用Home Brew 发布自己的Mac 软件制作三方home brew tap制作HomeBrew 三方tap的教程我已经在之前的文章有介绍过了，在这就不在赘述了。有需要的小伙伴可以去这里自行学习。制作.dmg文件      打开磁盘工具            选择“文件”-“新建映像”-“空白映像”     ...">
+<link rel="canonical" href="http://localhost:4000/2023/08/17/%E4%BD%BF%E7%94%A8hombrew-%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84Mac-app.html"><link rel="alternate" type="application/rss+xml" title="harry’s blog" href="/feed.xml"><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
 <link rel="manifest" href="/assets/site.webmanifest">
@@ -454,124 +454,150 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
         <ul><li class="navigation__item"><a href="/">主页</a></li><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><div class="icon"><svg fill="#34495e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="100px" height="100px"><path d="M 10 0.1875 C 4.578125 0.1875 0.1875 4.578125 0.1875 10 C 0.1875 15.421875 4.578125 19.8125 10 19.8125 C 12.289063 19.8125 14.394531 19.003906 16.0625 17.6875 L 16.9375 18.5625 C 16.570313 19.253906 16.699219 20.136719 17.28125 20.71875 L 21.875 25.34375 C 22.589844 26.058594 23.753906 26.058594 24.46875 25.34375 L 25.34375 24.46875 C 26.058594 23.753906 26.058594 22.589844 25.34375 21.875 L 20.71875 17.28125 C 20.132813 16.695313 19.253906 16.59375 18.5625 16.96875 L 17.6875 16.09375 C 19.011719 14.421875 19.8125 12.300781 19.8125 10 C 19.8125 4.578125 15.421875 0.1875 10 0.1875 Z M 10 2 C 14.417969 2 18 5.582031 18 10 C 18 14.417969 14.417969 18 10 18 C 5.582031 18 2 14.417969 2 10 C 2 5.582031 5.582031 2 10 2 Z M 4.9375 7.46875 C 4.421875 8.304688 4.125 9.289063 4.125 10.34375 C 4.125 13.371094 6.566406 15.8125 9.59375 15.8125 C 10.761719 15.8125 11.859375 15.433594 12.75 14.8125 C 12.511719 14.839844 12.246094 14.84375 12 14.84375 C 8.085938 14.84375 4.9375 11.695313 4.9375 7.78125 C 4.9375 7.675781 4.933594 7.574219 4.9375 7.46875 Z"/></svg></div></button></li></ul>
       </nav></div>
   </header>
-</div><div class="page__content"><img class="article__header--cover" style="" src="https://img.win3000.com/m00/56/35/2d27f423708985c2ccafffe891d4c4ff.jpg"></img><div class ="main"><div class="grid grid--reverse">
+</div><div class="page__content"><img class="article__header--cover" style="" src="https://cdn.pixabay.com/photo/2017/01/18/16/46/hong-kong-1990268_1280.jpg"></img><div class ="main"><div class="grid grid--reverse">
 
               <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>如何创建一个三方home brew tap</h1></header></div><meta itemprop="headline" content="如何创建一个三方home brew tap"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>使用homeBrew 发布自己的Mac 软件</h1></header></div><meta itemprop="headline" content="使用homeBrew 发布自己的Mac 软件"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=homeBrew">homeBrew</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 03, 2023</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="133">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-02-03T00:00:00+08:00">
-    <meta itemprop="keywords" content="homeBrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=homebrew">homebrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 17, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-08-17T00:00:00+08:00">
+    <meta itemprop="keywords" content="homebrew"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h4 id="前情提要">前情提要</h4>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h2 id="使用home-brew-发布自己的mac-软件">使用Home Brew 发布自己的Mac 软件</h2>
 
-<p>为什么要创建三方的homeBrew呢？原因在于呀，我们想要官方的homebrew添加软件是有很多限制的，比如需要在官方的homeBrew Formula里添加ruby脚本文件，并且要增加测试脚本，诸如此，还需要像官方的brew仓库提交MR，等待官方的合并，相对来说，如果不是公开的三方库，我们这样做无非是增加了很多的工作量。那么另外一种简单，同样是brew支持的方式就是创建自己的三方brew 仓库。（当然我们是因为有需求驱动的，简单说我想要借助brew的便捷性，达到内部lint工具的快捷安装），接下来，我会把我创建以及成功使用的步骤做以下几点记录。</p>
+<h3 id="制作三方home-brew-tap">制作三方home brew tap</h3>
 
-<h4 id="1-创建三方tap仓库">1. 创建三方Tap仓库</h4>
+<p>制作HomeBrew 三方tap的教程我已经在之前的文章有介绍过了，在这就不在赘述了。有需要的小伙伴可以去<a href="https://haoxiansen.github.io/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">这里</a>自行学习。</p>
 
-<p>​	如何创建三方tap库？</p>
+<h3 id="制作dmg文件">制作.dmg文件</h3>
 
- 	1. 首先，我们需要再github上创建一个公开的仓库，并且名字以 <strong>homebrew-</strong>   开头的。然后将建好的tap仓库git clone到本地；
- 	2. 在仓库里添加Formula目录，这个目录是放我们三方软件安装脚本的，具体的脚本我会在3点里细说。
+<ul>
+  <li>
+    <p>打开磁盘工具</p>
 
-<p>​		如下：https://github.com/xxxx/homebrew-private</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817195344image-20230817195343871.png" alt="image-20230817195343871" style="zoom:50%;" /></p>
+  </li>
+  <li>
+    <p>选择“文件”-“新建映像”-“空白映像”</p>
 
-<p>​	这样我们的准备工作就完成了。ok，那怎么添加到brew呢？</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817195534image-20230817195534431.png" alt="image-20230817195534431" /></p>
+  </li>
+  <li>
+    <p>命名为temp， 大小可以根据实际app大小给一个</p>
 
-<h4 id="2-开发brew-三方库lib">2. 开发brew 三方库lib</h4>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817195651image-20230817195650815.png" alt="image-20230817195650815" style="zoom:50%;" /></p>
+  </li>
+  <li>
+    <p>完成之后会出现temp的dmg以及未命名的一个磁盘</p>
 
-<p>比如我们用shell 开发了一个命令行工具exampleLint， 我们把他放到了github里，地址为https://github.com/xxx/xxx/exampleLint.</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817195851image-20230817195851150.png" alt="image-20230817195851150" style="zoom:50%;" /></p>
+  </li>
+  <li>
+    <p>准备三个材料：1、打好的.app包 2、app包的icon 3、应用程序的替身</p>
 
-<p>这样来说我们的三方lib就准备完成了…</p>
+    <ul>
+      <li>1/2 就不用多介绍了</li>
+      <li>应用程序的替身制作，打开“电脑”-“Macintosh HD”-“应用程序”-双击选择“制作替身”选项</li>
+    </ul>
+  </li>
+  <li>
+    <p>打开“未命名”的磁盘， 将1、2、3 拖入</p>
+  </li>
+  <li>
+    <p>双击空白区， 选择“查看显示选项”</p>
 
-<p>当然你可以选择任何语言去写，shell、swift、ruby、python等等</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817200525image-20230817200524935.png" alt="image-20230817200524935" /></p>
+  </li>
+  <li>
+    <p>将我们2的背景图片，拖到背景图片位置</p>
 
-<h4 id="3-编写formula-ruby脚本文件">3. 编写Formula ruby脚本文件</h4>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817200613image-20230817200613713.png" alt="image-20230817200613713" /></p>
+  </li>
+  <li>
+    <p>重新打开磁盘工具，选择“映像”-“转换”</p>
 
-<p>来到了比较重要的环节，home brew 当然需要我们提供给它一个脚本，告诉他这个lib的一些信息啊，download地址等等，这个文件就是放在Formula目录下，是一个ruby脚本文件。</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817200711image-20230817200711769.png" alt="image-20230817200711769" /></p>
+  </li>
+  <li>
+    <p>选取刚才temp.dmg，存储为我们app的名字</p>
 
-<p>1、将2步骤中的lib可执行文件，打包成tar包</p>
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817200836image-20230817200836058.png" alt="image-20230817200836058" /></p>
+  </li>
+  <li>
+    <p>至此我们dmg就只做完毕，打开.dmg， 就出现了我们常见的页面</p>
 
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 将release文件打包成xxx.tar.gz</span>
-<span class="nb">tar</span> <span class="nt">-czf</span> xxx.tar.gz release
+    <p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817201051image-20230817201051546.png" alt="image-20230817201051546" /></p>
+  </li>
+</ul>
+
+<h3 id="创建cask-脚本">创建Cask 脚本</h3>
+
+<h4 id="将dmg放到可访问下载的地址">将dmg放到可访问下载的地址</h4>
+
+<p>这里我选择在github重新建一个Repo用来存放dmg， 然后创建一个release，存放有dmg，如下：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817201343image-20230817201343224.png" alt="image-20230817201343224" /></p>
+
+<h4 id="创建cask脚本">创建Cask脚本</h4>
+
+<p>使用命令<code class="language-plaintext highlighter-rouge">brew create --cask [dmg_download_url]</code> 创建一个cask ruby 脚本。</p>
+
+<p>补充好需要内容，如下：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817201534image-20230817201534286.png" alt="image-20230817201534286" /></p>
+
+<h4 id="发布到公有cask仓库">发布到公有cask仓库</h4>
+
+<p>发布到cask 公有仓库，需要先可执行<code class="language-plaintext highlighter-rouge">brew audit --cask --new kcode</code> 命令检查。其中kcode 是我自己的cask名字。</p>
+
+<p>需要注意的是，homebrew会去检查你的项目查看数、点赞数、签名等等，需要满足条件才能发布，要不然就会报以下错误：</p>
+
+<p><img src="https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230817201834image-20230817201834123.png" alt="image-20230817201834123" /></p>
+
+<p>很明显，我们不满足要求，所以我们没法用公开的cask仓库。</p>
+
+<p>我们选择三方仓库tap使用。</p>
+
+<h4 id="发布三方tap仓库">发布三方tap仓库</h4>
+
+<p>如果你是新建的tap仓库，那么你需要新建一个Casks目录，然后将rb脚本放到这个目录里。然后去执行添加tap（<strong>需要注意的是先保证的你的三方tap仓库push了</strong>）：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap <span class="o">[</span>xxx/repo] <span class="o">[</span>url]
 </code></pre></div></div>
 
-<p>如果是shell开发，我们可以直接用github生成的.tar.gz文件</p>
+<p>而我已经有tap仓库了，那么同样我需要新建一个Casks目录，然后将rb脚本放到这个目录下，然后Push项目，执行更新操作：</p>
 
-<p>2、生成SHA256</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shasum <span class="nt">-a</span> 256 xxx.tar.gz | <span class="nb">awk</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> xxx-sha256.txt
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew update 
+// 或者
+brew tap <span class="nt">--force-auto-update</span> <span class="o">[</span>xxx/repo]
 </code></pre></div></div>
 
-<p>3、如果自己生成的tar包，则需要上传到github的release中，上传完会得到下载链接。</p>
+<h3 id="安装--更新">安装 | 更新</h3>
 
-<p>4、生成formula安装脚本</p>
+<p>安装</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">create</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">xxx</span><span class="o">/</span><span class="n">exampleLint</span><span class="p">.</span><span class="nf">tar</span><span class="p">.</span><span class="nf">gz</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap brew tap <span class="o">[</span>xxx/repo] <span class="o">&amp;&amp;</span> brew <span class="nb">install</span> <span class="o">[</span>app_name]
 </code></pre></div></div>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ExampleLint</span> <span class="o">&lt;</span> <span class="no">Formula</span>
-  <span class="n">desc</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">homepage</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint"</span>
-  <span class="n">url</span> <span class="s2">"https://github.com/HaoXianSen/exampleLint/releases/download/1.0.0/exampleLint-mac.tar.gz"</span>
-  <span class="n">sha256</span> <span class="s2">"bde3c29d31576ad833d3e22c5ed2889589917a367b749977a7703e018fc99a43"</span>
-  <span class="n">version</span> <span class="s2">"1.0.0"</span>
-  <span class="k">def</span> <span class="nf">install</span>
-    <span class="n">bin</span><span class="p">.</span><span class="nf">install</span> <span class="s2">"exampleLint"</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<p>更新</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew update
+brew upgrade <span class="o">[</span>cask_name]
 </code></pre></div></div>
 
-<p>将对应的信息添加补充到上边脚本里。</p>
+<p>如果要更新app的版本：</p>
 
-<p>ExampleLint 继承于Formula类。具体文档查看https://docs.brew.sh/Formula-Cookbook</p>
+<p>我们需要先去三方tap里改脚本的版本号，以及对应sha256。具体sha256怎么生成，请到第一部分所提到的文章里看。</p>
 
-<h4 id="4-小试牛刀">4. 小试牛刀</h4>
+<h3 id="参考文章">参考文章</h3>
 
-<p>安装我们自己的工具包：</p>
+<p><a href="https://docs.brew.sh/Cask-Cookbook#stanza-zap">Cask Cookbook</a></p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="kp">private</span> <span class="err">或者</span> <span class="n">brew</span> <span class="n">tap</span> <span class="n">xxxx</span><span class="o">/</span><span class="n">homebrew</span><span class="o">-</span><span class="kp">private</span>
-<span class="c1"># 我们可以带前缀homebrew-也可以不带，xxxx是github中最后地址的前一段，一般是自己github名</span>
-</code></pre></div></div>
-
-<p>这样我们就可以将我们三方tap加入到brew中了，可到具体位置查看：</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nt">--repository</span> 可查看brew 安装位置，查看/Library/Taps/
-</code></pre></div></div>
-
-<p>接下来就可以安装我们自己的软件了, 如下方式：</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>exampleLint
-</code></pre></div></div>
-
-<p>就可以安装我们的软件。</p>
-
-<h4 id="5-更新与版本">5. 更新与版本</h4>
-
-<p>我们难免会遇到lib版本需要更新。如何更新版本？</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew tap &lt;user/repo&gt; &lt;URL&gt;
-brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt; 
-</code></pre></div></div>
-
-<p>与安装brew 三方库一样，只要我们执行这个命令，github三方仓库就会更新到最新。</p>
-
-<h4 id="6-移除tap">6. 移除tap</h4>
-
-<p>移除使用以下命令</p>
-
-<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew untap user/repo
-</code></pre></div></div>
-
-<h4 id="参考文献">参考文献</h4>
-
-<p>1、 <a href="https://docs.brew.sh/">homebrew 官网</a></p>
-
-<p>2、https://www.jianshu.com/p/df351f34c160</p>
+<p><a href="https://haoxiansen.github.io/2023/02/03/%E5%88%9B%E5%BB%BA%E4%B8%89%E6%96%B9homeBrew.html">如何创建一个三方home brew tap</a></p>
 
 </div><section class="article__sharing d-print-none"><!-- AddToAny BEGIN -->
 <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
@@ -582,7 +608,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
 <a class="a2a_button_linkedin"></a>
 </div>
 <script async src="https://static.addtoany.com/menu/page.js"></script>
-<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-02-03T00:00:00+08:00"><!-- start custom article footer snippet -->
+<!-- AddToAny END --></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2023-08-17T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --><div class="article__license"><div class="license">
     <p>This work is licensed under a <a itemprop="license" rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution-NonCommercial 4.0 International</a> license.
@@ -590,7 +616,7 @@ brew tap <span class="nt">--force-auto-update</span> &lt;user/repo&gt;
         <img alt="Attribution-NonCommercial 4.0 International" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" />
       </a>
     </p>
-  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/01/05/Swift-%E6%9E%84%E5%BB%BACLI.html">swift 编写第一个CLI程序</a></div><div class="next"><span>NEXT</span><a href="/2023/03/20/%E5%9F%BA%E4%BA%8EHomebrew%E7%9A%84CodeLint%E9%9B%86%E6%88%90-%E6%80%BB.html">基于homebrew 的code lint 集成</a></div></div></div>
+  </div></div></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2023/08/07/Flutter%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html">Flutter 入门简介</a></div><div class="next"><span>NEXT</span><a href="/2023/10/24/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E4%B8%80%E5%A0%86%E7%9A%84if%E5%88%A4%E6%96%AD%E8%AF%AD%E5%8F%A5.html">如何优化一堆的if条件语句</a></div></div></div>
 
 </div>
 

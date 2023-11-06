@@ -462,6 +462,101 @@ m173 -8 c0 -5 -2 -10 -4 -10 -3 0 -8 5 -11 10 -3 6 -1 10 4 10 6 0 11 -4 11
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="harry"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/10/24/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E4%B8%80%E5%A0%86%E7%9A%84if%E5%88%A4%E6%96%AD%E8%AF%AD%E5%8F%A5.html"><h2 itemprop="headline" class="item__header">如何优化一堆的if条件语句</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">如何优化一堆的if条件语句
+
+1.前提
+
+  func test() {
+    let currentList = model
+        for outlinesIndex in 0...currentList.outlines.count - 1 {
+            for subOutlinesIndex in 0...currentList.outlines[outlinesIndex].subOutlines.count - 1 {
+                if currentList.outlines[outlinesIndex].subOutlines[subOutlinesIndex].id == currentList.livingCardPac...</div><p><a href="/2023/10/24/%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E4%B8%80%E5%A0%86%E7%9A%84if%E5%88%A4%E6%96%AD%E8%AF%AD%E5%8F%A5.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">设计模式</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 24, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-10-24T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,设计模式"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/08/17/%E4%BD%BF%E7%94%A8hombrew-%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84Mac-app.html"><h2 itemprop="headline" class="item__header">使用homeBrew 发布自己的Mac 软件</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">使用Home Brew 发布自己的Mac 软件
+
+制作三方home brew tap
+
+制作HomeBrew 三方tap的教程我已经在之前的文章有介绍过了，在这就不在赘述了。有需要的小伙伴可以去这里自行学习。
+
+制作.dmg文件
+
+
+  
+    打开磁盘工具
+
+    
+  
+  
+    选择“文件”-“新建映像”-“空白映像”
+
+    
+  
+  
+    命名为temp， 大小可以根据实际app大小给一个
+
+    
+  
+  
+    完成之后会出现temp的dmg以及未命名的一个磁盘
+
+    
+  
+  
+    准备三个材料：1、打好的.app包 2、app包的icon 3、应用程序的替身
+
+    
+      1/2 就不用多介绍了
+      应用程序的替身制作...</div><p><a href="/2023/08/17/%E4%BD%BF%E7%94%A8hombrew-%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84Mac-app.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=homebrew">homebrew</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 17, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-08-17T00:00:00+08:00">
+    <meta itemprop="keywords" content="homebrew"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/08/07/Flutter%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html"><h2 itemprop="headline" class="item__header">Flutter 入门简介</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">Flutter 入门简介
+
+1 简介
+
+Flutter 是由谷歌开发推出的一款开源的移动应用开发框架，其主打的就是跨平台、高保真、高性能。其开发呢主要使用的dart语言。一套代码可以同时在Android和iOS  系统上运行。并且Flutter 还可以和原生进行混合开发。
+
+2 主要优势
+
+2.1跨平台自绘渲染引擎
+
+Flutter 采用自绘渲染引擎Skia，那么和其他的跨平台框架不同的是，其他框架要不采用webView进行渲染，要不采用操作原生控件进行渲染， 并且避免了像RN，weex那样不断和native进行布局同步，导致的布局卡顿，手势卡顿等问题。那么Flutter利用自己的跨平台2d绘制渲染引擎，不仅可以保证UI的一致性，而且能降低维护的成本。（Skia是安卓系统一直使用的一个...</div><p><a href="/2023/08/07/Flutter%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=Flutter">Flutter</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 07, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-08-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="Flutter"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2023/07/24/FLEX%E4%B8%89%E6%96%B9%E5%BA%93iOS-15%E4%BB%A5%E4%B8%8A%E9%9B%86%E6%88%90%E5%88%B0App%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98OOM.html"><h2 itemprop="headline" class="item__header">FLEX在iOS15 以上设备的OOM排查</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">起因
+
+从iOS 15 开始我们发现FLEX 三方库在我们的iOS 工程无法使用，表现为ExploreToolBar可以正常显示，但是只要点击ToolBar上任何按钮都会发生内存占用暴增，导致内存崩溃（即OOM），这个问题虽然发现的很早，但是原因和方案一直没有去探索。导致其实有的时候我们遇到想要Debug的一些功能只能用iOS 15以下的一些设备去排查。甚至都想关掉FLEX。另外FLEX提供的DEBUG功能确实是非常的丰富，对于我们开发来说也是帮助很大，所以我觉得还是有必要排查清楚为什么会导致OOM，又该怎么去解决。（当然近期我也在github Flex 进行的反馈，至今没有接收到回复…）
+
+排查
+
+排查发生崩溃的原因（OOM）
+
+其实最早之前我并不知道，是因为OOM崩溃的，直到开始探...</div><p><a href="/2023/07/24/FLEX%E4%B8%89%E6%96%B9%E5%BA%93iOS-15%E4%BB%A5%E4%B8%8A%E9%9B%86%E6%88%90%E5%88%B0App%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98OOM.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 24, 2023</span>
+            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="158">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2023-07-24T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2023/06/12/MGJRouterKit%E7%9A%84%E7%A0%94%E7%A9%B6.html"><h2 itemprop="headline" class="item__header">MGJRouterKit 实现、优劣浅析</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">代码浅析
 
@@ -741,98 +836,20 @@ key: 107
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 26, 2022</span>
             </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="108">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-08-26T00:00:00+08:00">
     <meta itemprop="keywords" content="iOS,MAC,Plugin"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2022/05/01/00_position_anchorPoint_frame.html"><h2 itemprop="headline" class="item__header">position、anchorPoint、frame理解</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前情提要
-
-​	     最近在学2d游戏框架SpriteKit，其中使用大量的AnchorPoint/position 来确定Node的位置，那本身来说对于anchorPoint、position的概念、以及他们之间互相起到什么作用，对于view又会造成什么影响，都是比较模糊的，所以再定位Node布局来说，就是一顿迷糊，正好工作这么多年了，还是对于这些基础的还是模糊，是有点说不过去了，所以我决定认真分析一下Frame、bounds、position、anchorPoint之间的关系，以及他们对显示的影响。
-
-进入正文
-
-frame： 表示了一个view 在其superView坐标系具体位置，那么他的参照物是其父view
-
-bounds：表示了一个view的本地坐标系下，参照物是自身，...</div><p><a href="/2022/05/01/00_position_anchorPoint_frame.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2022</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="107">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2022-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/08/01_flutter_and_ios_matter.html"><h2 itemprop="headline" class="item__header">解决原生横滑scrollView和Flutter 纵滑CustomScroll的冲突</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前言
-
-
-
-最近项目中在横向滑动的PageViewController（WMPageController）里嵌入了Flutter 的 CustomScrollView，原本会觉得一切ok，却出现了一个致命的问题：安卓嵌入之后滑动流程稳定，没有任何问题，iOS 嵌入之后出现Flutter 页面滑动卡顿、不流畅，体现在触发flutter 列表滑动的同时，会触发原生横滑，且必须垂直滑动（无一点左右的滑动偏移）才会稳定触发Flutter 列表的滑动，否则容易触发左右横滑，所以我们习惯了单手用手机的人，根本无法顺畅滑动。如下面的gif（其实我已经很努力的在上下滑了，很明显上下滑动的距离大于水平滑动的距离，用户的用意也应该是要上下滑动，但是却触发了横滑）：
-
-
-
-解决方式
-
-
-
-首先触摸flutt...</div><p><a href="/2020/06/08/01_flutter_and_ios_matter.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=iOS">iOS</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 08, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="101">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-08T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter,iOS"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/06/07/00_flutter-hot-reload.html"><h2 itemprop="headline" class="item__header">热重载原理研究和探索</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">热重载原理研究和探索
-
-1. 前言
-
-
-
-Flutter 亚秒级别的热重载是开发者的神兵利器，它能够提供我们快速修改UI、增加功能、修复bug，不需要重新启动应用，就可以看到改动效果。那么Flutter是如何做到这样的功能的呢？下面我们一起探究一下其中的原理。
-
-2. 首先需要知道JIT 和AOT
-
-
-
-JIT
-
-JIT（Just In Time），指的是运行时编译，Flutter 在debug模式下采用这种方式，在运行时动态下发和执行代码，启动速度快，但是由于在运行时编译，性能会受影响。
-
-
-
-AOT
-
-AOT（Ahead Of Time），指的是在运行之前进行编译，Flutter 在Release模式下采用，可以为特定的平台生成稳定的二进制代码、执行性能好、运行速度快，但是每次都需...</div><p><a href="/2020/06/07/00_flutter-hot-reload.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 07, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="100">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-06-07T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/05/01/02_flutter_text_has_underline.html"><h2 itemprop="headline" class="item__header">Flutter Text 文字下有黄色下划线</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">导致原因
-
-导致这种情况发生的原因是因为，Text widget 隶属于Material 风格下的组件，如果根节点不是Material 相关组件，则会使用默认带黄色下划线的格式。如果根节点是Material 容器组件，则会采用其Material风格的样式（即不带有下换线）。
-
-解决方式
-
-1. 采用根节点为脚手架Scaffold组件
-Scaffold(body: content,);
-
-2.  采用根节点为Material 组件
-Material(child: content);
-
-3. 逐个修改Text 组件的style 下的decoration为TextDecoration.none
-child: Text(
-                      "专栏的文章",
-     ...</div><p><a href="/2020/05/01/02_flutter_text_has_underline.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=Flutter">Flutter</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2020</span>
-            </li><li><i class="far fa-eye"></i> <span class="js-pageview" data-page-key="102">0</span> views</li></ul></div><meta itemprop="author" content="harry"/><meta itemprop="datePublished" content="2020-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="Flutter"></div>
       </article></div>
-</div><div class="layout--home"></div>
+</div><div class="layout--home"><div class="pagination"><p>19 post articles, 2 pages.</p>
+    <div class="pagination__menu">
+      <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
+            <i class="fas fa-angle-left"></i>
+          </div></li><li>
+              <div class="button button--primary button--circle focus"><span>1</span></div>
+            </li><li>
+                <a class="button button--secondary button--circle" href="/page2"><span>2</span></a>
+              </li><li><a class="button button--secondary button--circle" href="/page2">
+            <i class="fas fa-angle-right"></i>
+          </a></li></ul>
+    </div>
+  </div></div>
 <script>/*(function () {
 
 })();*/

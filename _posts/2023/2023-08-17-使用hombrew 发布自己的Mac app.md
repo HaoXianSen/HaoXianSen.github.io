@@ -1,6 +1,6 @@
 ---
 title: 使用homeBrew 发布自己的Mac 软件
-tags: [homebrew]
+tags: homebrew
 published: true
 article_header:
     type: cover 

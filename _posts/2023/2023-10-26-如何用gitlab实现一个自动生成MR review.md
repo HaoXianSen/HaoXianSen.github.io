@@ -1,6 +1,6 @@
 ---
 title: 基于gitlab的仓库管理，如何自动生成MR提供code review？
-tags: [iOS] [gitlab]
+tags: iOS gitlab	
 published: false
 article_header:
     type: cover 
