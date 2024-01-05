@@ -344,6 +344,40 @@ SwiftLint 就没有什么可说的了，强大&实用&支持各种方式接入~�
 
   ![image-20230606163316722](https://cdn.jsdelivr.net/gh/HaoXianSen/HaoXianSen.github.io@master/screenshots/20230606163316image-20230606163316722.png)
 
+#### 方案改进（2023.12.18）
+
+* 当前方案存在的问题
+
+  * **hooks脚本不受git版本控制**。因为git hooks 是不受git版本控制的，也就是说它是本地的。那么就会存在新拉的库（已经加入codelint），hooks脚本不存在。也就没了code lint 检查。
+  * **库必须执行lintmaker 命令才会加入config文件（.clang-format, .swiftlint.yml）。** 如何能更加简便的进行，并且可控。是当前要面临的又一大难题。
+
+* 解决方案
+
+  预想解决方案大概有两种：
+
+  1. 将hook script 加入到库根目录，执行某个命令的时候，将hook script copy到.git/hooks/下
+  2. 将hook script 放到个人目录下的.git-template/hooks/下，这个git 模版目录下的脚本，每次git clone | git init 会将模版文件copy到.git/hooks/下
+
+  ok。我们现在来分析一下以上两种方案：
+
+  ♥️首先看一下第二种方案，这种方案来说，能满足我们首次进行git clone 和git init 命令后copy 脚本的需求，但是假如是以下的情况
+
+  如果库a，b两同学已经都clone到了本地，随后a 同学加入了code lint。那么b同学是不会执行到git clone 或者git init 操作。那么也就是无法同步到b同学了。
+
+  ♥️既然第二种方案，还是无法达到我们预期，那我们来看第一种方案。首先我们可以在项目根目录，建立一个hooks/目录存放脚本文件，然后通过lintmaker 命令，进行链接，也就是ln -s -f ../../hooks/pre-commit  pre-commit。
+
+  同样这种情况也存在以上问题，也就是说b同学必须要执行一次lintmaker 命令，如果b同学没有执行，那么代码就不会被code lint。
+
+  ♥️看来以上两种预想方案都行不通，主要的问题还是我们没法搞定自动同步的问题。那么对于IOS 工程有什么命令是我们肯定执行的呢？很明显Cocoapods命令，那么我们从这条路出发，我们可以写一个Cocoapods hooks脚本，让其在pre-instal 或者post-install去检查当前库，以及子库以path引用的库，是否拥有hooks脚本，如果没有，我们就将hooks脚本进行移动。当然，我们可以配合1 + 2 两种方案进行。
+
+  ♥️基于以上方案，还有一个问题，如何控制打包的时候不去进行这项检测？
+
+* 👌那么我们详细策划一下整体解决方案
+
+  采用iOS 工程特有的pod hook的机制，在pod install的时候进行检测壳工程及开发子库的lint配置文件是否存在，如果存在说明，当前已经加入了lint， 那么将pre-commit文件 copy 到.git/hooks/目录下，另外还有一个问题
+
+
+
 #### 总结
 
 - 整个code lint tool的集成断断续续花费了半年多的时间，整体上还是比较满意的
