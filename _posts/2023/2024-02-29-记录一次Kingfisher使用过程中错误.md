@@ -1,6 +1,6 @@
 ---
 title: 记录一次Kingfisher使用过程中的问题
-tags: Ruby Cocoapods
+tags: iOS 三方库
 published: true
 article_header:
     type: cover 
