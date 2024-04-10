@@ -444,7 +444,7 @@ Pipeline是持续集成、交付、部署的顶级组件，如上内容中介绍
 
 缓存是作业下载和保存的一个或多个文件。如果使用相同缓存的后续作业将不需要再次下载文件，可增加作业执行的速度。
 
-缓存的关键字用法可查看[四、gitlab-ci.yml 文件配置部分的cache关键字](#四、.gitlab-ci.yml 文件)
+缓存的关键字用法可查看[`cache`](https://docs.gitlab.cn/jh/ci/ymll/#cache)
 
 ##### 产物
 
@@ -452,7 +452,7 @@ Pipeline是持续集成、交付、部署的顶级组件，如上内容中介绍
 
 默认情况下产物的有效期是30天，也可以设置产物的过期时间。
 
-产物的关键字可查看[四、gitlab-ci.yml 文件配置部分的cache关键字](#四、.gitlab-ci.yml 文件)
+产物的关键字可查看[`artifacts`](https://docs.gitlab.cn/jh/ci/ymll/#artifacts)
 
 ### 九、总结
 
