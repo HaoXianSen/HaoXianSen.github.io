@@ -108,7 +108,7 @@ git 支持以上的执行器。选择执行器可按照以上对比选择。具�
 
 配置shared runner 先决条件则是需要gitlab 管理员权限。
 
-配置group runner 的先决条件则是需要时group管理员。
+配置group runner 的先决条件则是需要group管理员权限。
 
 配置project runner的先决条件则是拥有项目的管理权。
 
